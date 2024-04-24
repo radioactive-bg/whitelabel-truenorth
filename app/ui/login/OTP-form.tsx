@@ -1,3 +1,4 @@
+'use client';
 import { lusitana } from '@/app/ui/fonts';
 import {
   AtSymbolIcon,
@@ -5,9 +6,17 @@ import {
   ExclamationCircleIcon,
 } from '@heroicons/react/24/outline';
 import { ArrowRightIcon } from '@heroicons/react/20/solid';
-import { Button } from './button';
+import { Button } from '../button';
 
-export default function LoginForm() {
+export default function OTPForm({
+  otp,
+  setOtp,
+  handleVerifyOtp,
+}: {
+  otp: string;
+  setOtp: (email: string) => void;
+  handleVerifyOtp: (password: string) => void;
+}) {
   return (
     <form className="space-y-3">
       <div className="flex-1 rounded-lg bg-gray-50 px-6 pb-4 pt-8">

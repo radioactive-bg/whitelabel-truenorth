@@ -1,0 +1,27 @@
+import { create } from 'zustand';
+
+export interface Auth {
+  access_token: string;
+  access_token_expires: number;
+  refresh_token: string;
+  isLoggedIn: boolean;
+  isInitialized: boolean;
+}
+
+export const authStore = create((set) => ({
+  auth: {
+    access_token: '',
+    access_token_expires: 0,
+    refresh_token: '',
+    isLoggedIn: false,
+  },
+  setauth: (auth: Auth) => set({ auth }),
+  updateAuthProperty: (propertyKey: keyof Auth, propertyValue: any) =>
+    set((state: any) => ({
+      auth: {
+        ...state.auth,
+        [propertyKey]: propertyValue,
+      },
+    })),
+  setAccesToken: (accesToken: string) => set({ accesToken: accesToken }),
+}));
