@@ -7,20 +7,15 @@ import {
 } from '@heroicons/react/24/outline';
 import { ArrowRightIcon } from '@heroicons/react/20/solid';
 import { Button } from '../button';
+import React, { useState } from 'react';
 
 export default function LoginForm({
-  email,
-  password,
-  setEmail,
-  setPassword,
   handleLogin,
 }: {
-  email: string;
-  password: string;
-  setEmail: (email: string) => void;
-  setPassword: (password: string) => void;
-  handleLogin: (e: any) => void;
+  handleLogin: (e: any, email: string, password: string) => void;
 }) {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   return (
     <form className="space-y-3">
       <div className="flex-1 rounded-lg bg-gray-50 px-6 pb-4 pt-8">
@@ -72,20 +67,30 @@ export default function LoginForm({
             </div>
           </div>
         </div>
-        <LoginButton onClick={handleLogin} />
+        <LoginButton onClick={handleLogin} email={email} password={password} />
         <div className="flex h-8 items-end space-x-1">
           {/* Add form errors here */}
         </div>
-        button
       </div>
     </form>
   );
 }
 
 // Correctly defining the function to accept props
-function LoginButton({ onClick }: { onClick: (e: any) => void }) {
+function LoginButton({
+  onClick,
+  email,
+  password,
+}: {
+  onClick: (e: any, email: string, password: string) => void;
+  email: string;
+  password: string;
+}) {
   return (
-    <Button className="mt-4 w-full" onClick={onClick}>
+    <Button
+      className="mt-4 w-full"
+      onClick={(e) => onClick(e, email, password)}
+    >
       Log in <ArrowRightIcon className="ml-auto h-5 w-5 text-gray-50" />
     </Button>
   );

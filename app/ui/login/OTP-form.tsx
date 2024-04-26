@@ -8,75 +8,72 @@ import {
 import { ArrowRightIcon } from '@heroicons/react/20/solid';
 import { Button } from '../button';
 
+import {
+  InputOTP,
+  InputOTPGroup,
+  InputOTPSeparator,
+  InputOTPSlot,
+} from '@/components/ui/input-otp';
+
+import React, { useState } from 'react';
+
 export default function OTPForm({
-  otp,
-  setOtp,
   handleVerifyOtp,
 }: {
-  otp: string;
-  setOtp: (email: string) => void;
-  handleVerifyOtp: (password: string) => void;
+  handleVerifyOtp: (e: any, otp: string) => void;
 }) {
+  const [otp, setOtp] = useState('');
+
   return (
-    <form className="space-y-3">
+    <div className="space-y-3">
       <div className="flex-1 rounded-lg bg-gray-50 px-6 pb-4 pt-8">
         <h1 className={`${lusitana.className} mb-3 text-2xl`}>
-          Please log in to continue.
+          Please enter OTP to continue.
         </h1>
-        <div className="w-full">
-          <div>
-            <label
-              className="mb-3 mt-5 block text-xs font-medium text-gray-900"
-              htmlFor="email"
-            >
-              Email
-            </label>
-            <div className="relative">
-              <input
-                className="peer block w-full rounded-md border border-gray-200 py-[9px] pl-10 text-sm outline-2 placeholder:text-gray-500"
-                id="email"
-                type="email"
-                name="email"
-                placeholder="Enter your email address"
-                required
-              />
-              <AtSymbolIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />
-            </div>
-          </div>
-          <div className="mt-4">
-            <label
-              className="mb-3 mt-5 block text-xs font-medium text-gray-900"
-              htmlFor="password"
-            >
-              Password
-            </label>
-            <div className="relative">
-              <input
-                className="peer block w-full rounded-md border border-gray-200 py-[9px] pl-10 text-sm outline-2 placeholder:text-gray-500"
-                id="password"
-                type="password"
-                name="password"
-                placeholder="Enter password"
-                required
-                minLength={6}
-              />
-              <KeyIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />
-            </div>
-          </div>
+        <div className="ml-4 w-full">
+          <InputOTP
+            maxLength={6}
+            value={otp}
+            onChange={(value: any) => {
+              setOtp(value);
+            }}
+          >
+            <InputOTPGroup>
+              <InputOTPSlot index={0} />
+              <InputOTPSlot index={1} />
+              <InputOTPSlot index={2} />
+            </InputOTPGroup>
+            <InputOTPSeparator />
+            <InputOTPGroup>
+              <InputOTPSlot index={3} />
+              <InputOTPSlot index={4} />
+              <InputOTPSlot index={5} />
+            </InputOTPGroup>
+          </InputOTP>
         </div>
-        <LoginButton />
+        <OTPButton onClick={handleVerifyOtp} otp={otp} />
         <div className="flex h-8 items-end space-x-1">
           {/* Add form errors here */}
         </div>
       </div>
-    </form>
+    </div>
   );
 }
 
-function LoginButton() {
+// Correctly defining the function to accept props
+function OTPButton({
+  onClick,
+  otp,
+}: {
+  onClick: (e: any, otp: string) => void;
+  otp: string;
+}) {
   return (
-    <Button className="mt-4 w-full">
-      Log in <ArrowRightIcon className="ml-auto h-5 w-5 text-gray-50" />
-    </Button>
+    <button
+      className="'flex aria-disabled:opacity-50', mt-4 h-10 w-full items-center rounded-lg bg-blue-500 px-4 text-sm font-medium text-white transition-colors hover:bg-blue-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500 active:bg-blue-600 aria-disabled:cursor-not-allowed"
+      onClick={(e) => onClick(e, otp)}
+    >
+      Submit
+    </button>
   );
 }

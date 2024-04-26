@@ -4,21 +4,28 @@ import Logo from '@/app/ui/logo';
 import LoginForm from '@/app/ui/login/login-form';
 import OTPForm from '@/app/ui/login/OTP-form';
 
-import { userStore } from '@/store/user';
-import { access } from 'fs';
+import { userStore, User } from '@/store/user';
+import { authStore, Auth } from '@/store/auth';
+import { useRouter } from 'next/navigation';
 
 export default function LoginPage() {
-  const user = userStore((state: any) => state.user);
+  const { user, setUser } = userStore() as {
+    user: User;
+    setUser: (user: User) => void;
+  };
+  const { auth, setAuth } = authStore() as {
+    auth: Auth;
+    setAuth: (auth: Auth) => void;
+  };
 
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [otp, setOtp] = useState('');
+  const router = useRouter();
+
   const [showOtpForm, setShowOtpForm] = useState(false);
 
-  const handleLogin = async (e: any) => {
+  const handleLogin = async (e: any, email: string, password: string) => {
     e.preventDefault();
+
     try {
-      console.log('email:', email);
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/oauth/token`,
         {
@@ -36,41 +43,62 @@ export default function LoginPage() {
       );
       const data = await response.json();
 
-      if (data.success) {
+      if (data.access_token) {
         //const user = await getUserProfile();
-        user.setAccesToken(data.access_token);
+        let authInfo: Auth = {
+          access_token: data.access_token,
+          access_token_expires: data.expires_in,
+          refresh_token: data.refresh_token,
+          isLoggedIn: true,
+        };
+        localStorage.setItem('access_token', data.access_token);
+        localStorage.setItem('refresh_token', data.refresh_token);
+        localStorage.setItem(
+          'access_token_expires',
+          data.expires_in.toString(),
+        );
 
-        console.log('User:', user);
+        setAuth(authInfo);
+
+        console.log('authInfo:', authInfo);
         setShowOtpForm(true);
       } else {
+        console.log('else Login Error:', data);
         alert(data.message);
       }
     } catch (error) {
-      console.error('Login Error:', error);
+      console.error('catch Login Error:', error);
       alert('Failed to login');
     }
   };
 
-  const handleVerifyOtp = async (e: any) => {
+  const handleVerifyOtp = async (e: any, otp: string) => {
     e.preventDefault();
+    console.log('otp: ', otp);
     try {
-      const response = await fetch('/api/verify-otp', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/distributor-crm/v1/check-2fa`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${auth.access_token}`,
+          },
+          body: JSON.stringify({ code: otp }),
         },
-        body: JSON.stringify({ email, otp }),
-      });
+      );
       const data = await response.json();
-      if (data.success) {
-        user.setUser(data.user);
+      console.log('OTP Data:', data);
+      if (data.status === 'success') {
+        //user.setUser(data.user);
         setShowOtpForm(false);
+        router.push('/dashboard'); // Redirects to the dashboard page
       } else {
-        alert(data.message);
+        // alert(data.message);
       }
     } catch (error) {
       console.error('OTP Error:', error);
-      alert('Failed to verify OTP');
+      //alert('Failed to verify OTP');
     }
   };
 
@@ -83,19 +111,9 @@ export default function LoginPage() {
           </div>
         </div>
         {showOtpForm ? (
-          <OTPForm
-            otp={otp}
-            setOtp={setOtp}
-            handleVerifyOtp={handleVerifyOtp}
-          />
+          <OTPForm handleVerifyOtp={handleVerifyOtp} />
         ) : (
-          <LoginForm
-            email={email}
-            setEmail={setEmail}
-            password={password}
-            setPassword={setPassword}
-            handleLogin={handleLogin}
-          />
+          <LoginForm handleLogin={handleLogin} />
         )}
       </div>
     </main>

@@ -1,13 +1,5 @@
 //must write our definitions later in this file
-import {
-  CustomerField,
-  CustomersTableType,
-  InvoiceForm,
-  InvoicesTable,
-  LatestInvoiceRaw,
-  User,
-  Revenue,
-} from './definitions';
+'use client';
 import { formatCurrency } from './utils';
 
 const API_URL = process.env.REACT_APP_API_URL;
@@ -52,10 +44,9 @@ export async function fetchFilteredInvoices(
 
 export async function fetchInvoicesPages(query: string) {
   try {
-    const response = await fetch(
-      `${API_URL}/invoices/pages?query=${encodeURIComponent(query)}`,
-      { method: 'GET' },
-    );
+    const response = await fetch(`${API_URL}distributor-crm/v1/orders`, {
+      method: 'GET',
+    });
     if (!response.ok)
       throw new Error('Failed to fetch total number of invoices pages.');
     const data = await response.json();

@@ -5,7 +5,6 @@ export interface Auth {
   access_token_expires: number;
   refresh_token: string;
   isLoggedIn: boolean;
-  isInitialized: boolean;
 }
 
 export const authStore = create((set) => ({
@@ -15,7 +14,7 @@ export const authStore = create((set) => ({
     refresh_token: '',
     isLoggedIn: false,
   },
-  setauth: (auth: Auth) => set({ auth }),
+  setAuth: (auth: Auth) => set({ auth }),
   updateAuthProperty: (propertyKey: keyof Auth, propertyValue: any) =>
     set((state: any) => ({
       auth: {
