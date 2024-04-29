@@ -26,8 +26,8 @@ export default function OTPForm({
 
   return (
     <div className="space-y-3">
-      <div className="flex-1 rounded-lg bg-gray-50 px-6 pb-4 pt-8">
-        <h1 className={`${lusitana.className} mb-3 text-2xl`}>
+      <div className="flex-1 rounded-lg px-6 pb-4 pt-8">
+        <h1 className="mb-5 mt-5 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
           Please enter OTP to continue.
         </h1>
         <div className="ml-4 w-full">
@@ -70,7 +70,7 @@ function OTPButton({
 }) {
   return (
     <button
-      className="'flex aria-disabled:opacity-50', mt-4 h-10 w-full items-center rounded-lg bg-blue-500 px-4 text-sm font-medium text-white transition-colors hover:bg-blue-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500 active:bg-blue-600 aria-disabled:cursor-not-allowed"
+      className="mt-10 flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
       onClick={(e) => onClick(e, otp)}
     >
       Submit

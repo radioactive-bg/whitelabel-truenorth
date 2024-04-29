@@ -7,7 +7,7 @@ import InvoiceStatus from '@/app/ui/invoices/status';
 import { formatDateToLocal, formatCurrency } from '@/app/lib/utils';
 //import { fetchFilteredOrders } from '@/app/lib/api/orders';
 import { access } from 'fs';
-import { authStore, Auth } from '@/store/auth';
+import { authStore, Auth } from '@/state/auth';
 
 export default async function InvoicesTable({
   query,

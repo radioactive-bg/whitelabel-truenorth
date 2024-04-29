@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import axios from 'axios';
 
 export interface Auth {
   access_token: string;
@@ -14,7 +15,7 @@ export const authStore = create((set) => ({
     refresh_token: '',
     isLoggedIn: false,
   },
-  setAuth: (auth: Auth) => set({ auth }),
+  setAuth: (auth: Auth | null) => set({ auth }),
   updateAuthProperty: (propertyKey: keyof Auth, propertyValue: any) =>
     set((state: any) => ({
       auth: {
@@ -22,5 +23,5 @@ export const authStore = create((set) => ({
         [propertyKey]: propertyValue,
       },
     })),
-  setAccesToken: (accesToken: string) => set({ accesToken: accesToken }),
 }));
+

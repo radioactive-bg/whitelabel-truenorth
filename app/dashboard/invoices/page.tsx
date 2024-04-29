@@ -7,11 +7,12 @@ import { lusitana } from '@/app/ui/fonts';
 import { InvoicesTableSkeleton } from '@/app/ui/skeletons';
 import { Suspense } from 'react';
 import { fetchOrderPage } from '@/app/lib/api/orders';
-import { getUserProfile } from '@/app/lib/api/user';
-import { authStore, Auth } from '@/store/auth';
+import { authStore, Auth } from '@/state/auth';
 import { useRouter } from 'next/navigation';
 
 import { useEffect, useState } from 'react';
+
+import { checkCredit } from '@/app/lib/api/wallet';
 
 export default function Page({
   searchParams,
@@ -21,8 +22,6 @@ export default function Page({
     page?: string;
   };
 }) {
-  const query = searchParams?.query || '';
-  const currentPage = Number(searchParams?.page) || 1;
   const router = useRouter();
 
   const { auth } = authStore() as {
@@ -44,7 +43,8 @@ export default function Page({
           router.push('/login');
         }
 
-        const TotalPages = await fetchOrderPage(null, auth.access_token);
+        const TotalPages = await fetchOrderPage(auth.access_token, 1);
+        const test = await checkCredit(auth.access_token);
         setLoading(false);
         setTotalPages(TotalPages);
       } catch (err) {
@@ -52,25 +52,7 @@ export default function Page({
       }
     }
 
-    async function testfetchData() {
-      try {
-        const accessToken =
-          auth.access_token || localStorage.getItem('access_token');
-
-        if (!accessToken) {
-          router.push('/login');
-        }
-
-        const TotalPages = await getUserProfile(auth.access_token);
-        setLoading(false);
-        //setTotalPages(TotalPages);
-      } catch (err) {
-        console.error('Error fetching invoices:', err);
-      }
-    }
-
-    testfetchData();
-    //fetchData();
+    fetchData();
   }, []);
 
   return (

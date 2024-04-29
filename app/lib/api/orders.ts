@@ -16,8 +16,9 @@ interface FetchInvoicesParams {
 
 //works
 export async function fetchOrderPage(
-  currentPage: number | null,
   access_token: string,
+  currentPage: number | null,
+  
 ) {
   const params: FetchInvoicesParams = {
     orderId: null,
@@ -43,6 +44,7 @@ export async function fetchOrderPage(
     const totalPages = Math.ceil(
       Number(response.data.data.length) / ITEMS_PER_PAGE,
     );
+    //console.log('response: ', response.data);
     return totalPages;
   } catch (error) {
     console.error('Fetch Error:', error);
@@ -62,7 +64,7 @@ export async function fetchOrderById(ID: number, access_token: string) {
         },
       },
     );
-    console.log('response of fetchOrderById:', JSON.stringify(response));
+
     return response.data.data;
   } catch (error) {
     console.error('Fetch Error:', error);
@@ -88,7 +90,7 @@ export async function downloadInvoice(ID: number, access_token: string) {
         params,
       },
     );
-    console.log('response of downloadInvoice:', JSON.stringify(response));
+
     return response.data;
   } catch (error) {
     console.error('Fetch Error:', error);
@@ -108,7 +110,7 @@ export async function getInvoice(ID: number, access_token: string) {
         },
       },
     );
-    console.log('response of getInvoice:', JSON.stringify(response));
+
     return response.data.data;
   } catch (error) {
     if (axios.isAxiosError(error)) {

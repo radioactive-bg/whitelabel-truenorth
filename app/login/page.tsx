@@ -4,8 +4,9 @@ import Logo from '@/app/ui/logo';
 import LoginForm from '@/app/ui/login/login-form';
 import OTPForm from '@/app/ui/login/OTP-form';
 
-import { userStore, User } from '@/store/user';
-import { authStore, Auth } from '@/store/auth';
+import { userStore, getUserProfile } from '@/state/user';
+import { User } from '@/app/lib/types/user';
+import { authStore, Auth } from '@/state/auth';
 import { useRouter } from 'next/navigation';
 
 export default function LoginPage() {
@@ -44,7 +45,6 @@ export default function LoginPage() {
       const data = await response.json();
 
       if (data.access_token) {
-        //const user = await getUserProfile();
         let authInfo: Auth = {
           access_token: data.access_token,
           access_token_expires: data.expires_in,
@@ -59,8 +59,8 @@ export default function LoginPage() {
         );
 
         setAuth(authInfo);
-
-        console.log('authInfo:', authInfo);
+        //const user = await getUserProfile(data.access_token);
+        //console.log('getUserProfile: '+JSON.stringify(user))
         setShowOtpForm(true);
       } else {
         console.log('else Login Error:', data);
@@ -74,7 +74,7 @@ export default function LoginPage() {
 
   const handleVerifyOtp = async (e: any, otp: string) => {
     e.preventDefault();
-    console.log('otp: ', otp);
+
     try {
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/distributor-crm/v1/check-2fa`,
@@ -88,10 +88,12 @@ export default function LoginPage() {
         },
       );
       const data = await response.json();
-      console.log('OTP Data:', data);
+
       if (data.status === 'success') {
-        //user.setUser(data.user);
-        setShowOtpForm(false);
+        setTimeout(() => {
+          setShowOtpForm(false);
+        }, 2000);
+
         router.push('/dashboard'); // Redirects to the dashboard page
       } else {
         // alert(data.message);
@@ -105,11 +107,6 @@ export default function LoginPage() {
   return (
     <main className="flex items-center justify-center md:h-screen">
       <div className="relative mx-auto flex w-full max-w-[400px] flex-col space-y-2.5 p-4 md:-mt-32">
-        <div className="flex h-20 w-full items-center rounded-lg bg-gray-50 p-3 md:h-36">
-          <div className="w-32  md:w-36">
-            <Logo />
-          </div>
-        </div>
         {showOtpForm ? (
           <OTPForm handleVerifyOtp={handleVerifyOtp} />
         ) : (
