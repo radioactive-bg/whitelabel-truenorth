@@ -7,8 +7,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body className={`${publicSans.className} antialiased`}>{children}</body>
+    <html lang="en" className="h-full bg-white">
+      <body className={`${publicSans.className} h-full antialiased`}>
+        {children}
+      </body>
     </html>
   );
 }
