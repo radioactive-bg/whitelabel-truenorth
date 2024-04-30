@@ -81,11 +81,11 @@ export async function postCredit(access_token: string) {
         body: Body,
       },
     );
-    console.log('checkCredit response.data.data: ', response.data);
+    console.log('postCredit response.data.data: ', response.data);
     return response.data;
   } catch (error) {
     console.error('Fetch Error:', error);
-    throw new Error('Failed to fetch Transactions List.');
+    throw new Error('Failed to fetch Post Credit.');
   }
 }
 
@@ -113,6 +113,26 @@ export async function checkCredit(access_token: string) {
     return response.data;
   } catch (error) {
     console.error('Fetch Error:', error);
-    throw new Error('Failed to fetch Transactions List.');
+    throw new Error('Failed to fetch Check Credit.');
+  }
+}
+
+//works
+export async function getCreditMethods(access_token: string) {
+  try {
+    const response = await axios.get(
+      `${process.env.NEXT_PUBLIC_API_URL}/distributor-crm/v1/wallets/credit-methods`,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${access_token}`,
+        },
+      },
+    );
+    console.log('getCreditMethods response.data.data: ', response.data);
+    return response.data;
+  } catch (error) {
+    console.error('Fetch Error:', error);
+    throw new Error('Failed to fetch Credit Methods.');
   }
 }

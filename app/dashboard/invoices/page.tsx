@@ -12,7 +12,7 @@ import { useRouter } from 'next/navigation';
 
 import { useEffect, useState } from 'react';
 
-import { checkCredit } from '@/app/lib/api/wallet';
+import { getTransactionsList } from '@/app/lib/api/wallet';
 
 export default function Page({
   searchParams,
@@ -44,7 +44,7 @@ export default function Page({
         }
 
         const TotalPages = await fetchOrderPage(auth.access_token, 1);
-        const test = await checkCredit(auth.access_token);
+        const test = await getTransactionsList(auth.access_token);
         setLoading(false);
         setTotalPages(TotalPages);
       } catch (err) {
