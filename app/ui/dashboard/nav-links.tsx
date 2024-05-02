@@ -16,7 +16,7 @@ const links = [
   { name: 'Catalog', href: '/dashboard/catalog', icon: BuildingStorefrontIcon },
   {
     name: 'Order List',
-    href: '/dashboard/invoices',
+    href: '/dashboard/orders',
     icon: DocumentDuplicateIcon,
   },
 ];
@@ -29,7 +29,7 @@ export default function NavLinks() {
       {links.map((link) => {
         const LinkIcon = link.icon;
         let isActive = pathname === link.href;
-        console.log('pathname: ', pathname);
+
         return (
           <Link
             key={link.name}
@@ -38,8 +38,8 @@ export default function NavLinks() {
               'group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6',
 
               isActive
-                ? 'bg-gray-50 text-indigo-600'
-                : 'text-gray-700 hover:bg-gray-50 hover:text-indigo-600',
+                ? 'bg-gray-50 text-[#50C8ED]'
+                : 'text-gray-700 hover:bg-gray-50 hover:text-[#50C8ED]',
             )}
           >
             <LinkIcon className="w-6" />

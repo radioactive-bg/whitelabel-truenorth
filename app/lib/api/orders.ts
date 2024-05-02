@@ -14,11 +14,41 @@ interface FetchInvoicesParams {
   page?: number | null;
 }
 
+export async function getOrdersList(
+  access_token: string,
+  currentPage: number | null,
+  statuses: number[],
+) {
+  const params = new URLSearchParams({
+    perPage: ITEMS_PER_PAGE.toString(),
+    page: currentPage ? currentPage.toString() : '1',
+  });
+
+  statuses.forEach((status) => {
+    params.append('status[]', status.toString());
+  });
+
+  try {
+    const response = await axios.get(`${API_URL}/distributor-crm/v1/orders`, {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${access_token}`,
+      },
+      params, // axios automatically converts this to a query string
+    });
+
+    console.log('getOrdersList response: ', response.data);
+    return response.data.data;
+  } catch (error) {
+    console.error('Fetch Error:', error);
+    throw new Error('Failed to fetch total number of invoices.');
+  }
+}
+
 //works
 export async function fetchOrderPage(
   access_token: string,
   currentPage: number | null,
-  
 ) {
   const params: FetchInvoicesParams = {
     orderId: null,

@@ -59,9 +59,9 @@ export default function LoginPage() {
         );
 
         setAuth(authInfo);
-        //const user = await getUserProfile(data.access_token);
-        //console.log('getUserProfile: '+JSON.stringify(user))
         setShowOtpForm(true);
+        await getUserProfile(data.access_token);
+        //console.log('getUserProfile: '+JSON.stringify(user))
       } else {
         console.log('else Login Error:', data);
         alert(data.message);

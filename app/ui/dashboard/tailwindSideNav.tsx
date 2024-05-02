@@ -5,9 +5,6 @@ import {
   Bars3Icon,
   BellIcon,
   Cog6ToothIcon,
-  DocumentDuplicateIcon,
-  HomeIcon,
-  UsersIcon,
   XMarkIcon,
 } from '@heroicons/react/24/outline';
 
@@ -18,33 +15,10 @@ import {
 
 import NavLinks from '@/app/ui/dashboard/nav-links';
 import Logo from '@/app/ui/logo';
-
-const navigation = [
-  {
-    name: 'Dashboard',
-    href: '/dashboard',
-    icon: HomeIcon,
-    current: true,
-  },
-  {
-    name: 'Catalog',
-    href: '/dashboard/catalog',
-    icon: UsersIcon,
-    current: false,
-  },
-  {
-    name: 'Invoices',
-    href: '/dashboard/invoices',
-    icon: DocumentDuplicateIcon,
-    current: false,
-  },
-];
-
-//update later when you make the components
-const userNavigation = [
-  { name: 'Your profile', href: '#' },
-  { name: 'Sign out', href: '#' },
-];
+import { authStore, Auth } from '@/state/auth';
+import { userStore } from '@/state/user';
+import { User } from '@/app/lib/types/user';
+import { useRouter } from 'next/navigation';
 
 function classNames(...classes: any[]) {
   return classes.filter(Boolean).join(' ');
@@ -56,6 +30,56 @@ export default function TailwindSideNav({
   children: React.ReactNode;
 }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const { auth, setAuth } = authStore() as {
+    auth: Auth;
+    setAuth: (auth: Auth) => void;
+  };
+  const { user } = userStore() as {
+    user: User;
+  };
+  const router = useRouter();
+
+  const handleUserProfile = () => {
+    router.push('/dashboard/userProfile');
+  };
+
+  const handleLogout = async (e: any) => {
+    e.preventDefault();
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/distributor-crm/v1/logout`,
+        {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${auth.access_token}`,
+          },
+        },
+      );
+      const data = await response.json();
+      console.log('logout request data: ', JSON.stringify(data));
+
+      let authInfo: Auth = {
+        access_token: '',
+        access_token_expires: 0,
+        refresh_token: '',
+        isLoggedIn: false,
+      };
+      localStorage.setItem('access_token', '');
+      localStorage.setItem('refresh_token', '');
+      localStorage.setItem('access_token_expires', '');
+      setAuth(authInfo);
+      router.push('/');
+    } catch (error) {
+      console.error('catch handleLogout Error:', error);
+      alert('Failed to logout');
+    }
+  };
+
+  const userNavigation = [
+    { name: 'Your profile', action: handleUserProfile },
+    { name: 'Sign out', action: handleLogout },
+  ];
 
   return (
     <>
@@ -134,11 +158,11 @@ export default function TailwindSideNav({
                         </li>
                         <li className="mt-auto">
                           <a
-                            href="#"
-                            className="group -mx-2 flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 text-gray-700 hover:bg-gray-50 hover:text-indigo-600"
+                            href=""
+                            className="group -mx-2 flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 text-gray-700 hover:bg-gray-50 hover:text-[#50C8ED]"
                           >
                             <Cog6ToothIcon
-                              className="h-6 w-6 shrink-0 text-gray-400 group-hover:text-indigo-600"
+                              className="h-6 w-6 shrink-0 text-gray-400 group-hover:text-[#50C8ED]"
                               aria-hidden="true"
                             />
                             Settings
@@ -171,10 +195,10 @@ export default function TailwindSideNav({
                 <li className="mt-auto">
                   <a
                     href="#"
-                    className="group -mx-2 flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 text-gray-700 hover:bg-gray-50 hover:text-indigo-600"
+                    className="group -mx-2 flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 text-gray-700 hover:bg-gray-50 hover:text-[#50C8ED]"
                   >
                     <Cog6ToothIcon
-                      className="h-6 w-6 shrink-0 text-gray-400 group-hover:text-indigo-600"
+                      className="h-6 w-6 shrink-0 text-gray-400 group-hover:text-[#50C8ED]"
                       aria-hidden="true"
                     />
                     Settings
@@ -204,7 +228,7 @@ export default function TailwindSideNav({
               />
 
               <div className="flex flex-1 gap-x-4 self-stretch lg:gap-x-6">
-                <form className="relative flex flex-1" action="#" method="GET">
+                {/* <form className="relative flex flex-1" action="#" method="GET">
                   <label htmlFor="search-field" className="sr-only">
                     Search
                   </label>
@@ -219,7 +243,10 @@ export default function TailwindSideNav({
                     type="search"
                     name="search"
                   />
-                </form>
+                </form> */}
+                {/*added this div istead of the search bar*/}
+                <div className="relative flex flex-1"></div>
+
                 <div className="flex items-center gap-x-4 lg:gap-x-6">
                   <button
                     type="button"
@@ -239,17 +266,19 @@ export default function TailwindSideNav({
                   <Menu as="div" className="relative">
                     <Menu.Button className="-m-1.5 flex items-center p-1.5">
                       <span className="sr-only">Open user menu</span>
-                      <img
-                        className="h-8 w-8 rounded-full bg-gray-50"
-                        src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                        alt=""
-                      />
+                      {/* replace this image with the one of the user */}
+
+                      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-50">
+                        <p className="text-blue-600">
+                          {user.name[0].toLocaleUpperCase()}
+                        </p>
+                      </div>
                       <span className="hidden lg:flex lg:items-center">
                         <span
                           className="ml-4 text-sm font-semibold leading-6 text-gray-900"
                           aria-hidden="true"
                         >
-                          Tom Cook
+                          {user.name}
                         </span>
                         <ChevronDownIcon
                           className="ml-2 h-5 w-5 text-gray-400"
@@ -266,19 +295,19 @@ export default function TailwindSideNav({
                       leaveFrom="transform opacity-100 scale-100"
                       leaveTo="transform opacity-0 scale-95"
                     >
-                      <Menu.Items className="absolute right-0 z-10 mt-2.5 w-32 origin-top-right rounded-md bg-white py-2 shadow-lg ring-1 ring-gray-900/5 focus:outline-none">
+                      <Menu.Items className=" absolute right-0 z-10 mt-2.5  w-32 origin-top-right rounded-md bg-white py-2 shadow-lg ring-1 ring-gray-900/5 focus:outline-none">
                         {userNavigation.map((item) => (
                           <Menu.Item key={item.name}>
                             {({ active }) => (
-                              <a
-                                href={item.href}
+                              <button
+                                onClick={item.action}
                                 className={classNames(
                                   active ? 'bg-gray-50' : '',
-                                  'block px-3 py-1 text-sm leading-6 text-gray-900',
+                                  'block w-full px-3 py-1 text-sm leading-6 text-gray-900',
                                 )}
                               >
                                 {item.name}
-                              </a>
+                              </button>
                             )}
                           </Menu.Item>
                         ))}

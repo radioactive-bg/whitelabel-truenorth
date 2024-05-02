@@ -42,9 +42,12 @@ export async function getShowWallets(access_token: string) {
 
 //error -500 -server error
 export async function getTransactionsList(access_token: string) {
+  let walletID = 94;
   try {
     const response = await axios.get(
-      `${process.env.NEXT_PUBLIC_API_URL}/distributor-crm/v1/wallets/1/transactions`,
+      `${
+        process.env.NEXT_PUBLIC_API_URL
+      }/distributor-crm/v1/wallets/${94}/transactions`,
       {
         headers: {
           'Content-Type': 'application/json',

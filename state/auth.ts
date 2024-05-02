@@ -10,10 +10,18 @@ export interface Auth {
 
 export const authStore = create((set) => ({
   auth: {
-    access_token: '',
-    access_token_expires: 0,
-    refresh_token: '',
-    isLoggedIn: false,
+    access_token: localStorage.getItem('access_token')
+      ? localStorage.getItem('access_token')
+      : '',
+    access_token_expires: localStorage.getItem('access_token_expires')
+      ? localStorage.getItem('access_token_expires')
+      : 0,
+    refresh_token: localStorage.getItem('refresh_token')
+      ? localStorage.getItem('refresh_token')
+      : '',
+    isLoggedIn: localStorage.getItem('isLoggedIn')
+      ? localStorage.getItem('isLoggedIn')
+      : false,
   },
   setAuth: (auth: Auth | null) => set({ auth }),
   updateAuthProperty: (propertyKey: keyof Auth, propertyValue: any) =>
@@ -24,4 +32,3 @@ export const authStore = create((set) => ({
       },
     })),
 }));
-
