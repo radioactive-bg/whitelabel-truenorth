@@ -10,18 +10,22 @@ export interface Auth {
 
 export const authStore = create((set) => ({
   auth: {
-    access_token: localStorage.getItem('access_token')
-      ? localStorage.getItem('access_token')
-      : '',
-    access_token_expires: localStorage.getItem('access_token_expires')
-      ? localStorage.getItem('access_token_expires')
-      : 0,
-    refresh_token: localStorage.getItem('refresh_token')
-      ? localStorage.getItem('refresh_token')
-      : '',
-    isLoggedIn: localStorage.getItem('isLoggedIn')
-      ? localStorage.getItem('isLoggedIn')
-      : false,
+    access_token: '',
+    access_token_expires: 0,
+    refresh_token: '',
+    isLoggedIn: false,
+  },
+  initializeAuth: () => {
+    // This function should only be called from the client side
+    const auth = {
+      access_token: localStorage.getItem('access_token') || '',
+      access_token_expires: parseInt(
+        localStorage.getItem('access_token_expires') || '0',
+      ),
+      refresh_token: localStorage.getItem('refresh_token') || '',
+      isLoggedIn: localStorage.getItem('isLoggedIn') === 'true',
+    };
+    set({ auth });
   },
   setAuth: (auth: Auth | null) => set({ auth }),
   updateAuthProperty: (propertyKey: keyof Auth, propertyValue: any) =>

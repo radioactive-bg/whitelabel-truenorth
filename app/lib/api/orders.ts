@@ -37,7 +37,7 @@ export async function getOrdersList(
       params, // axios automatically converts this to a query string
     });
 
-    console.log('getOrdersList response: ', response.data);
+    console.log('getOrdersList response: ', response);
     return response.data.data;
   } catch (error) {
     console.error('Fetch Error:', error);
