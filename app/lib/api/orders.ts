@@ -37,8 +37,8 @@ export async function getOrdersList(
       params, // axios automatically converts this to a query string
     });
 
-    console.log('getOrdersList response: ', response);
-    return response.data.data;
+    //console.log('getOrdersList response: ', response);
+    return response;
   } catch (error) {
     console.error('Fetch Error:', error);
     throw new Error('Failed to fetch total number of invoices.');

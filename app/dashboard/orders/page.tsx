@@ -1,13 +1,13 @@
 'use client';
-import {
-  Pagination,
-  PaginationContent,
-  PaginationEllipsis,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from '@/components/ui/pagination';
+// import {
+//   Pagination,
+//   PaginationContent,
+//   PaginationEllipsis,
+//   PaginationItem,
+//   PaginationLink,
+//   PaginationNext,
+//   PaginationPrevious,
+// } from '@/components/ui/pagination';
 
 import Search from '@/app/ui/search';
 import Table from '@/app/ui/invoices/table';
@@ -19,16 +19,11 @@ import { getOrdersList } from '@/app/lib/api/orders';
 import { authStore, Auth } from '@/state/auth';
 import { useRouter } from 'next/navigation';
 
+import Pagination from '@/app/ui/orders/ordersListPagination';
+
 import { useEffect, useState } from 'react';
 
-export default function Page({
-  searchParams,
-}: {
-  searchParams?: {
-    query?: string;
-    page?: string;
-  };
-}) {
+export default function Page({}: {}) {
   const router = useRouter();
 
   const { auth } = authStore() as {
@@ -71,37 +66,69 @@ export default function Page({
 
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [page, setPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
 
-  const [links, setLinks] = useState([]);
+  //   useEffect(() => {
+  //     async function fetchData() {
+  //       try {
+  //         const accessToken =
+  //           auth.access_token || localStorage.getItem('access_token');
+
+  //         if (!accessToken) {
+  //           router.push('/login');
+  //         }
+
+  //         const response = await getOrdersList(
+  //           auth.access_token,
+  //           currentPage,
+  //           [3, 7],
+  //         );
+
+  //         console.log('response:', JSON.stringify(response));
+  //         setLoading(false);
+  //         setOrders(response.data.data);
+  //       } catch (err) {
+  //         console.error('Error fetching invoices:', err);
+  //       }
+  //     }
+
+  //     fetchData();
+  //   }, []);
 
   useEffect(() => {
-    async function fetchData() {
-      try {
-        const accessToken =
-          auth.access_token || localStorage.getItem('access_token');
-
-        if (!accessToken) {
-          router.push('/login');
-        }
-
-        const response = await getOrdersList(
-          auth.access_token,
-          page,
-          [3, 5, 7],
-        );
-        setLoading(false);
-        setOrders(response.data);
-      } catch (err) {
-        console.error('Error fetching invoices:', err);
-      }
+    console.log('calls the useEffect in orders');
+    if (!auth.access_token) {
+      router.push('/login');
+      return;
     }
+    fetchOrders(currentPage);
+  }, [currentPage, auth.access_token, router]);
 
-    fetchData();
-  }, []);
+  const fetchOrders = async (page: number) => {
+    setLoading(true);
+    try {
+      const response = await getOrdersList(auth.access_token, page, [3, 7]);
+      setOrders(response.data.data);
+      const urlObject = new URL(response.data.links.last);
+      const queryParams = new URLSearchParams(urlObject.search);
+      const lastPage = queryParams.get('page');
+      setTotalPages(Number(lastPage)); // Assuming API returns totalPages
+      setLoading(false);
+    } catch (error) {
+      console.error('Error fetching orders:', error);
+      setLoading(false);
+    }
+  };
+
+  const handlePageChange = (page: number) => {
+    setLoading(true);
+    setCurrentPage(page);
+    fetchOrders(page);
+  };
 
   return (
-    <div className="w-full">
+    <div className=" w-full">
       {loading === true ? (
         <div>Loading...</div>
       ) : (
@@ -237,7 +264,7 @@ export default function Page({
               </div>
             </div>
           </div>
-          <Pagination>
+          {/* <Pagination>
             <PaginationContent>
               <PaginationItem>
                 <PaginationPrevious href="#" />
@@ -255,13 +282,40 @@ export default function Page({
                 <PaginationEllipsis />
               </PaginationItem>
               <PaginationItem>
-                <PaginationLink href="#">25</PaginationLink>
+                <PaginationLink href="#">{totalPages}</PaginationLink>
               </PaginationItem>
               <PaginationItem>
                 <PaginationNext href="#" />
               </PaginationItem>
             </PaginationContent>
-          </Pagination>
+          </Pagination> */}
+
+          {/*<Pagination>
+            {Array.from(
+              { length: totalPages },
+              (_, i) =>
+                // Only render the first three items or the last item
+                (i < 3 || i === totalPages - 1) && (
+                  <PaginationItem key={i + 1}>
+                    <PaginationLink
+                      onClick={() => handlePageChange(i + 1)}
+                      href="#"
+                      aria-current={currentPage === i + 1 ? 'page' : undefined}
+                    >
+                      {i + 1}
+                    </PaginationLink>
+                  </PaginationItem>
+                ),
+            )}
+            </Pagination>*/}
+          <div className="ml-4 mt-4 flex w-full flex-row items-center md:ml-[calc(60%-310px)] md:mt-0">
+            <Pagination
+              router={router}
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={handlePageChange}
+            />
+          </div>
         </>
       )}
     </div>
