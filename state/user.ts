@@ -1,3 +1,4 @@
+'use client';
 import { create } from 'zustand';
 import axios from 'axios';
 import { User } from '../app/lib/types/user';
@@ -5,7 +6,7 @@ import { User } from '../app/lib/types/user';
 export const userStore = create((set) => ({
   user: {
     id: 'string',
-    name: 'string',
+    name: localStorage.getItem('username') || 'no value',
     email: 'some.email@gmail.com',
     is2FAEnable: true,
     acl: {},
@@ -33,6 +34,8 @@ export async function getUserProfile(access_token: string) {
     );
     console.error('response.data.data: ', response.data.data);
     userStore.setState({ user: response.data.data });
+
+    localStorage.setItem('username', response.data.data.name);
 
     console.error('userStore: ', JSON.stringify(userStore.getState()));
 

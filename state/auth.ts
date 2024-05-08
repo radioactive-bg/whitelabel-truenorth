@@ -1,5 +1,7 @@
+'use client';
 import { create } from 'zustand';
 import axios from 'axios';
+import { User } from '../app/lib/types/user';
 
 export interface Auth {
   access_token: string;
@@ -10,7 +12,7 @@ export interface Auth {
 
 export const authStore = create((set) => ({
   auth: {
-    access_token: '',
+    access_token: localStorage.getItem('access_token') || 'no value',
     access_token_expires: 0,
     refresh_token: '',
     isLoggedIn: false,

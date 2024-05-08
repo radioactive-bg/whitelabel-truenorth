@@ -93,9 +93,19 @@ export default function CatalogPage() {
   const [loading, setLoading] = useState(true);
   const [productGroups, setProductGroups] = useState([]);
 
-  const [searchQuery, setSearchQuery] = useState('');
-  const [RegionSearchQuery, setRagionSearchQuery] = useState('');
-  const [CurrencySearchQuery, setCurrencySearchQuery] = useState('');
+  // search Bars states
+  const [productGroupsSearchQuery, setProductGroupsSearchQuery] = useState('');
+  const [regionSearchQuery, setRegionSearchQuery] = useState('');
+  const [currencySearchQuery, setCurrencySearchQuery] = useState('');
+
+  // filtered product groups states
+  const [filteredProductGroups, setFilteredProductGroups] = useState(
+    filters[0].options,
+  );
+  const [filteredRegions, setFilteredRegions] = useState(filters[1].options);
+  const [filteredCurrences, setFilteredCurrences] = useState(
+    filters[2].options,
+  );
 
   const router = useRouter();
   const { auth } = authStore() as {
@@ -103,7 +113,10 @@ export default function CatalogPage() {
   };
 
   useEffect(() => {
-    if (!auth.access_token) {
+    const localValue = localStorage.getItem('access_token') || 'no value';
+    //console.log('localValue in catalog: ', localValue);
+    //console.log('auth.access_token in catalog: ', auth.access_token);
+    if (localValue === 'no value') {
       router.push('/login');
       return;
     }
@@ -112,13 +125,11 @@ export default function CatalogPage() {
 
   const fetchProductGroups = async () => {
     setLoading(true);
+    console.log('auth.access_token: ' + auth.access_token);
     try {
       const response = await getProductGroupsList(auth.access_token);
       setProductGroups(response.data.data);
-      console.log(
-        'response.data.data from fetchProductGroups:',
-        JSON.stringify(response.data.data),
-      );
+
       setLoading(false);
     } catch (error) {
       console.error('Error fetching orders:', error);
@@ -126,10 +137,18 @@ export default function CatalogPage() {
     }
   };
 
-  // Filter product groups based on search query
-  const filteredProductGroups = productGroups.filter((product: any) =>
-    product.name.toLowerCase().includes(searchQuery.toLowerCase()),
-  );
+  // Generic function to filter options based on search input
+  const filterOptions = (
+    allOptions: any,
+    query: any,
+    setFilteredArrayFunc: any,
+  ) => {
+    let filteredArray = allOptions.filter((option: any) =>
+      option.label.toLowerCase().includes(query.toLowerCase()),
+    );
+
+    setFilteredArrayFunc(filteredArray);
+  };
 
   return (
     <div className="bg-white">
@@ -250,33 +269,23 @@ export default function CatalogPage() {
           </Transition.Root>
 
           <main className="mx-auto max-w-2xl px-4 lg:max-w-7xl lg:px-8">
-            <div className="border-b border-gray-200 pb-10 pt-24">
-              <h1 className="text-4xl font-bold tracking-tight text-gray-900">
-                Our Giftcards
-              </h1>
-              <p className="mt-4 text-base text-gray-500">
-                Checkout out the latest release of Basic Tees, new and improved
-                with four openings!
-              </p>
-            </div>
-
-            <div className="hidden lg:block">
-              <form className="divide-y divide-gray-200">
-                {filters.map((section, sectionIdx) => (
+            <div className=" flex items-center justify-end border-b border-gray-200 pb-10 pt-24">
+              <div className="flex hidden items-center lg:block">
+                <form className="flex items-center">
                   <Popover
                     as="div"
-                    key={section.name}
+                    key={'Product Group'}
                     id="menu"
-                    className="relative inline-block text-left"
+                    className="relative inline-block pl-[20px] text-left"
                   >
                     <div>
                       <Popover.Button className="group inline-flex items-center justify-center text-sm font-medium text-gray-700 hover:text-gray-900">
-                        <span>{section.name}</span>
-                        {sectionIdx === 0 ? (
+                        <span>{'Product Group'}</span>
+                        {/* {sectionIdx === 0 ? (
                           <span className="ml-1.5 rounded bg-gray-200 px-1.5 py-0.5 text-xs font-semibold tabular-nums text-gray-700">
                             1
                           </span>
-                        ) : null}
+                        ) : null} */}
                         <ChevronDownIcon
                           className="-mr-1 ml-1 h-5 w-5 flex-shrink-0 text-gray-400 group-hover:text-gray-500"
                           aria-hidden="true"
@@ -294,22 +303,43 @@ export default function CatalogPage() {
                       leaveTo="transform opacity-0 scale-95"
                     >
                       <Popover.Panel className="absolute right-0 z-10 mt-2 origin-top-right rounded-md bg-white p-4 shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none">
-                        <form className="space-y-4">
-                          {section.options.map((option, optionIdx) => (
+                        <input
+                          type="text"
+                          placeholder="Search options..."
+                          className="mb-4 w-full rounded-md border-gray-300 p-2 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50"
+                          // onChange={(e) => {
+                          //   const value = e.target.value.toLowerCase();
+                          //   section.options = section.options.filter(
+                          //     (option) =>
+                          //       option.label.toLowerCase().includes(value),
+                          //   );
+                          // }}
+                          value={productGroupsSearchQuery}
+                          onChange={(e) => {
+                            setProductGroupsSearchQuery(e.target.value);
+                            filterOptions(
+                              filters[0].options,
+                              e.target.value,
+                              setFilteredProductGroups,
+                            );
+                          }}
+                        />
+                        <form className="max-h-60 space-y-4 overflow-y-auto">
+                          {filteredProductGroups.map((option, optionIdx) => (
                             <div
                               key={option.value}
                               className="flex items-center"
                             >
                               <input
-                                id={`filter-${section.id}-${optionIdx}`}
-                                name={`${section.id}[]`}
+                                id={`filter-${'Product Group'}-${optionIdx}`}
+                                name={`${'Product Group'}[]`}
                                 defaultValue={option.value}
                                 defaultChecked={option.checked}
                                 type="checkbox"
-                                className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                                className=" ml-[5px] h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
                               />
                               <label
-                                htmlFor={`filter-${section.id}-${optionIdx}`}
+                                htmlFor={`filter-${'Product Group'}-${optionIdx}`}
                                 className="ml-3 whitespace-nowrap pr-6 text-sm font-medium text-gray-900"
                               >
                                 {option.label}
@@ -320,8 +350,150 @@ export default function CatalogPage() {
                       </Popover.Panel>
                     </Transition>
                   </Popover>
-                ))}
-              </form>
+                  <Popover
+                    as="div"
+                    key={'Activation Region'}
+                    id="menu"
+                    className="relative inline-block pl-[20px] text-left"
+                  >
+                    <div>
+                      <Popover.Button className="group inline-flex items-center justify-center text-sm font-medium text-gray-700 hover:text-gray-900">
+                        <span>{'Activation Region'}</span>
+                        {/* {sectionIdx === 0 ? (
+                          <span className="ml-1.5 rounded bg-gray-200 px-1.5 py-0.5 text-xs font-semibold tabular-nums text-gray-700">
+                            1
+                          </span>
+                        ) : null} */}
+                        <ChevronDownIcon
+                          className="-mr-1 ml-1 h-5 w-5 flex-shrink-0 text-gray-400 group-hover:text-gray-500"
+                          aria-hidden="true"
+                        />
+                      </Popover.Button>
+                    </div>
+
+                    <Transition
+                      as={Fragment}
+                      enter="transition ease-out duration-100"
+                      enterFrom="transform opacity-0 scale-95"
+                      enterTo="transform opacity-100 scale-100"
+                      leave="transition ease-in duration-75"
+                      leaveFrom="transform opacity-100 scale-100"
+                      leaveTo="transform opacity-0 scale-95"
+                    >
+                      <Popover.Panel className="absolute right-0 z-10 mt-2 origin-top-right rounded-md bg-white p-4 shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none">
+                        <input
+                          type="text"
+                          placeholder="Search options..."
+                          className="mb-4 w-full rounded-md border-gray-300 p-2 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50"
+                          value={regionSearchQuery}
+                          onChange={(e) => {
+                            setRegionSearchQuery(e.target.value);
+                            filterOptions(
+                              filters[1].options,
+                              e.target.value,
+                              setFilteredRegions,
+                            );
+                          }}
+                        />
+                        <form className="max-h-60 space-y-4 overflow-y-auto">
+                          {filteredRegions.map((option, optionIdx) => (
+                            <div
+                              key={option.value}
+                              className="flex items-center"
+                            >
+                              <input
+                                id={`filter-${'Activation Region'}-${optionIdx}`}
+                                name={`${'Activation Region'}[]`}
+                                defaultValue={option.value}
+                                defaultChecked={option.checked}
+                                type="checkbox"
+                                className=" ml-[5px] h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                              />
+                              <label
+                                htmlFor={`filter-${'Activation Region'}-${optionIdx}`}
+                                className="ml-3 whitespace-nowrap pr-6 text-sm font-medium text-gray-900"
+                              >
+                                {option.label}
+                              </label>
+                            </div>
+                          ))}
+                        </form>
+                      </Popover.Panel>
+                    </Transition>
+                  </Popover>
+                  <Popover
+                    as="div"
+                    key={'Denomination currency'}
+                    id="menu"
+                    className="relative inline-block pl-[20px] text-left"
+                  >
+                    <div>
+                      <Popover.Button className="group inline-flex items-center justify-center text-sm font-medium text-gray-700 hover:text-gray-900">
+                        <span>{'Denomination currency'}</span>
+                        {/* {sectionIdx === 0 ? (
+                          <span className="ml-1.5 rounded bg-gray-200 px-1.5 py-0.5 text-xs font-semibold tabular-nums text-gray-700">
+                            1
+                          </span>
+                        ) : null} */}
+                        <ChevronDownIcon
+                          className="-mr-1 ml-1 h-5 w-5 flex-shrink-0 text-gray-400 group-hover:text-gray-500"
+                          aria-hidden="true"
+                        />
+                      </Popover.Button>
+                    </div>
+
+                    <Transition
+                      as={Fragment}
+                      enter="transition ease-out duration-100"
+                      enterFrom="transform opacity-0 scale-95"
+                      enterTo="transform opacity-100 scale-100"
+                      leave="transition ease-in duration-75"
+                      leaveFrom="transform opacity-100 scale-100"
+                      leaveTo="transform opacity-0 scale-95"
+                    >
+                      <Popover.Panel className="absolute right-0 z-10 mt-2 origin-top-right rounded-md bg-white p-4 shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none">
+                        <input
+                          type="text"
+                          placeholder="Search options..."
+                          className="mb-4 w-full rounded-md border-gray-300 p-2 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50"
+                          value={currencySearchQuery}
+                          onChange={(e) => {
+                            setCurrencySearchQuery(e.target.value);
+                            filterOptions(
+                              filters[2].options,
+                              e.target.value,
+                              setFilteredCurrences,
+                            );
+                          }}
+                        />
+                        <form className="max-h-60 space-y-4 overflow-y-auto">
+                          {filteredCurrences.map((option, optionIdx) => (
+                            <div
+                              key={option.value}
+                              className="flex items-center"
+                            >
+                              <input
+                                id={`filter-${'Denomination currency'}-${optionIdx}`}
+                                name={`${'Denomination currency'}[]`}
+                                defaultValue={option.value}
+                                defaultChecked={option.checked}
+                                type="checkbox"
+                                className=" ml-[5px] h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                              />
+                              <label
+                                htmlFor={`filter-${'Denomination currency'}-${optionIdx}`}
+                                className="ml-3 whitespace-nowrap pr-6 text-sm font-medium text-gray-900"
+                              >
+                                {option.label}
+                              </label>
+                            </div>
+                          ))}
+                        </form>
+                      </Popover.Panel>
+                    </Transition>
+                  </Popover>
+                </form>
+              </div>
             </div>
 
             <div className="pb-24 pt-12 lg:grid lg:grid-cols-3 lg:gap-x-8">
@@ -391,7 +563,7 @@ export default function CatalogPage() {
 
                   {productGroups.map((product: any) => (
                     <a key={product.id} href={product.href} className="group">
-                      <div className="aspect-h-1 aspect-w-1 xl:aspect-h-8 xl:aspect-w-7 w-full overflow-hidden rounded-lg bg-gray-200">
+                      <div className="aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-lg bg-gray-200 xl:aspect-h-8 xl:aspect-w-7">
                         <img
                           src={product.logo}
                           alt={product.imageAlt}

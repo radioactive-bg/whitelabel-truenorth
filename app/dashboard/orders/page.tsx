@@ -69,36 +69,14 @@ export default function Page({}: {}) {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
 
-  //   useEffect(() => {
-  //     async function fetchData() {
-  //       try {
-  //         const accessToken =
-  //           auth.access_token || localStorage.getItem('access_token');
-
-  //         if (!accessToken) {
-  //           router.push('/login');
-  //         }
-
-  //         const response = await getOrdersList(
-  //           auth.access_token,
-  //           currentPage,
-  //           [3, 7],
-  //         );
-
-  //         console.log('response:', JSON.stringify(response));
-  //         setLoading(false);
-  //         setOrders(response.data.data);
-  //       } catch (err) {
-  //         console.error('Error fetching invoices:', err);
-  //       }
-  //     }
-
-  //     fetchData();
-  //   }, []);
-
   useEffect(() => {
     console.log('calls the useEffect in orders');
-    if (!auth.access_token) {
+
+    const localValue = localStorage.getItem('access_token') || 'no value';
+    //console.log('localValue in orders: ', localValue);
+    //console.log('auth.access_token in orders: ', auth.access_token);
+
+    if (localValue === 'no value') {
       router.push('/login');
       return;
     }

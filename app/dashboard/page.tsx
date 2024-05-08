@@ -10,10 +10,14 @@ export default function CatalogPage() {
   };
 
   useEffect(() => {
-    if (!auth.access_token) {
+    const localValue = localStorage.getItem('access_token') || 'no value';
+    //console.log('localValue: ', localValue);
+    //console.log('auth.access_token: ', auth.access_token);
+
+    if (localValue === 'no value') {
       router.push('/login');
       return;
     }
-  }, []);
+  }, [auth.access_token]);
   return <p>Home Page</p>;
 }
