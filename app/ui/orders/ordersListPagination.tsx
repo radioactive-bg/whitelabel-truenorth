@@ -23,19 +23,24 @@ export default function Pagination({
     if (currentPage > 1) {
       // Previous Page
       items.push(
-        <PaginationLink
+        <PaginationPrevious
+          key="prev"
           className="mr-[20px]"
+          href="#"
           onClick={() => onPageChange(currentPage - 1)}
-        >
-          <PaginationPrevious href="#" />
-        </PaginationLink>,
+        />,
       );
     }
 
-    // Current page
+    function generateRandomNumber(min: number, max: number) {
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    //Current page
+
     items.push(
-      <>
-        <PaginationLink className="ml-[40px] bg-gray-200" aria-current="page">
+      <div className="flex justify-between" key={generateRandomNumber(1, 100)}>
+        <PaginationLink className=" bg-gray-200" aria-current="page">
           {currentPage}
         </PaginationLink>
 
@@ -45,17 +50,17 @@ export default function Pagination({
         <PaginationItem key={currentPage + 2}>
           <PaginationLink aria-current="page">{currentPage + 2}</PaginationLink>
         </PaginationItem>
-      </>,
+      </div>,
     );
 
     if (currentPage < totalPages) {
       // Next Page
       items.push(
-        <PaginationItem key="next">
-          <PaginationLink onClick={() => onPageChange(currentPage + 1)}>
-            <PaginationNext href="#" />
-          </PaginationLink>
-        </PaginationItem>,
+        <PaginationNext
+          key="next"
+          href="#"
+          onClick={() => onPageChange(currentPage + 1)}
+        />,
       );
     }
 

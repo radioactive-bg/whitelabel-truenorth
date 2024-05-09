@@ -8,11 +8,11 @@ export async function getPriceList(access_token: string) {
       {
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${access_token}`,
+          Authorization: `Bearer ${localStorage.getItem('access_token')}`,
         },
       },
     );
-    console.log('getPriceList response.data.data: ', response.data.data);
+    //console.log('getPriceList response.data.data: ', response.data.data);
     return response.data.data;
   } catch (error) {
     console.error('Fetch Error:', error);
@@ -37,7 +37,7 @@ export async function getPreview(access_token: string, page: number) {
       {
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${access_token}`,
+          Authorization: `Bearer ${localStorage.getItem('access_token')}`,
         },
         params,
       },
@@ -65,12 +65,12 @@ export async function getPriceListExport(access_token: string) {
       {
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${access_token}`,
+          Authorization: `Bearer ${localStorage.getItem('access_token')}`,
         },
         params,
       },
     );
-    console.log('getPriceListExport response.data.data: ', response.data);
+    //console.log('getPriceListExport response.data.data: ', response.data);
     return response.data;
   } catch (error) {
     console.error('Fetch Error:', error);
@@ -86,7 +86,7 @@ export async function getItmesPriceList(access_token: string) {
       {
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${access_token}`,
+          Authorization: `Bearer ${localStorage.getItem('access_token')}`,
         },
       },
     );
@@ -113,7 +113,7 @@ export async function getItemsPriceListExport(access_token: string) {
       {
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${access_token}`,
+          Authorization: `Bearer ${localStorage.getItem('access_token')}`,
         },
         params,
       },

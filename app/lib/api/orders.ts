@@ -1,4 +1,6 @@
 import axios from 'axios';
+//import { access_token } from '../constants';
+
 const ITEMS_PER_PAGE = 10;
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -32,7 +34,7 @@ export async function getOrdersList(
     const response = await axios.get(`${API_URL}/distributor-crm/v1/orders`, {
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${access_token}`,
+        Authorization: `Bearer ${localStorage.getItem('access_token')}`,
       },
       params, // axios automatically converts this to a query string
     });
@@ -66,7 +68,7 @@ export async function fetchOrderPage(
     const response = await axios.get(`${API_URL}/distributor-crm/v1/orders`, {
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${access_token}`,
+        Authorization: `Bearer ${localStorage.getItem('access_token')}`,
       },
       params, // axios automatically converts this to a query string
     });
@@ -90,7 +92,7 @@ export async function fetchOrderById(ID: number, access_token: string) {
       {
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${access_token}`,
+          Authorization: `Bearer ${localStorage.getItem('access_token')}`,
         },
       },
     );
@@ -115,7 +117,7 @@ export async function downloadInvoice(ID: number, access_token: string) {
       {
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${access_token}`,
+          Authorization: `Bearer ${localStorage.getItem('access_token')}`,
         },
         params,
       },
@@ -136,7 +138,7 @@ export async function getInvoice(ID: number, access_token: string) {
       {
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${access_token}`,
+          Authorization: `Bearer ${localStorage.getItem('access_token')}`,
         },
       },
     );

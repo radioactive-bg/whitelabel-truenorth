@@ -1,4 +1,5 @@
 import axios from 'axios';
+//import { accessToken } from '../constants';
 
 //works
 export async function getCompany(access_token: string) {
@@ -8,7 +9,8 @@ export async function getCompany(access_token: string) {
       {
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${access_token}`,
+          // Authorization: `Bearer ${access_token}`,
+          Authorization: `Bearer ${localStorage.getItem('access_token')}`,
         },
       },
     );

@@ -17,73 +17,6 @@ import { FunnelIcon, MinusIcon, PlusIcon } from '@heroicons/react/20/solid';
 import { filters } from '@/app/lib/constants';
 import { getProductGroupsList } from '@/app/lib/api/productGroup';
 
-const products = [
-  {
-    id: 1,
-    name: 'Basic Tee 8-Pack',
-    href: '#',
-    price: '$256',
-    description:
-      'Get the full lineup of our Basic Tees. Have a fresh shirt all week, and an extra for laundry day.',
-    options: '8 colors',
-    imageSrc:
-      'https://tailwindui.com/img/ecommerce-images/category-page-02-image-card-01.jpg',
-    imageAlt:
-      'Eight shirts arranged on table in black, olive, grey, blue, white, red, mustard, and green.',
-  },
-  {
-    id: 2,
-    name: 'Basic Tee',
-    href: '#',
-    price: '$32',
-    description:
-      'Look like a visionary CEO and wear the same black t-shirt every day.',
-    options: 'Black',
-    imageSrc:
-      'https://tailwindui.com/img/ecommerce-images/category-page-02-image-card-02.jpg',
-    imageAlt: 'Front of plain black t-shirt.',
-  },
-  {
-    id: 3,
-    name: 'Basic Tee 8-Pack',
-    href: '#',
-    price: '$256',
-    description:
-      'Get the full lineup of our Basic Tees. Have a fresh shirt all week, and an extra for laundry day.',
-    options: '8 colors',
-    imageSrc:
-      'https://tailwindui.com/img/ecommerce-images/category-page-02-image-card-01.jpg',
-    imageAlt:
-      'Eight shirts arranged on table in black, olive, grey, blue, white, red, mustard, and green.',
-  },
-  {
-    id: 4,
-    name: 'Basic Tee',
-    href: '#',
-    price: '$32',
-    description:
-      'Look like a visionary CEO and wear the same black t-shirt every day.',
-    options: 'Black',
-    imageSrc:
-      'https://tailwindui.com/img/ecommerce-images/category-page-02-image-card-02.jpg',
-    imageAlt: 'Front of plain black t-shirt.',
-  },
-  {
-    id: 5,
-    name: 'Basic Tee 8-Pack',
-    href: '#',
-    price: '$256',
-    description:
-      'Get the full lineup of our Basic Tees. Have a fresh shirt all week, and an extra for laundry day.',
-    options: '8 colors',
-    imageSrc:
-      'https://tailwindui.com/img/ecommerce-images/category-page-02-image-card-01.jpg',
-    imageAlt:
-      'Eight shirts arranged on table in black, olive, grey, blue, white, red, mustard, and green.',
-  },
-  // More products...
-];
-
 function classNames(...classes: any) {
   return classes.filter(Boolean).join(' ');
 }
@@ -108,24 +41,26 @@ export default function CatalogPage() {
   );
 
   const router = useRouter();
-  const { auth } = authStore() as {
+  const { auth, initializeAuth } = authStore() as {
     auth: Auth;
+    initializeAuth: () => void;
   };
 
   useEffect(() => {
+    initializeAuth();
     const localValue = localStorage.getItem('access_token') || 'no value';
     //console.log('localValue in catalog: ', localValue);
     //console.log('auth.access_token in catalog: ', auth.access_token);
-    if (localValue === 'no value') {
+    if (!localValue) {
       router.push('/login');
       return;
     }
     fetchProductGroups();
-  }, []);
+  }, [auth.access_token]);
 
   const fetchProductGroups = async () => {
     setLoading(true);
-    console.log('auth.access_token: ' + auth.access_token);
+
     try {
       const response = await getProductGroupsList(auth.access_token);
       setProductGroups(response.data.data);
@@ -133,7 +68,21 @@ export default function CatalogPage() {
       setLoading(false);
     } catch (error) {
       console.error('Error fetching orders:', error);
+      setLoading(true);
+    }
+  };
+
+  const fetchProducts = async () => {
+    setLoading(true);
+
+    try {
+      const response = await getProductGroupsList(auth.access_token);
+      setProductGroups(response.data.data);
+
       setLoading(false);
+    } catch (error) {
+      console.error('Error fetching orders:', error);
+      setLoading(true);
     }
   };
 
@@ -201,7 +150,7 @@ export default function CatalogPage() {
                     </div>
 
                     {/* Mobile Filters */}
-                    <form className="mt-4 border-t border-gray-200">
+                    <div className="mt-4 border-t border-gray-200">
                       <h3 className="sr-only">Categories</h3>
 
                       {filters.map((section) => (
@@ -261,7 +210,7 @@ export default function CatalogPage() {
                           )}
                         </Disclosure>
                       ))}
-                    </form>
+                    </div>
                   </Dialog.Panel>
                 </Transition.Child>
               </div>
@@ -271,7 +220,7 @@ export default function CatalogPage() {
           <main className="mx-auto max-w-2xl px-4 lg:max-w-7xl lg:px-8">
             <div className=" flex items-center justify-end border-b border-gray-200 pb-10 pt-24">
               <div className="flex hidden items-center lg:block">
-                <form className="flex items-center">
+                <div className="flex items-center">
                   <Popover
                     as="div"
                     key={'Product Group'}
@@ -307,13 +256,6 @@ export default function CatalogPage() {
                           type="text"
                           placeholder="Search options..."
                           className="mb-4 w-full rounded-md border-gray-300 p-2 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50"
-                          // onChange={(e) => {
-                          //   const value = e.target.value.toLowerCase();
-                          //   section.options = section.options.filter(
-                          //     (option) =>
-                          //       option.label.toLowerCase().includes(value),
-                          //   );
-                          // }}
                           value={productGroupsSearchQuery}
                           onChange={(e) => {
                             setProductGroupsSearchQuery(e.target.value);
@@ -492,7 +434,7 @@ export default function CatalogPage() {
                       </Popover.Panel>
                     </Transition>
                   </Popover>
-                </form>
+                </div>
               </div>
             </div>
 
@@ -561,20 +503,31 @@ export default function CatalogPage() {
                     </div>
                   ))} */}
 
-                  {productGroups.map((product: any) => (
-                    <a key={product.id} href={product.href} className="group">
-                      <div className="aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-lg bg-gray-200 xl:aspect-h-8 xl:aspect-w-7">
-                        <img
-                          src={product.logo}
-                          alt={product.imageAlt}
-                          className="h-full w-full object-cover object-center group-hover:opacity-75"
-                        />
-                      </div>
-                      <h3 className="mt-4 text-sm text-gray-700">
-                        {product.name}
-                      </h3>
-                    </a>
-                  ))}
+                  {filteredProductGroups.map((product: any, index: number) =>
+                    // if the index is 0 do not display the first product group
+                    product.label === 'All' ? null : (
+                      <a
+                        key={product.value}
+                        href={product.href}
+                        className="group flex flex-col items-center"
+                      >
+                        <div className="aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-lg bg-gray-200 xl:aspect-h-7 xl:aspect-w-7">
+                          <img
+                            src={product.logo ? product.logo : '/NoPhoto.jpg'}
+                            alt={
+                              product.imageAlt
+                                ? product.imageAlt
+                                : 'Default description'
+                            }
+                            className="h-full w-full object-cover object-center group-hover:opacity-75"
+                          />
+                        </div>
+                        <h3 className="mt-4 text-sm text-gray-700">
+                          {product.label}
+                        </h3>
+                      </a>
+                    ),
+                  )}
                 </div>
               </section>
             </div>

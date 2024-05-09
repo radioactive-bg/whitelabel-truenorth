@@ -10,12 +10,12 @@ export async function getProductGroupsList(access_token: string) {
       {
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${access_token}`,
+          Authorization: `Bearer ${localStorage.getItem('access_token')}`,
         },
         params,
       },
     );
-    console.log('getPriceListExport response.data.data: ', response.data);
+    // console.log('getProductGroupsList response.data.data: ', response.data);
     return response;
   } catch (error) {
     console.error('Fetch Error:', error);

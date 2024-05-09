@@ -1,4 +1,5 @@
 import axios from 'axios';
+//import { access_token } from '../constants';
 
 //works
 export async function getYesNoFilter(access_token: string) {
@@ -8,7 +9,7 @@ export async function getYesNoFilter(access_token: string) {
       {
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${access_token}`,
+          Authorization: `Bearer ${localStorage.getItem('access_token')}`,
         },
       },
     );
@@ -23,12 +24,13 @@ export async function getYesNoFilter(access_token: string) {
 //works
 export async function getProductGroups(access_token: string) {
   try {
+    console.log('access_token: ', access_token);
     const response = await axios.get(
       `${process.env.NEXT_PUBLIC_API_URL}/distributor-crm/v1/filters/product-groups`,
       {
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${access_token}`,
+          Authorization: `Bearer ${localStorage.getItem('access_token')}`,
         },
       },
     );
@@ -48,7 +50,7 @@ export async function getProducts(access_token: string) {
       {
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${access_token}`,
+          Authorization: `Bearer ${localStorage.getItem('access_token')}`,
         },
       },
     );
@@ -68,7 +70,7 @@ export async function getStatuses(access_token: string) {
       {
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${access_token}`,
+          Authorization: `Bearer ${localStorage.getItem('access_token')}`,
         },
       },
     );
@@ -88,7 +90,7 @@ export async function getTransactionMethods(access_token: string) {
       {
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${access_token}`,
+          Authorization: `Bearer ${localStorage.getItem('access_token')}`,
         },
       },
     );
@@ -108,7 +110,7 @@ export async function getTransactionTypes(access_token: string) {
       {
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${access_token}`,
+          Authorization: `Bearer ${localStorage.getItem('access_token')}`,
         },
       },
     );
@@ -128,7 +130,7 @@ export async function getOrderProducts(access_token: string) {
       {
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${access_token}`,
+          Authorization: `Bearer ${localStorage.getItem('access_token')}`,
         },
       },
     );
@@ -152,7 +154,7 @@ export async function getClients(access_token: string, page: number | null) {
       {
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${access_token}`,
+          Authorization: `Bearer ${localStorage.getItem('access_token')}`,
         },
         params,
       },
@@ -173,7 +175,7 @@ export async function getDateType(access_token: string) {
       {
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${access_token}`,
+          Authorization: `Bearer ${localStorage.getItem('access_token')}`,
         },
       },
     );

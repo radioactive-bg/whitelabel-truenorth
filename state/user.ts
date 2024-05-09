@@ -5,20 +5,36 @@ import { User } from '../app/lib/types/user';
 
 export const userStore = create((set) => ({
   user: {
-    id: 'string',
-    name: localStorage.getItem('username') || 'no value',
+    id: 'null',
+    //name: localStorage.getItem('username') || 'no value',
+    name: 'null',
     email: 'some.email@gmail.com',
     is2FAEnable: true,
     acl: {},
   },
-  setUser: (user: User | null) => set({ user }),
-  updateUserProperty: (propertyKey: keyof User, propertyValue: any) =>
-    set((state: any) => ({
-      user: {
+  setUser: (user: User | null) => {
+    if (user) {
+      localStorage.setItem('username', user.name);
+    } else {
+      localStorage.removeItem('username');
+    }
+    set({ user });
+  },
+  updateUserProperty: (propertyKey: keyof User, propertyValue: any) => {
+    set((state: any) => {
+      // Update the user state
+      const newUser = {
         ...state.user,
         [propertyKey]: propertyValue,
-      },
-    })),
+      };
+
+      if (propertyKey === 'name') {
+        localStorage.setItem('username', propertyValue);
+      }
+
+      return { user: newUser };
+    });
+  },
 }));
 
 //works

@@ -26,8 +26,9 @@ import { useEffect, useState } from 'react';
 export default function Page({}: {}) {
   const router = useRouter();
 
-  const { auth } = authStore() as {
+  const { auth, initializeAuth } = authStore() as {
     auth: Auth;
+    initializeAuth: () => void;
   };
 
   function getStatusStyles(status: number) {
@@ -70,6 +71,7 @@ export default function Page({}: {}) {
   const [totalPages, setTotalPages] = useState(0);
 
   useEffect(() => {
+    //initializeAuth();
     console.log('calls the useEffect in orders');
 
     const localValue = localStorage.getItem('access_token') || 'no value';
@@ -185,7 +187,7 @@ export default function Page({}: {}) {
                     </thead>
                     <tbody className="divide-y divide-gray-200 bg-white">
                       {orders.map((order: any) => (
-                        <tr key={order.email}>
+                        <tr key={order.id}>
                           <td className="whitespace-nowrap py-5 pr-3 text-sm sm:pl-0">
                             <div className="flex items-center">
                               <div className="ml-4">

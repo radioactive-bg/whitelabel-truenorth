@@ -5,16 +5,18 @@ import { useRouter } from 'next/navigation';
 
 export default function CatalogPage() {
   const router = useRouter();
-  const { auth } = authStore() as {
+  const { auth, initializeAuth } = authStore() as {
     auth: Auth;
+    initializeAuth: () => void;
   };
 
   useEffect(() => {
-    const localValue = localStorage.getItem('access_token') || 'no value';
-    //console.log('localValue: ', localValue);
-    //console.log('auth.access_token: ', auth.access_token);
+    initializeAuth();
+    const localValue = localStorage.getItem('access_token') || '';
+    //console.log('localValue in  page - dashboard: ', localValue);
+    //console.log('auth.access_token in  page - dashboard: ', auth.access_token);
 
-    if (localValue === 'no value') {
+    if (localValue === '' || !localValue) {
       router.push('/login');
       return;
     }

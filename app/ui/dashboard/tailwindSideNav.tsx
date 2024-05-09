@@ -1,5 +1,5 @@
 'use client';
-import { Fragment, useState } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 import { Dialog, Menu, Transition } from '@headlessui/react';
 import {
   Bars3Icon,
@@ -34,10 +34,21 @@ export default function TailwindSideNav({
     auth: Auth;
     setAuth: (auth: Auth) => void;
   };
-  const { user } = userStore() as {
+  const { user, updateUserProperty } = userStore() as {
     user: User;
+    updateUserProperty: (propertyKey: keyof User, propertyValue: any) => void;
   };
   const router = useRouter();
+  useEffect(() => {
+    const localValue = localStorage.getItem('username') || '';
+    //console.log('localValue in  page - dashboard: ', localValue);
+    //console.log('auth.access_token in  page - dashboard: ', auth.access_token);
+    updateUserProperty('name', localValue);
+    if (localValue === '' || !localValue) {
+      router.push('/login');
+      return;
+    }
+  }, [auth.access_token]);
 
   const handleUserProfile = () => {
     router.push('/dashboard/userProfile');
