@@ -21,7 +21,7 @@ export async function getPriceList(access_token: string) {
 }
 
 //works
-export async function getPreview(access_token: string, page: number) {
+export async function getPreview(page: number) {
   const params = {
     productGroup: null,
     productName: null,
@@ -42,8 +42,8 @@ export async function getPreview(access_token: string, page: number) {
         params,
       },
     );
-    console.log('getPreview response.data.data: ', response.data.data);
-    return response.data.data;
+    console.log('getPreview response.data: ', response.data);
+    return response.data;
   } catch (error) {
     console.error('Fetch Error:', error);
     throw new Error('Failed to fetch Preview.');
