@@ -16,7 +16,6 @@ import { FunnelIcon, MinusIcon, PlusIcon } from '@heroicons/react/20/solid';
 
 import { filters } from '@/app/lib/constants';
 import { getProductGroupsList } from '@/app/lib/api/productGroup';
-import { getPreview } from '@/app/lib/api/priceList';
 
 import FilterPopover from '@/app/ui/dashboard/catalog/FilterPopover';
 import ProductsTable from '@/app/ui/dashboard/catalog/ProductsTable';
@@ -27,7 +26,7 @@ function classNames(...classes: any) {
 
 export default function CatalogPage() {
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   // do we need this ???
   const [productGroups, setProductGroups] = useState([]);
 
@@ -52,44 +51,38 @@ export default function CatalogPage() {
       router.push('/login');
       return;
     }
-    fetchProductGroups();
+
     //fetchProducts();
   }, [auth.access_token]);
 
-  const fetchProductGroups = async () => {
-    setLoading(true);
-
-    try {
-      const response = await getProductGroupsList(auth.access_token);
-      setProductGroups(response.data.data);
-
-      setLoading(false);
-    } catch (error) {
-      console.error('Error fetching orders:', error);
-      setLoading(true);
-    }
-  };
-
-  const fetchProducts = async (pageNumber = 1) => {
-    setLoading(true);
-
-    try {
-      const response = await getPreview(pageNumber ? pageNumber : 1);
-      setProducts(response.data);
-
-      setLoading(false);
-    } catch (error) {
-      console.error('Error fetching orders:', error);
-      setLoading(true);
-    }
+  const handleSelectProductGroupIcon = (productLabel: any) => {
+    let newAllFilters = allFilters.map((filter) => {
+      if (filter.id === allFilters[0].id) {
+        let newOptions = filter.options.map((option: any) => {
+          if (option.label === productLabel) {
+            return {
+              ...option,
+              checked: true,
+            };
+          }
+          return option;
+        });
+        return { ...filter, options: newOptions };
+      }
+      return filter;
+    });
+    setAllFilters(newAllFilters);
+    setFiltersActive(true);
   };
 
   const checkIfAnyFiltersActive = () => {
+    console.log('checkIfAnyFiltersActive');
+    console.log('allFilters: ', allFilters);
     const isActive = allFilters.some((filter) =>
-      filter.options.some((option) => option.checked === true),
+      filter.options.some((option) => option.checked),
     );
-    console.log('isActive: ', !isActive);
-    setFiltersActive(!isActive);
+    console.log('isActive : ' + isActive);
+    setFiltersActive(isActive);
   };
 
   return (
@@ -147,63 +140,22 @@ export default function CatalogPage() {
                     <div className="mt-4 border-t border-gray-200">
                       <h3 className="sr-only">Categories</h3>
 
-                      {filters.map((section) => (
-                        <Disclosure
-                          as="div"
-                          key={section.id}
-                          className="border-t border-gray-200 px-4 py-6"
-                        >
-                          {({ open }) => (
-                            <>
-                              <h3 className="-mx-2 -my-3 flow-root">
-                                <Disclosure.Button className="flex w-full items-center justify-between bg-white px-2 py-3 text-gray-400 hover:text-gray-500">
-                                  <span className="font-medium text-gray-900">
-                                    {section.name}
-                                  </span>
-                                  <span className="ml-6 flex items-center">
-                                    {open ? (
-                                      <MinusIcon
-                                        className="h-5 w-5"
-                                        aria-hidden="true"
-                                      />
-                                    ) : (
-                                      <PlusIcon
-                                        className="h-5 w-5"
-                                        aria-hidden="true"
-                                      />
-                                    )}
-                                  </span>
-                                </Disclosure.Button>
-                              </h3>
-                              <Disclosure.Panel className="pt-6">
-                                <div className="space-y-6">
-                                  {section.options.map((option, optionIdx) => (
-                                    <div
-                                      key={option.value}
-                                      className="flex items-center"
-                                    >
-                                      <input
-                                        id={`filter-mobile-${section.id}-${optionIdx}`}
-                                        name={`${section.id}[]`}
-                                        defaultValue={option.value}
-                                        type="checkbox"
-                                        defaultChecked={option.checked}
-                                        className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
-                                      />
-                                      <label
-                                        htmlFor={`filter-mobile-${section.id}-${optionIdx}`}
-                                        className="ml-3 min-w-0 flex-1 text-gray-500"
-                                      >
-                                        {option.label}
-                                      </label>
-                                    </div>
-                                  ))}
-                                </div>
-                              </Disclosure.Panel>
-                            </>
-                          )}
-                        </Disclosure>
-                      ))}
+                      <div className="flex flex-col space-y-4 px-4 py-6">
+                        {allFilters.map((filter) => (
+                          <FilterPopover
+                            key={filter.id}
+                            fullFilter={filter}
+                            setFullFilter={(updatedFilter: any) => {
+                              const newAllFilters = allFilters.map((f) =>
+                                f.id === updatedFilter.id ? updatedFilter : f,
+                              );
+                              setAllFilters(newAllFilters);
+                            }}
+                            checkIfAnyFiltersActive={checkIfAnyFiltersActive}
+                            setFiltersActive={setFiltersActive}
+                          />
+                        ))}
+                      </div>
                     </div>
                   </Dialog.Panel>
                 </Transition.Child>
@@ -215,51 +167,20 @@ export default function CatalogPage() {
             <div className=" flex items-center justify-end border-b border-gray-200 pb-10 pt-24">
               <div className="flex hidden items-center lg:block">
                 <div className="flex items-center">
-                  <FilterPopover
-                    fullFilter={allFilters[0]}
-                    setFullFilter={(fullFilter: any) => {
-                      let newAllFIlters = allFilters.map((filter) => {
-                        if (filter.id === fullFilter.id) {
-                          return fullFilter;
-                        }
-                        return filter;
-                      });
-                      setAllFilters(newAllFIlters);
-                    }}
-                    filtersActive={filtersActive}
-                    setFiltersActive={setFiltersActive}
-                    checkIfAnyFiltersActive={checkIfAnyFiltersActive}
-                  />
-                  <FilterPopover
-                    fullFilter={allFilters[1]}
-                    setFullFilter={(fullFilter: any) => {
-                      let newAllFIlters = allFilters.map((filter) => {
-                        if (filter.id === fullFilter.id) {
-                          return fullFilter;
-                        }
-                        return filter;
-                      });
-                      setAllFilters(newAllFIlters);
-                    }}
-                    filtersActive={filtersActive}
-                    setFiltersActive={setFiltersActive}
-                    checkIfAnyFiltersActive={checkIfAnyFiltersActive}
-                  />
-                  <FilterPopover
-                    fullFilter={allFilters[2]}
-                    setFullFilter={(fullFilter: any) => {
-                      let newAllFIlters = allFilters.map((filter) => {
-                        if (filter.id === fullFilter.id) {
-                          return fullFilter;
-                        }
-                        return filter;
-                      });
-                      setAllFilters(newAllFIlters);
-                    }}
-                    filtersActive={filtersActive}
-                    setFiltersActive={setFiltersActive}
-                    checkIfAnyFiltersActive={checkIfAnyFiltersActive}
-                  />
+                  {allFilters.map((filter) => (
+                    <FilterPopover
+                      key={filter.id}
+                      fullFilter={filter}
+                      setFullFilter={(updatedFilter: any) => {
+                        const newAllFilters = allFilters.map((f) =>
+                          f.id === updatedFilter.id ? updatedFilter : f,
+                        );
+                        setAllFilters(newAllFilters);
+                      }}
+                      checkIfAnyFiltersActive={checkIfAnyFiltersActive}
+                      setFiltersActive={setFiltersActive}
+                    />
+                  ))}
                 </div>
               </div>
             </div>
@@ -285,21 +206,26 @@ export default function CatalogPage() {
 
               <section
                 aria-labelledby="product-heading"
-                className="mt-6 md:col-span-6 lg:col-span-3 lg:mt-0 xl:col-span-3"
+                className="md:col-span-6 lg:col-span-3  xl:col-span-3"
               >
                 <h2 id="product-heading" className="sr-only">
                   Products
                 </h2>
 
                 {filtersActive === true ? (
-                  <ProductsTable />
+                  <ProductsTable
+                    allFilters={allFilters}
+                    checkIfAnyFiltersActive={checkIfAnyFiltersActive}
+                  />
                 ) : (
                   <div className="grid grid-cols-1 gap-y-4 sm:grid-cols-2 sm:gap-x-6 sm:gap-y-10 md:grid-cols-3 lg:gap-x-8 xl:grid-cols-6">
                     {allFilters[0].options.map((product: any, index: number) =>
                       product.label === 'All' ? null : (
-                        <a
+                        <button
                           key={product.value}
-                          href={product.href}
+                          onClick={(e) =>
+                            handleSelectProductGroupIcon(product.label)
+                          }
                           className="group flex flex-col items-center"
                         >
                           <div className="aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-lg bg-gray-200 xl:aspect-h-7 xl:aspect-w-7">
@@ -316,7 +242,7 @@ export default function CatalogPage() {
                           <h3 className="mt-4 text-sm text-gray-700">
                             {product.label}
                           </h3>
-                        </a>
+                        </button>
                       ),
                     )}
                   </div>

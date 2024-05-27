@@ -21,28 +21,56 @@ export async function getPriceList(access_token: string) {
 }
 
 //works
-export async function getPreview(page: number) {
-  const params = {
-    productGroup: null,
-    productName: null,
-    hasBasePrice: null,
-    hasSalePrice: null,
-    availability: null,
-    perPage: 10,
-    page: page ? page : 1,
-  };
+export async function getPreview(
+  page: number,
+  regionId: any[] | null,
+  currencyIso: any[] | null,
+  productGroupName: string | null,
+  productGroupIds: any[] | null,
+  availability: boolean | null,
+  hasBasePrice: boolean | null,
+  hasSalePrice: boolean | null,
+) {
+  let queryString = `perPage=10&page=${page}`;
+
+  if (productGroupName !== null)
+    queryString += `&productGroupName=${encodeURIComponent(productGroupName)}`;
+  if (availability !== null) queryString += `&availability=${availability}`;
+  if (hasBasePrice !== null) queryString += `&hasBasePrice=${hasBasePrice}`;
+  if (hasSalePrice !== null) queryString += `&hasSalePrice=${hasSalePrice}`;
+
+  // Add each product group ID to the queryString
+  if (productGroupIds) {
+    productGroupIds.forEach((id) => {
+      queryString += `&productGroupIds[]=${id}`;
+    });
+  }
+
+  // Add each region ID to the queryString
+  if (regionId) {
+    regionId.forEach((id) => {
+      queryString += `&regionId=${id}`;
+    });
+  }
+
+  // Add each currency to the queryString
+  if (currencyIso) {
+    currencyIso.forEach((currency) => {
+      queryString += `&currencyIso=${currency}`;
+    });
+  }
+
   try {
     const response = await axios.get(
-      `${process.env.NEXT_PUBLIC_API_URL}/distributor-crm/v1/price-lists/company/preview`,
+      `${process.env.NEXT_PUBLIC_API_URL}/distributor-crm/v1/price-lists/company/preview?${queryString}`,
       {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${localStorage.getItem('access_token')}`,
         },
-        params,
       },
     );
-    console.log('getPreview response.data: ', response.data);
+    // console.log('getPreview response.data: ', response.data);
     return response.data;
   } catch (error) {
     console.error('Fetch Error:', error);

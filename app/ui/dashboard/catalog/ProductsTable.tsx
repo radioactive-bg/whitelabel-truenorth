@@ -1,63 +1,117 @@
-import React, { useState, useEffect } from 'react';
-import {
-  ChevronLeftIcon,
-  ChevronRightIcon,
-  ArrowLongLeftIcon,
-  ArrowLongRightIcon,
-} from '@heroicons/react/24/outline';
+import React, { useState, useEffect, useRef } from 'react';
 
 import { getPreview } from '@/app/lib/api/priceList';
+import axios, { CancelTokenSource } from 'axios';
+import Pagination from '../../../ui/dashboard/pagination';
 
-const ProductsTable = (data: any, allFilters: any) => {
+const ProductsTable = ({
+  allFilters,
+  checkIfAnyFiltersActive,
+}: {
+  allFilters: any;
+  checkIfAnyFiltersActive: () => void;
+}) => {
   const [products, setProducts] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
 
-  const orders = [
-    {
-      number: 'WU88191111',
-      date: 'January 22, 2021',
-      datetime: '2021-01-22',
-      invoiceHref: '#',
-      total: '$238.00',
-      products: [
-        {
-          id: 1,
-          name: 'Machined Pen and Pencil Set',
-          href: '#',
-          price: '$70.00',
-          status: 'Delivered Jan 25, 2021',
-          imageSrc:
-            'https://tailwindui.com/img/ecommerce-images/order-history-page-02-product-01.jpg',
-          imageAlt:
-            'Detail of mechanical pencil tip with machined black steel shaft and chrome lead tip.',
-        },
-      ],
-    },
-  ];
+  // we must focus on htese filters
+  const [regionIDs, setRegionIDs] = useState([]);
+  const [currencies, setCurrencies] = useState([]);
+  const [productGroupIDs, setProductGroupIDs] = useState([]);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await getPreview(currentPage);
-        console.log(' fetchData getPreview  response.data: ', response.data);
-        setProducts(response.data);
-      } catch (error) {
+  //functionallity for these will be aded later
+  const [availability, setAvailability] = useState(null);
+  const [hasBasePrice, setHasBasePrice] = useState(null);
+  const [hasSalePrice, setHasSalePrice] = useState(null);
+
+  const [productName, setProductName] = useState(null);
+
+  const cancelTokenSource = useRef<CancelTokenSource | null>(null);
+  const latestRequestId = useRef<number>(0);
+
+  const fetchData = async () => {
+    // Cancel the previous request if there was one
+
+    if (cancelTokenSource.current) {
+      cancelTokenSource.current.cancel(
+        'Operation canceled due to new request.',
+      );
+    }
+
+    // Create a new token for the current request
+    cancelTokenSource.current = axios.CancelToken.source();
+    const requestId = ++latestRequestId.current;
+    try {
+      const response = await getPreview(
+        currentPage,
+        regionIDs,
+        currencies,
+        null,
+        productGroupIDs,
+        null,
+        null,
+        null,
+      );
+      //console.log(' fetchData getPreview  response.data: ', response.data);
+      if (requestId === latestRequestId.current) {
+        let data = response.data ? response.data : [];
+
+        console.log('fetchData response: ', JSON.stringify(response));
+        setCurrentPage(response.meta.current_page);
+        setTotalPages(response.meta.last_page);
+        setProducts(data);
+      }
+    } catch (error) {
+      if (axios.isCancel(error)) {
+        console.log('Request canceled:', error.message);
+      } else {
         console.error('Fetch Error:', error);
       }
-    };
+    }
+  };
+
+  useEffect(() => {
     fetchData();
-  }, [currentPage]);
+  }, [regionIDs, currencies, productGroupIDs]);
+
+  useEffect(() => {
+    // Extracting the checked options' ids from allFilters
+
+    const newRegionIDs = allFilters
+      .find((filter: any) => filter.id === 'Activation Region')
+      ?.options.filter((option: any) => option.checked)
+      .map((option: any) => option.value);
+
+    const newCurrencies = allFilters
+      .find((filter: any) => filter.id === 'Denomination currency')
+      ?.options.filter((option: any) => option.checked)
+      .map((option: any) => option.value);
+
+    const newProductGroupIDs = allFilters
+      .find((filter: any) => filter.id === 'Product Group')
+      ?.options.filter((option: any) => option.checked)
+      .map((option: any) => option.value);
+
+    // Update state with the new arrays of ids
+    setRegionIDs(newRegionIDs || []);
+    setCurrencies(newCurrencies || []);
+    setProductGroupIDs(newProductGroupIDs || []);
+
+    checkIfAnyFiltersActive();
+    fetchData();
+  }, [allFilters, currentPage]);
 
   return (
     <div className="w-full">
       {/* ProductsTable */}
       <div className="bg-white">
-        <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 lg:pb-24">
-          <div className="mt-16">
+        <div className="mx-auto max-w-7xl px-4  sm:px-6 lg:px-8 lg:pb-24">
+          <div className="">
             <h2 className="sr-only">Recent orders</h2>
 
             <div className="space-y-20">
-              {products.length > 2 ? (
+              {products.length > 0 ? (
                 <div key={'test'}>
                   <h3 className="sr-only">
                     Order placed on <time dateTime={'test'}>{'test'}</time>
@@ -111,7 +165,9 @@ const ProductsTable = (data: any, allFilters: any) => {
                           <td className="py-6 pr-8">
                             <div className="flex items-center">
                               <img
-                                src={product.logo}
+                                src={
+                                  product.logo ? product.logo : '/NoPhoto.jpg'
+                                }
                                 alt={
                                   product.imageAlt
                                     ? product.imageAlt
@@ -121,36 +177,64 @@ const ProductsTable = (data: any, allFilters: any) => {
                               />
                               <div>
                                 <div className="font-medium text-gray-900">
-                                  {product.name}
+                                  {product.groupName}
                                 </div>
                                 <div className="mt-1 sm:hidden">
                                   {product.price}
+                                  {product.currency === 'USD' ? '$' : '€'}
                                 </div>
                               </div>
                             </div>
                           </td>
                           <td className="hidden py-6 pr-8 sm:table-cell">
-                            {product.groupName}
+                            {product.group}
                           </td>
                           <td className="hidden py-6 pr-8 sm:table-cell">
                             {product.price}
+                            {product.currency === 'USD' ? '$' : '€'}
                           </td>
 
-                          <td className="hidden py-6 pr-8 sm:table-cell">
-                            {'test'}
+                          <td className=" py-6 sm:table-cell sm:pr-8">
+                            <select
+                              id={`quantity-${product.id}`}
+                              name={`quantity-${product.id}`}
+                              className="max-h-24 max-w-full overflow-y-auto rounded-md border border-gray-300 py-1.5 text-left text-base font-medium leading-5 text-gray-700 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:text-sm"
+                            >
+                              {product.isEnabled ? (
+                                Array.from({ length: 50 }, (_, i) => (
+                                  <option key={i + 1} value={i + 1}>
+                                    {i + 1}
+                                  </option>
+                                ))
+                              ) : (
+                                <option value="0">0</option>
+                              )}
+                            </select>
                           </td>
-                          <td className="hidden py-6 pr-8 sm:table-cell">
-                            <span className="inline-flex items-center rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">
-                              Active
-                            </span>
-                          </td>
+
+                          {product.isEnabled ? (
+                            <td className=" hidden min-w-[100px] py-6 pr-8 sm:table-cell">
+                              <span className=" inline-flex items-center rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">
+                                In Stock
+                              </span>
+                            </td>
+                          ) : (
+                            <td className="hidden min-w-[100px] py-6 pr-8 sm:table-cell">
+                              <span className=" inline-flex items-center rounded-md bg-red-50 px-2 py-1 text-xs font-medium text-red-700 ring-1 ring-inset ring-red-600/20">
+                                Sold Out
+                              </span>
+                            </td>
+                          )}
 
                           <td className="whitespace-nowrap py-6 text-right font-medium">
-                            <a href={product.href} className="text-indigo-600">
-                              View
+                            <button
+                              onClick={() => {}}
+                              className="ml-4 text-indigo-600"
+                            >
+                              Add
                               <span className="hidden lg:inline"> Product</span>
                               <span className="sr-only">, {product.name}</span>
-                            </a>
+                            </button>
                           </td>
                         </tr>
                       ))}
@@ -164,78 +248,12 @@ const ProductsTable = (data: any, allFilters: any) => {
           </div>
         </div>
       </div>
-
       {/* Pagination */}
-
-      <nav className="flex items-center justify-between border-t border-gray-200 px-4 sm:px-0">
-        <div className="-mt-px flex w-0 flex-1">
-          <button
-            onClick={() => setCurrentPage(currentPage - 1)}
-            className="inline-flex items-center border-t-2 border-transparent pr-1 pt-4 text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700"
-          >
-            <ArrowLongLeftIcon
-              className="mr-3 h-5 w-5 text-gray-400"
-              aria-hidden="true"
-            />
-            Previous
-          </button>
-        </div>
-        <div className="hidden md:-mt-px md:flex">
-          <a
-            href="#"
-            className="inline-flex items-center border-t-2 border-transparent px-4 pt-4 text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700"
-          >
-            1
-          </a>
-          {/* Current: "border-indigo-500 text-indigo-600", Default: "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300" */}
-          <a
-            href="#"
-            className="inline-flex items-center border-t-2 border-indigo-500 px-4 pt-4 text-sm font-medium text-indigo-600"
-            aria-current="page"
-          >
-            2
-          </a>
-          <a
-            href="#"
-            className="inline-flex items-center border-t-2 border-transparent px-4 pt-4 text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700"
-          >
-            3
-          </a>
-          <span className="inline-flex items-center border-t-2 border-transparent px-4 pt-4 text-sm font-medium text-gray-500">
-            ...
-          </span>
-          <a
-            href="#"
-            className="inline-flex items-center border-t-2 border-transparent px-4 pt-4 text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700"
-          >
-            8
-          </a>
-          <a
-            href="#"
-            className="inline-flex items-center border-t-2 border-transparent px-4 pt-4 text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700"
-          >
-            9
-          </a>
-          <a
-            href="#"
-            className="inline-flex items-center border-t-2 border-transparent px-4 pt-4 text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700"
-          >
-            10
-          </a>
-        </div>
-        <div className="-mt-px flex w-0 flex-1 justify-end">
-          <button
-            onClick={() => setCurrentPage(currentPage - 1)}
-            className="inline-flex items-center border-t-2 border-transparent pl-1 pt-4 text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700"
-          >
-            Next
-            <ArrowLongRightIcon
-              className="ml-3 h-5 w-5 text-gray-400"
-              aria-hidden="true"
-            />
-          </button>
-        </div>
-      </nav>
+      <Pagination
+        currentPage={currentPage}
+        setCurrentPage={setCurrentPage}
+        totalPages={totalPages}
+      />
     </div>
   );
 };

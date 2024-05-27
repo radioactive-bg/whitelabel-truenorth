@@ -1,17 +1,6 @@
 'use client';
-// import {
-//   Pagination,
-//   PaginationContent,
-//   PaginationEllipsis,
-//   PaginationItem,
-//   PaginationLink,
-//   PaginationNext,
-//   PaginationPrevious,
-// } from '@/components/ui/pagination';
 
 import Search from '@/app/ui/search';
-import Table from '@/app/ui/invoices/table';
-import { CreateInvoice } from '@/app/ui/invoices/buttons';
 import { lusitana } from '@/app/ui/fonts';
 import { InvoicesTableSkeleton } from '@/app/ui/skeletons';
 import { Suspense } from 'react';
@@ -19,7 +8,7 @@ import { getOrdersList } from '@/app/lib/api/orders';
 import { authStore, Auth } from '@/state/auth';
 import { useRouter } from 'next/navigation';
 
-import Pagination from '@/app/ui/orders/ordersListPagination';
+import Pagination from '../../ui/dashboard/pagination';
 
 import { useEffect, useState } from 'react';
 
@@ -244,58 +233,21 @@ export default function Page({}: {}) {
               </div>
             </div>
           </div>
-          {/* <Pagination>
-            <PaginationContent>
-              <PaginationItem>
-                <PaginationPrevious href="#" />
-              </PaginationItem>
-              <PaginationItem>
-                <PaginationLink href="#">1</PaginationLink>
-              </PaginationItem>
-              <PaginationItem>
-                <PaginationLink href="#">2</PaginationLink>
-              </PaginationItem>
-              <PaginationItem>
-                <PaginationLink href="#">3</PaginationLink>
-              </PaginationItem>
-              <PaginationItem>
-                <PaginationEllipsis />
-              </PaginationItem>
-              <PaginationItem>
-                <PaginationLink href="#">{totalPages}</PaginationLink>
-              </PaginationItem>
-              <PaginationItem>
-                <PaginationNext href="#" />
-              </PaginationItem>
-            </PaginationContent>
-          </Pagination> */}
 
-          {/*<Pagination>
-            {Array.from(
-              { length: totalPages },
-              (_, i) =>
-                // Only render the first three items or the last item
-                (i < 3 || i === totalPages - 1) && (
-                  <PaginationItem key={i + 1}>
-                    <PaginationLink
-                      onClick={() => handlePageChange(i + 1)}
-                      href="#"
-                      aria-current={currentPage === i + 1 ? 'page' : undefined}
-                    >
-                      {i + 1}
-                    </PaginationLink>
-                  </PaginationItem>
-                ),
-            )}
-            </Pagination>*/}
-          <div className="ml-4 mt-4 flex w-full flex-row items-center md:ml-[calc(60%-310px)] md:mt-0">
-            <Pagination
+          {/* <Pagination
+
               router={router}
               currentPage={currentPage}
               totalPages={totalPages}
               onPageChange={handlePageChange}
-            />
-          </div>
+            /> */}
+
+          {/* Pagination */}
+          <Pagination
+            currentPage={currentPage}
+            setCurrentPage={setCurrentPage}
+            totalPages={totalPages}
+          />
         </>
       )}
     </div>
