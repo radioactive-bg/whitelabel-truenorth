@@ -31,9 +31,9 @@ export default function TailwindSideNav({
   children,
 }: {
   children: React.ReactNode;
-  }) {
+}) {
   const [openShoppingCart, setOpenShoppingCart] = useState(false);
-  
+
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const { auth, setAuth } = authStore() as {
     auth: Auth;
@@ -107,11 +107,13 @@ export default function TailwindSideNav({
         <body class="h-full">
         ```
       */}
-      <div>
+      <>
         <Transition.Root show={sidebarOpen} as={Fragment}>
           <Dialog
             as="div"
-            className="relative z-50 lg:hidden"
+            //see if removing the z-index braks anything else
+            ///className="relative z-50 lg:hidden"
+            className="relative lg:hidden"
             onClose={setSidebarOpen}
           >
             <Transition.Child
@@ -169,7 +171,7 @@ export default function TailwindSideNav({
                       <ul role="list" className="flex flex-1 flex-col gap-y-7">
                         <li>
                           <ul role="list" className="-mx-2 space-y-1">
-                            <NavLinks />
+                            <NavLinks setSidebarOpen={setSidebarOpen} />
                           </ul>
                         </li>
                         <li className="mt-auto">
@@ -204,7 +206,7 @@ export default function TailwindSideNav({
               <ul role="list" className="flex flex-1 flex-col gap-y-7">
                 <li>
                   <ul role="list" className="-mx-2 space-y-1">
-                    <NavLinks />
+                    <NavLinks setSidebarOpen={setSidebarOpen} />
                   </ul>
                 </li>
 
@@ -226,7 +228,12 @@ export default function TailwindSideNav({
         </div>
 
         <div className="lg:pl-72">
-          <div className="sticky top-0 z-40 lg:mx-auto lg:max-w-7xl lg:px-8">
+          {/* Static topbar for desktop */}
+          <div
+            //see if removing the z-index braks anything else
+            //className="sticky top-0 z-40 lg:mx-auto lg:max-w-7xl lg:px-8"
+            className="sticky top-0 lg:mx-auto lg:max-w-7xl lg:px-8"
+          >
             <div className="flex h-16 items-center gap-x-4 border-b border-gray-200 bg-white px-4 shadow-sm sm:gap-x-6 sm:px-6 lg:px-0 lg:shadow-none">
               <button
                 type="button"
@@ -246,7 +253,7 @@ export default function TailwindSideNav({
               <div className="flex flex-1 gap-x-4 self-stretch lg:gap-x-6">
                 {/*added this div istead of the search bar*/}
                 <div className="relative flex flex-1"></div>
-                    <ShoppingCartModal open={openShoppingCart} setOpen={setOpenShoppingCart} />
+
                 <div className="flex items-center gap-x-4 lg:gap-x-6">
                   <button
                     type="button"
@@ -256,14 +263,13 @@ export default function TailwindSideNav({
                     <BellIcon className="h-6 w-6" aria-hidden="true" />
                   </button>
                   <button
-                    onClick={ () => setOpenShoppingCart(!openShoppingCart)}
+                    onClick={() => setOpenShoppingCart(!openShoppingCart)}
                     type="button"
                     className="-m-2.5 p-2.5 text-gray-400 hover:text-gray-500"
                   >
                     <span className="sr-only">View picked items</span>
                     <ShoppingBagIcon className="h-6 w-6" aria-hidden="true" />
                   </button>
-                
 
                   {/* Separator */}
                   <div
@@ -332,8 +338,12 @@ export default function TailwindSideNav({
               {children}
             </div>
           </main>
+          <ShoppingCartModal
+            open={openShoppingCart}
+            setOpen={setOpenShoppingCart}
+          />
         </div>
-      </div>
+      </>
     </>
   );
 }

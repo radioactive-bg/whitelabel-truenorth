@@ -1,20 +1,7 @@
-/*
-  This example requires some changes to your config:
-  
-  ```
-  // tailwind.config.js
-  module.exports = {
-    // ...
-    plugins: [
-      // ...
-      require('@tailwindcss/forms'),
-    ],
-  }
-  ```
-*/
-import { Fragment, useState } from 'react'
-import { Dialog, Transition  } from '@headlessui/react'
-import { XMarkIcon } from '@heroicons/react/24/outline'
+import { Fragment, useState } from 'react';
+import { Dialog, Transition } from '@headlessui/react';
+import { XMarkIcon } from '@heroicons/react/24/outline';
+import { useCartStore } from '../../../../state/shoppingCart';
 
 const products = [
   {
@@ -23,8 +10,10 @@ const products = [
     href: '#',
     color: 'White and black',
     price: '$140.00',
-    imageSrc: 'https://tailwindui.com/img/ecommerce-images/shopping-cart-page-04-product-03.jpg',
-    imageAlt: 'Front of zip tote bag with white canvas, black canvas straps and handle, and black zipper pulls.',
+    imageSrc:
+      'https://tailwindui.com/img/ecommerce-images/shopping-cart-page-04-product-03.jpg',
+    imageAlt:
+      'Front of zip tote bag with white canvas, black canvas straps and handle, and black zipper pulls.',
   },
   {
     id: 2,
@@ -32,18 +21,26 @@ const products = [
     href: '#',
     color: 'Salmon',
     price: '$90.00',
-    imageSrc: 'https://tailwindui.com/img/ecommerce-images/shopping-cart-page-04-product-01.jpg',
-    imageAlt: 'Salmon orange fabric pouch with match zipper, gray zipper pull, and adjustable hip belt.',
+    imageSrc:
+      'https://tailwindui.com/img/ecommerce-images/shopping-cart-page-04-product-01.jpg',
+    imageAlt:
+      'Salmon orange fabric pouch with match zipper, gray zipper pull, and adjustable hip belt.',
   },
-  // More products...
-]
+];
 
-export default function ShoppingCartModal({ open, setOpen }: { open: boolean, setOpen: any }) {
-
+export default function ShoppingCartModal({
+  open,
+  setOpen,
+}: {
+  open: boolean;
+  setOpen: any;
+}) {
+  const { cartItems, addToCart, removeFromCart, updateQuantity, clearCart } =
+    useCartStore();
 
   return (
-    <Transition show={open}>
-      <Dialog className="relative z-10" onClose={setOpen}>
+    <Transition show={open} className="Transition">
+      <Dialog className="z-100 bbb relative" onClose={setOpen}>
         <Transition.Child
           enter="ease-out duration-300"
           enterFrom="opacity-0"
@@ -68,8 +65,14 @@ export default function ShoppingCartModal({ open, setOpen }: { open: boolean, se
               <Dialog.Panel className="flex w-full max-w-3xl transform text-left text-base transition sm:my-8">
                 <form className="relative flex w-full flex-col overflow-hidden bg-white pb-8 pt-6 sm:rounded-lg sm:pb-6 lg:py-8">
                   <div className="flex items-center justify-between px-4 sm:px-6 lg:px-8">
-                    <h2 className="text-lg font-medium text-gray-900">Shopping Cart</h2>
-                    <button type="button" className="text-gray-400 hover:text-gray-500" onClick={() => setOpen(false)}>
+                    <h2 className="text-lg font-medium text-gray-900">
+                      Shopping Cart
+                    </h2>
+                    <button
+                      type="button"
+                      className="text-gray-400 hover:text-gray-500"
+                      onClick={() => setOpen(false)}
+                    >
                       <span className="sr-only">Close</span>
                       <XMarkIcon className="h-6 w-6" aria-hidden="true" />
                     </button>
@@ -80,9 +83,15 @@ export default function ShoppingCartModal({ open, setOpen }: { open: boolean, se
                       Items in your shopping cart
                     </h2>
 
-                    <ul role="list" className="divide-y divide-gray-200 px-4 sm:px-6 lg:px-8">
+                    <ul
+                      role="list"
+                      className="divide-y divide-gray-200 px-4 sm:px-6 lg:px-8"
+                    >
                       {products.map((product, productIdx) => (
-                        <li key={product.id} className="flex py-8 text-sm sm:items-center">
+                        <li
+                          key={product.id}
+                          className="flex py-8 text-sm sm:items-center"
+                        >
                           <img
                             src={product.imageSrc}
                             alt={product.imageAlt}
@@ -93,13 +102,18 @@ export default function ShoppingCartModal({ open, setOpen }: { open: boolean, se
                               <h3 className="font-medium text-gray-900">
                                 <a href={product.href}>{product.name}</a>
                               </h3>
-                              <p className="mt-1 text-gray-500">{product.color}</p>
+                              <p className="mt-1 text-gray-500">
+                                {product.color}
+                              </p>
                             </div>
                             <p className="row-span-2 row-end-2 font-medium text-gray-900 sm:order-1 sm:ml-6 sm:w-1/3 sm:flex-none sm:text-right">
                               {product.price}
                             </p>
                             <div className="flex items-center sm:block sm:flex-none sm:text-center">
-                              <label htmlFor={`quantity-${productIdx}`} className="sr-only">
+                              <label
+                                htmlFor={`quantity-${productIdx}`}
+                                className="sr-only"
+                              >
                                 Quantity, {product.name}
                               </label>
                               <select
@@ -127,10 +141,16 @@ export default function ShoppingCartModal({ open, setOpen }: { open: boolean, se
                           </div>
                         </li>
                       ))}
+                      {cartItems.map((cartItem, cartItemIdx) => (
+                        <li>test</li>
+                      ))}
                     </ul>
                   </section>
 
-                  <section aria-labelledby="summary-heading" className="mt-auto sm:px-6 lg:px-8">
+                  <section
+                    aria-labelledby="summary-heading"
+                    className="mt-auto sm:px-6 lg:px-8"
+                  >
                     <div className="bg-gray-50 p-6 sm:rounded-lg sm:p-8">
                       <h2 id="summary-heading" className="sr-only">
                         Order summary
@@ -140,7 +160,9 @@ export default function ShoppingCartModal({ open, setOpen }: { open: boolean, se
                         <dl className="-my-4 divide-y divide-gray-200 text-sm">
                           <div className="flex items-center justify-between py-4">
                             <dt className="text-gray-600">Subtotal</dt>
-                            <dd className="font-medium text-gray-900">$262.00</dd>
+                            <dd className="font-medium text-gray-900">
+                              $262.00
+                            </dd>
                           </div>
                           <div className="flex items-center justify-between py-4">
                             <dt className="text-gray-600">Shipping</dt>
@@ -148,11 +170,17 @@ export default function ShoppingCartModal({ open, setOpen }: { open: boolean, se
                           </div>
                           <div className="flex items-center justify-between py-4">
                             <dt className="text-gray-600">Tax</dt>
-                            <dd className="font-medium text-gray-900">$53.40</dd>
+                            <dd className="font-medium text-gray-900">
+                              $53.40
+                            </dd>
                           </div>
                           <div className="flex items-center justify-between py-4">
-                            <dt className="text-base font-medium text-gray-900">Order total</dt>
-                            <dd className="text-base font-medium text-gray-900">$320.40</dd>
+                            <dt className="text-base font-medium text-gray-900">
+                              Order total
+                            </dt>
+                            <dd className="text-base font-medium text-gray-900">
+                              $320.40
+                            </dd>
                           </div>
                         </dl>
                       </div>
@@ -174,5 +202,5 @@ export default function ShoppingCartModal({ open, setOpen }: { open: boolean, se
         </div>
       </Dialog>
     </Transition>
-  )
+  );
 }

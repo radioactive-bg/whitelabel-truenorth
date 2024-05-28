@@ -21,7 +21,11 @@ const links = [
   },
 ];
 
-export default function NavLinks() {
+export default function NavLinks({
+  setSidebarOpen,
+}: {
+  setSidebarOpen: (open: any) => void;
+}) {
   const pathname = usePathname();
 
   return (
@@ -34,6 +38,7 @@ export default function NavLinks() {
           <Link
             key={link.name}
             href={link.href}
+            onClick={() => setSidebarOpen(false)}
             className={clsx(
               'group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6',
 
