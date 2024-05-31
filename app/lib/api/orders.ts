@@ -48,10 +48,7 @@ export async function getOrdersList(
 }
 
 //works
-export async function fetchOrderPage(
-  access_token: string,
-  currentPage: number | null,
-) {
+export async function fetchOrderPage(currentPage: number | null) {
   const params: FetchInvoicesParams = {
     orderId: null,
     dateFrom: '',
@@ -84,11 +81,12 @@ export async function fetchOrderPage(
   }
 }
 
-//works
-export async function fetchOrderById(ID: number, access_token: string) {
+export async function fetchOrderById(ID: string) {
+  //try switching the order id to a number if it does nto work
+  console.log('ID: ', ID);
   try {
     const response = await axios.get(
-      `${API_URL}/distributor-crm/v1/orders/${ID}`,
+      `${API_URL}/distributor-crm/v1/orders/${Number(ID)}`,
       {
         headers: {
           'Content-Type': 'application/json',
@@ -96,7 +94,7 @@ export async function fetchOrderById(ID: number, access_token: string) {
         },
       },
     );
-
+    console.log('response: ', response);
     return response.data.data;
   } catch (error) {
     console.error('Fetch Error:', error);

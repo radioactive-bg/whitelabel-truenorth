@@ -111,8 +111,8 @@ export default function TailwindSideNav({
         <Transition.Root show={sidebarOpen} as={Fragment}>
           <Dialog
             as="div"
-            //see if removing the z-index braks anything else
-            ///className="relative z-50 lg:hidden"
+            //see if removing the z-index breaks anything else
+            //className="relative z-50 lg:hidden"
             className="relative lg:hidden"
             onClose={setSidebarOpen}
           >
@@ -231,8 +231,8 @@ export default function TailwindSideNav({
           {/* Static topbar for desktop */}
           <div
             //see if removing the z-index braks anything else
-            //className="sticky top-0 z-40 lg:mx-auto lg:max-w-7xl lg:px-8"
-            className="sticky top-0 lg:mx-auto lg:max-w-7xl lg:px-8"
+            className="sticky top-0 z-40 lg:mx-auto lg:max-w-7xl lg:px-8"
+            //className="sticky top-0 lg:mx-auto lg:max-w-7xl lg:px-8"
           >
             <div className="flex h-16 items-center gap-x-4 border-b border-gray-200 bg-white px-4 shadow-sm sm:gap-x-6 sm:px-6 lg:px-0 lg:shadow-none">
               <button

@@ -1,12 +1,17 @@
-import create from 'zustand';
+import { create } from 'zustand';
 
 export interface Product {
   id: number;
+  group: string;
   name: string;
-  price: number;
-  imageSrc: string;
-  imageAlt: string;
-  quantity: number;
+  groupName: string;
+  regions: string[];
+  currency: string;
+  basePrice: string;
+  salePrice: string;
+  isEnabled: boolean;
+  price: string;
+  logo: string;
 }
 
 export interface CartItem extends Product {
@@ -35,20 +40,20 @@ const setCartItemsInLocalStorage = (cartItems: CartItem[]) => {
 
 export const useCartStore = create<CartState>((set) => ({
   cartItems: getInitialCartItems(),
-  addToCart: (product) =>
+  addToCart: (cartItem) =>
     set((state) => {
       const existingProduct = state.cartItems.find(
-        (item) => item.id === product.id,
+        (item) => item.id === cartItem.id,
       );
       let updatedCartItems;
       if (existingProduct) {
         updatedCartItems = state.cartItems.map((item) =>
-          item.id === product.id
-            ? { ...item, quantity: item.quantity + product.quantity }
+          item.id === cartItem.id
+            ? { ...item, quantity: item.quantity + cartItem.quantity }
             : item,
         );
       } else {
-        updatedCartItems = [...state.cartItems, product];
+        updatedCartItems = [...state.cartItems, cartItem];
       }
       setCartItemsInLocalStorage(updatedCartItems);
       return {

@@ -54,6 +54,11 @@ export default function Page({}: {}) {
     }
   }
 
+  const viewOrder = (orderId: number) => {
+    console.log(`Navigating to order ${orderId}`);
+    router.push(`/dashboard/orders/${orderId}`);
+  };
+
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
@@ -217,13 +222,13 @@ export default function Page({}: {}) {
                           </td>
 
                           <td className="relative whitespace-nowrap py-5 pr-4 text-center text-sm font-medium sm:pr-0">
-                            <a
-                              href="#"
-                              className="text-indigo-600 hover:text-indigo-900"
+                            <button
+                              onClick={() => viewOrder(order.id)}
+                              className={`$ ml-4 rounded-md px-3 py-1 text-indigo-600 transition duration-150 hover:bg-indigo-100 hover:text-indigo-500 active:bg-indigo-200 active:text-indigo-700`}
                             >
                               View
                               <span className="sr-only">, {order.name}</span>
-                            </a>
+                            </button>
                           </td>
                         </tr>
                       ))}

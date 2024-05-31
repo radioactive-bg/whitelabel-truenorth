@@ -3,6 +3,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { getPreview } from '@/app/lib/api/priceList';
 import axios, { CancelTokenSource } from 'axios';
 import Pagination from '../../../ui/dashboard/pagination';
+import { useCartStore } from '../../../../state/shoppingCart';
 
 const ProductsTable = ({
   allFilters,
@@ -11,6 +12,23 @@ const ProductsTable = ({
   allFilters: any;
   checkIfAnyFiltersActive: () => void;
 }) => {
+  const { cartItems, addToCart, removeFromCart, updateQuantity, clearCart } =
+    useCartStore();
+  const [selectedQuantities, setSelectedQuantities] = useState<{
+    [key: number]: number;
+  }>({});
+  const handleQuantityChange = (productId: number, quantity: number) => {
+    setSelectedQuantities((prev) => ({
+      ...prev,
+      [productId]: quantity,
+    }));
+  };
+
+  const handleAddToCart = (product: any) => {
+    const quantity = selectedQuantities[product.id] || 1;
+    addToCart({ ...product, quantity });
+  };
+
   const [products, setProducts] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -176,7 +194,7 @@ const ProductsTable = ({
                                 className="mr-6 h-16 w-16 rounded object-cover object-center"
                               />
                               <div>
-                                <div className="font-medium text-gray-900">
+                                <div className="mr-2 font-medium text-gray-900">
                                   {product.groupName}
                                 </div>
                                 <div className="mt-1 sm:hidden">
@@ -198,6 +216,12 @@ const ProductsTable = ({
                             <select
                               id={`quantity-${product.id}`}
                               name={`quantity-${product.id}`}
+                              onChange={(e) =>
+                                handleQuantityChange(
+                                  product.id,
+                                  parseInt(e.target.value),
+                                )
+                              }
                               className="max-h-24 max-w-full overflow-y-auto rounded-md border border-gray-300 py-1.5 text-left text-base font-medium leading-5 text-gray-700 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:text-sm"
                             >
                               {product.isEnabled ? (
@@ -228,8 +252,13 @@ const ProductsTable = ({
 
                           <td className="whitespace-nowrap py-6 text-right font-medium">
                             <button
-                              onClick={() => {}}
-                              className="ml-4 text-indigo-600"
+                              disabled={!product.isEnabled}
+                              onClick={() => handleAddToCart(product)}
+                              className={`ml-4 rounded-md px-3 py-1 text-indigo-600 transition duration-150 hover:bg-indigo-100 hover:text-indigo-500 active:bg-indigo-200 active:text-indigo-700 ${
+                                !product.isEnabled
+                                  ? 'cursor-not-allowed opacity-50'
+                                  : ''
+                              }`}
                             >
                               Add
                               <span className="hidden lg:inline"> Product</span>

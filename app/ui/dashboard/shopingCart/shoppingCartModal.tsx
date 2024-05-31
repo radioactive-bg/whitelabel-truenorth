@@ -1,32 +1,7 @@
-import { Fragment, useState } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import { XMarkIcon } from '@heroicons/react/24/outline';
 import { useCartStore } from '../../../../state/shoppingCart';
-
-const products = [
-  {
-    id: 1,
-    name: 'Zip Tote Basket',
-    href: '#',
-    color: 'White and black',
-    price: '$140.00',
-    imageSrc:
-      'https://tailwindui.com/img/ecommerce-images/shopping-cart-page-04-product-03.jpg',
-    imageAlt:
-      'Front of zip tote bag with white canvas, black canvas straps and handle, and black zipper pulls.',
-  },
-  {
-    id: 2,
-    name: 'Throwback Hip Bag',
-    href: '#',
-    color: 'Salmon',
-    price: '$90.00',
-    imageSrc:
-      'https://tailwindui.com/img/ecommerce-images/shopping-cart-page-04-product-01.jpg',
-    imageAlt:
-      'Salmon orange fabric pouch with match zipper, gray zipper pull, and adjustable hip belt.',
-  },
-];
 
 export default function ShoppingCartModal({
   open,
@@ -38,9 +13,34 @@ export default function ShoppingCartModal({
   const { cartItems, addToCart, removeFromCart, updateQuantity, clearCart } =
     useCartStore();
 
+  const calculateSubtotal = () => {
+    return cartItems
+      .reduce((total, item) => {
+        return total + parseFloat(item.price) * item.quantity;
+      }, 0)
+      .toFixed(2);
+  };
+
+  const calculateTax = (subtotal: string) => {
+    const taxRate = 0.1; // Assuming a tax rate of 10%
+    return (parseFloat(subtotal) * taxRate).toFixed(2);
+  };
+
+  const [subtotal, setSubtotal] = useState('0.00');
+  const [tax, setTax] = useState('0.00');
+  const [total, setTotal] = useState('0.00');
+
+  useEffect(() => {
+    const newSubtotal = calculateSubtotal();
+    setSubtotal(newSubtotal);
+    const newTax = calculateTax(newSubtotal);
+    setTax(newTax);
+    setTotal((parseFloat(newSubtotal) + parseFloat(newTax)).toFixed(2));
+  }, [cartItems]);
+
   return (
     <Transition show={open} className="Transition">
-      <Dialog className="z-100 bbb relative" onClose={setOpen}>
+      <Dialog className="z-100 relative" onClose={setOpen}>
         <Transition.Child
           enter="ease-out duration-300"
           enterFrom="opacity-0"
@@ -52,7 +52,8 @@ export default function ShoppingCartModal({
           <div className="hidden sm:fixed sm:inset-0 sm:block sm:bg-gray-500 sm:bg-opacity-75 sm:transition-opacity" />
         </Transition.Child>
 
-        <div className="fixed inset-0 z-10 w-screen overflow-y-auto">
+        {/*remove the margin top mt-[40px] if we do not need it */}
+        <div className="fixed inset-0 z-10 mt-[60px] w-screen overflow-y-auto">
           <div className="flex min-h-full items-stretch justify-center text-center sm:items-center sm:px-6 lg:px-8">
             <Transition.Child
               enter="ease-out duration-300"
@@ -82,43 +83,44 @@ export default function ShoppingCartModal({
                     <h2 id="cart-heading" className="sr-only">
                       Items in your shopping cart
                     </h2>
-
                     <ul
                       role="list"
                       className="divide-y divide-gray-200 px-4 sm:px-6 lg:px-8"
                     >
-                      {products.map((product, productIdx) => (
+                      {cartItems.map((cartItem, cartItemIdx) => (
                         <li
-                          key={product.id}
+                          key={cartItem.id}
                           className="flex py-8 text-sm sm:items-center"
                         >
                           <img
-                            src={product.imageSrc}
-                            alt={product.imageAlt}
+                            src={cartItem.logo ? cartItem.logo : '/NoPhoto.jpg'}
+                            alt={cartItem.groupName}
                             className="h-24 w-24 flex-none rounded-lg border border-gray-200 sm:h-32 sm:w-32"
                           />
                           <div className="ml-4 grid flex-auto grid-cols-1 grid-rows-1 items-start gap-x-5 gap-y-3 sm:ml-6 sm:flex sm:items-center sm:gap-0">
                             <div className="row-end-1 flex-auto sm:pr-6">
                               <h3 className="font-medium text-gray-900">
-                                <a href={product.href}>{product.name}</a>
+                                <p>{cartItem.group}</p>
                               </h3>
                               <p className="mt-1 text-gray-500">
-                                {product.color}
+                                {cartItem.name}
                               </p>
                             </div>
-                            <p className="row-span-2 row-end-2 font-medium text-gray-900 sm:order-1 sm:ml-6 sm:w-1/3 sm:flex-none sm:text-right">
-                              {product.price}
+                            <p className=" row-span-2 row-end-2 ml-[20px] font-medium text-gray-900 sm:order-1 sm:ml-6 sm:w-1/3 sm:flex-none sm:text-center">
+                              {cartItem.currency === 'USD' ? '$' : '€'}
+                              {cartItem.price}
                             </p>
                             <div className="flex items-center sm:block sm:flex-none sm:text-center">
                               <label
-                                htmlFor={`quantity-${productIdx}`}
+                                htmlFor={`quantity-${cartItemIdx}`}
                                 className="sr-only"
                               >
-                                Quantity, {product.name}
+                                Quantity, {cartItem.name}
                               </label>
                               <select
-                                id={`quantity-${productIdx}`}
-                                name={`quantity-${productIdx}`}
+                                defaultValue={cartItem.quantity}
+                                id={`quantity-${cartItemIdx}`}
+                                name={`quantity-${cartItemIdx}`}
                                 className="block max-w-full rounded-md border border-gray-300 py-1.5 text-left text-base font-medium leading-5 text-gray-700 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:text-sm"
                               >
                                 <option value={1}>1</option>
@@ -129,9 +131,12 @@ export default function ShoppingCartModal({
                                 <option value={6}>6</option>
                                 <option value={7}>7</option>
                                 <option value={8}>8</option>
+                                <option value={9}>9</option>
+                                <option value={10}>10</option>
                               </select>
 
                               <button
+                                onClick={() => removeFromCart(cartItem.id)}
                                 type="button"
                                 className="ml-4 font-medium text-indigo-600 hover:text-indigo-500 sm:ml-0 sm:mt-2"
                               >
@@ -140,9 +145,6 @@ export default function ShoppingCartModal({
                             </div>
                           </div>
                         </li>
-                      ))}
-                      {cartItems.map((cartItem, cartItemIdx) => (
-                        <li>test</li>
                       ))}
                     </ul>
                   </section>
@@ -161,17 +163,16 @@ export default function ShoppingCartModal({
                           <div className="flex items-center justify-between py-4">
                             <dt className="text-gray-600">Subtotal</dt>
                             <dd className="font-medium text-gray-900">
-                              $262.00
+                              {subtotal}
                             </dd>
                           </div>
-                          <div className="flex items-center justify-between py-4">
-                            <dt className="text-gray-600">Shipping</dt>
-                            <dd className="font-medium text-gray-900">$5.00</dd>
-                          </div>
+
                           <div className="flex items-center justify-between py-4">
                             <dt className="text-gray-600">Tax</dt>
                             <dd className="font-medium text-gray-900">
-                              $53.40
+                              <dd className="font-medium text-gray-900">
+                                {tax}
+                              </dd>
                             </dd>
                           </div>
                           <div className="flex items-center justify-between py-4">
@@ -179,7 +180,7 @@ export default function ShoppingCartModal({
                               Order total
                             </dt>
                             <dd className="text-base font-medium text-gray-900">
-                              $320.40
+                              {total}
                             </dd>
                           </div>
                         </dl>
