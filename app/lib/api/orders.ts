@@ -81,9 +81,8 @@ export async function fetchOrderPage(currentPage: number | null) {
   }
 }
 
+//works
 export async function fetchOrderById(ID: string) {
-  //try switching the order id to a number if it does nto work
-  console.log('ID: ', ID);
   try {
     const response = await axios.get(
       `${API_URL}/distributor-crm/v1/orders/${Number(ID)}`,
@@ -94,8 +93,7 @@ export async function fetchOrderById(ID: string) {
         },
       },
     );
-    console.log('response: ', response);
-    return response.data.data;
+    return response.data;
   } catch (error) {
     console.error('Fetch Error:', error);
     throw new Error('Failed to fetch invoice by ID.');
@@ -103,7 +101,7 @@ export async function fetchOrderById(ID: string) {
 }
 
 //works
-export async function downloadInvoice(ID: number, access_token: string) {
+export async function downloadInvoice(ID: number) {
   const params = {
     invoiceFormat: 'pdf',
     onlyFirstPage: false,
@@ -118,9 +116,10 @@ export async function downloadInvoice(ID: number, access_token: string) {
           Authorization: `Bearer ${localStorage.getItem('access_token')}`,
         },
         params,
+        responseType: 'blob', // Ensure the response is a blob
       },
     );
-
+    console.log('response downloadInvoice:', response);
     return response.data;
   } catch (error) {
     console.error('Fetch Error:', error);

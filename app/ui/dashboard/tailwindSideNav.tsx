@@ -1,6 +1,12 @@
 'use client';
 import { Fragment, useEffect, useState } from 'react';
-import { Dialog, Menu, Transition } from '@headlessui/react';
+import {
+  Dialog,
+  Menu,
+  Transition,
+  DialogPanel,
+  TransitionChild,
+} from '@headlessui/react';
 import {
   Bars3Icon,
   BellIcon,
@@ -23,6 +29,8 @@ import { useRouter } from 'next/navigation';
 
 import ShoppingCartModal from '../../ui/dashboard/shopingCart/shoppingCartModal';
 
+import { getWalletsList } from '@/app/lib/api/wallet';
+
 function classNames(...classes: any[]) {
   return classes.filter(Boolean).join(' ');
 }
@@ -33,6 +41,7 @@ export default function TailwindSideNav({
   children: React.ReactNode;
 }) {
   const [openShoppingCart, setOpenShoppingCart] = useState(false);
+  const [wallet, setWallet] = useState([{ availableAmount: '$ 0' }]);
 
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const { auth, setAuth } = authStore() as {
@@ -44,6 +53,7 @@ export default function TailwindSideNav({
     updateUserProperty: (propertyKey: keyof User, propertyValue: any) => void;
   };
   const router = useRouter();
+
   useEffect(() => {
     const localValue = localStorage.getItem('username') || '';
     //console.log('localValue in  page - dashboard: ', localValue);
@@ -55,6 +65,15 @@ export default function TailwindSideNav({
     }
   }, [auth.access_token]);
 
+  useEffect(() => {
+    fetchWallet();
+  }, []);
+
+  const fetchWallet = async () => {
+    let walletInfo = await getWalletsList();
+    console.log('walletInfo:', walletInfo);
+    setWallet(walletInfo);
+  };
   const handleUserProfile = () => {
     router.push('/dashboard/userProfile');
   };
@@ -99,16 +118,8 @@ export default function TailwindSideNav({
 
   return (
     <>
-      {/*
-        This example requires updating your template:
-
-        ```
-        <html class="h-full bg-white">
-        <body class="h-full">
-        ```
-      */}
       <>
-        <Transition.Root show={sidebarOpen} as={Fragment}>
+        <Transition show={sidebarOpen} as={Fragment}>
           <Dialog
             as="div"
             //see if removing the z-index breaks anything else
@@ -116,7 +127,7 @@ export default function TailwindSideNav({
             className="relative lg:hidden"
             onClose={setSidebarOpen}
           >
-            <Transition.Child
+            <TransitionChild
               as={Fragment}
               enter="transition-opacity ease-linear duration-300"
               enterFrom="opacity-0"
@@ -126,10 +137,10 @@ export default function TailwindSideNav({
               leaveTo="opacity-0"
             >
               <div className="fixed inset-0 bg-gray-900/80" />
-            </Transition.Child>
+            </TransitionChild>
 
             <div className="fixed inset-0 flex">
-              <Transition.Child
+              <TransitionChild
                 as={Fragment}
                 enter="transition ease-in-out duration-300 transform"
                 enterFrom="-translate-x-full"
@@ -138,8 +149,8 @@ export default function TailwindSideNav({
                 leaveFrom="translate-x-0"
                 leaveTo="-translate-x-full"
               >
-                <Dialog.Panel className="relative mr-16 flex w-full max-w-xs flex-1">
-                  <Transition.Child
+                <DialogPanel className="relative mr-16 flex w-full max-w-xs flex-1">
+                  <TransitionChild
                     as={Fragment}
                     enter="ease-in-out duration-300"
                     enterFrom="opacity-0"
@@ -161,8 +172,7 @@ export default function TailwindSideNav({
                         />
                       </button>
                     </div>
-                  </Transition.Child>
-                  {/* Sidebar component, swap this element with another sidebar if you like */}
+                  </TransitionChild>
                   <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-white px-6 pb-4">
                     <div className="flex h-16 shrink-0 items-center">
                       <Logo />
@@ -189,11 +199,11 @@ export default function TailwindSideNav({
                       </ul>
                     </nav>
                   </div>
-                </Dialog.Panel>
-              </Transition.Child>
+                </DialogPanel>
+              </TransitionChild>
             </div>
           </Dialog>
-        </Transition.Root>
+        </Transition>
 
         {/* Static sidebar for desktop */}
         <div className="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-72 lg:flex-col">
@@ -202,6 +212,17 @@ export default function TailwindSideNav({
             <div className="flex h-16 shrink-0 items-center">
               <Logo />
             </div>
+            {/* add the wallet  */}
+
+            {/* <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-2 bg-white px-4 py-10 sm:px-6 xl:px-8">
+              <dt className="text-sm font-medium leading-6 text-gray-500">
+                {'Wallet'}
+              </dt>
+
+              <dd className="w-full flex-none text-3xl font-medium leading-10 tracking-tight text-gray-900">
+                {`${wallet[0].availableAmount}`}
+              </dd>
+            </div> */}
             <nav className="flex flex-1 flex-col">
               <ul role="list" className="flex flex-1 flex-col gap-y-7">
                 <li>

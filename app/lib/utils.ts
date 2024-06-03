@@ -67,3 +67,37 @@ export const generatePagination = (currentPage: number, totalPages: number) => {
     totalPages,
   ];
 };
+
+export const getStatusStyles = (status: number) => {
+  switch (status) {
+    case 3:
+      return {
+        text: 'Complete',
+        bgColor: 'bg-green-50',
+        textColor: 'text-green-700',
+        ringColor: 'ring-green-600',
+      };
+    case 6:
+      return {
+        text: 'Cancelled',
+        bgColor: 'bg-red-50',
+        textColor: 'text-red-700',
+        ringColor: 'ring-red-600',
+      };
+    case 7:
+      return {
+        text: 'In process',
+        bgColor: 'bg-[#FAAD14]',
+        textColor: 'text-[#FAAD14]',
+        ringColor: 'ring-[#FAAD14]',
+      };
+
+    default:
+      return {
+        text: 'Unknown',
+        bgColor: 'bg-gray-50',
+        textColor: 'text-gray-700',
+        ringColor: 'ring-gray-600',
+      };
+  }
+};

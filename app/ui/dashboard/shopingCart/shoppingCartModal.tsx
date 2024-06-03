@@ -13,6 +13,10 @@ export default function ShoppingCartModal({
   const { cartItems, addToCart, removeFromCart, updateQuantity, clearCart } =
     useCartStore();
 
+  const [subtotal, setSubtotal] = useState('0.00');
+  const [tax, setTax] = useState('0.00');
+  const [total, setTotal] = useState('0.00');
+
   const calculateSubtotal = () => {
     return cartItems
       .reduce((total, item) => {
@@ -26,9 +30,10 @@ export default function ShoppingCartModal({
     return (parseFloat(subtotal) * taxRate).toFixed(2);
   };
 
-  const [subtotal, setSubtotal] = useState('0.00');
-  const [tax, setTax] = useState('0.00');
-  const [total, setTotal] = useState('0.00');
+  const handleQuantityChange = (productId: any, quantity: number) => {
+    console.log('productId:', productId, 'quantity:', quantity);
+    updateQuantity(productId, quantity);
+  };
 
   useEffect(() => {
     const newSubtotal = calculateSubtotal();
@@ -39,7 +44,7 @@ export default function ShoppingCartModal({
   }, [cartItems]);
 
   return (
-    <Transition show={open} className="Transition">
+    <Transition show={open}>
       <Dialog className="z-100 relative" onClose={setOpen}>
         <Transition.Child
           enter="ease-out duration-300"
@@ -122,6 +127,12 @@ export default function ShoppingCartModal({
                                 id={`quantity-${cartItemIdx}`}
                                 name={`quantity-${cartItemIdx}`}
                                 className="block max-w-full rounded-md border border-gray-300 py-1.5 text-left text-base font-medium leading-5 text-gray-700 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:text-sm"
+                                onChange={(e) =>
+                                  handleQuantityChange(
+                                    cartItem.id,
+                                    Number(e.target.value),
+                                  )
+                                }
                               >
                                 <option value={1}>1</option>
                                 <option value={2}>2</option>

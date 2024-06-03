@@ -7,6 +7,7 @@ import { Suspense } from 'react';
 import { getOrdersList } from '@/app/lib/api/orders';
 import { authStore, Auth } from '@/state/auth';
 import { useRouter } from 'next/navigation';
+import { getStatusStyles } from '@/app/lib/utils';
 
 import Pagination from '../../ui/dashboard/pagination';
 
@@ -20,40 +21,6 @@ export default function Page({}: {}) {
     initializeAuth: () => void;
   };
 
-  function getStatusStyles(status: number) {
-    switch (status) {
-      case 3:
-        return {
-          text: 'Complete',
-          bgColor: 'bg-green-50',
-          textColor: 'text-green-700',
-          ringColor: 'ring-green-600',
-        };
-      case 6:
-        return {
-          text: 'Cancelled',
-          bgColor: 'bg-red-50',
-          textColor: 'text-red-700',
-          ringColor: 'ring-red-600',
-        };
-      case 7:
-        return {
-          text: 'In process',
-          bgColor: 'bg-[#FAAD14]',
-          textColor: 'text-[#FAAD14]',
-          ringColor: 'ring-[#FAAD14]',
-        };
-
-      default:
-        return {
-          text: 'Unknown',
-          bgColor: 'bg-gray-50',
-          textColor: 'text-gray-700',
-          ringColor: 'ring-gray-600',
-        };
-    }
-  }
-
   const viewOrder = (orderId: number) => {
     console.log(`Navigating to order ${orderId}`);
     router.push(`/dashboard/orders/${orderId}`);
@@ -66,7 +33,6 @@ export default function Page({}: {}) {
 
   useEffect(() => {
     //initializeAuth();
-    console.log('calls the useEffect in orders');
 
     const localValue = localStorage.getItem('access_token') || 'no value';
     //console.log('localValue in orders: ', localValue);
@@ -93,12 +59,6 @@ export default function Page({}: {}) {
       console.error('Error fetching orders:', error);
       setLoading(false);
     }
-  };
-
-  const handlePageChange = (page: number) => {
-    setLoading(true);
-    setCurrentPage(page);
-    fetchOrders(page);
   };
 
   return (
@@ -238,14 +198,6 @@ export default function Page({}: {}) {
               </div>
             </div>
           </div>
-
-          {/* <Pagination
-
-              router={router}
-              currentPage={currentPage}
-              totalPages={totalPages}
-              onPageChange={handlePageChange}
-            /> */}
 
           {/* Pagination */}
           <Pagination

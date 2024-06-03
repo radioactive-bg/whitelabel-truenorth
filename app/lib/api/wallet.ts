@@ -1,14 +1,14 @@
 import axios from 'axios';
 
 //works
-export async function getWalletsList(access_token: string) {
+export async function getWalletsList() {
   try {
     const response = await axios.get(
       `${process.env.NEXT_PUBLIC_API_URL}/distributor-crm/v1/wallets`,
       {
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${access_token}`,
+          Authorization: `Bearer ${localStorage.getItem('access_token')}`,
         },
       },
     );
