@@ -3,7 +3,7 @@
 import { useParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { fetchOrderById, downloadInvoice } from '@/app/lib/api/orders'; // Assume this function fetches the order details from your API
-import { PaperClipIcon } from '@heroicons/react/20/solid'
+import { PaperClipIcon } from '@heroicons/react/20/solid';
 import { getStatusStyles } from '@/app/lib/utils';
 
 const OrderDetails = () => {
@@ -118,10 +118,10 @@ const OrderDetails = () => {
                 {order.orderDetails.displayId}, was placed on{' '}
                 {order.orderDetails.createdAt}. The total amount for this order
                 is {order.orderDetails.amountTotal}, and its current status is
-                marked as '{order.orderDetails.statusText}'. This order includes
-                a variety of items/services that were carefully selected by the
-                customer. For more details, please refer to the attached
-                invoice.
+                marked as `&apos;`{order.orderDetails.statusText}`&apos;`. This
+                order includes a variety of items/services that were carefully
+                selected by the customer. For more details, please refer to the
+                attached invoice.
               </dd>
             </div>
             <div className="border-t border-gray-100 px-4 py-6 sm:col-span-2 sm:px-0">
@@ -135,7 +135,10 @@ const OrderDetails = () => {
                 >
                   <li className="flex items-center justify-between py-4 pl-4 pr-5 text-sm leading-6">
                     <div className="flex w-0 flex-1 items-center">
-                      <PaperClipIcon className="h-5 w-5 flex-shrink-0 text-gray-400" aria-hidden="true" />
+                      <PaperClipIcon
+                        className="h-5 w-5 flex-shrink-0 text-gray-400"
+                        aria-hidden="true"
+                      />
 
                       <div className="ml-4 flex min-w-0 flex-1 gap-2">
                         <span className="truncate font-medium">
