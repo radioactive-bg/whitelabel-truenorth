@@ -13,6 +13,7 @@ import {
   Cog6ToothIcon,
   XMarkIcon,
   ShoppingBagIcon,
+  WalletIcon,
 } from '@heroicons/react/24/outline';
 
 import {
@@ -71,7 +72,7 @@ export default function TailwindSideNav({
 
   const fetchWallet = async () => {
     let walletInfo = await getWalletsList();
-    console.log('walletInfo:', walletInfo);
+    console.log('walletInfo:', JSON.stringify(walletInfo));
     setWallet(walletInfo);
   };
   const handleUserProfile = () => {
@@ -223,6 +224,21 @@ export default function TailwindSideNav({
                 {`${wallet[0].availableAmount}`}
               </dd>
             </div> */}
+            <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-2 rounded-lg border border-gray-300 bg-white px-4 py-5 shadow-md  xl:px-8">
+              <div className="flex w-full items-center">
+                <WalletIcon
+                  className="h-6 w-6 shrink-0 text-gray-400 group-hover:text-[#50C8ED]"
+                  aria-hidden="true"
+                />
+                <dt className="ml-[10px] text-sm font-bold leading-6 text-gray-500">
+                  {'Wallet'}
+                </dt>
+              </div>
+              <dd className="w-full flex-none text-2xl font-medium leading-10 tracking-tight text-gray-900">
+                {`${wallet[0].availableAmount}`}
+              </dd>
+            </div>
+
             <nav className="flex flex-1 flex-col">
               <ul role="list" className="flex flex-1 flex-col gap-y-7">
                 <li>

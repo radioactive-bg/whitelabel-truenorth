@@ -64,7 +64,9 @@ export default function Page({}: {}) {
   return (
     <div className=" w-full">
       {loading === true ? (
-        <div>Loading...</div>
+        <div>
+          <InvoicesTableSkeleton />
+        </div>
       ) : (
         <>
           <div className="px-4 sm:px-6 lg:px-8">
@@ -106,7 +108,6 @@ export default function Page({}: {}) {
                         >
                           Client
                         </th>
-
                         <th
                           scope="col"
                           className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"

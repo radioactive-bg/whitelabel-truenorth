@@ -4,13 +4,7 @@ import { authStore, Auth } from '@/state/auth';
 import { useRouter } from 'next/navigation';
 
 import { Fragment, useState } from 'react';
-import {
-  Dialog,
-  Disclosure,
-  Menu,
-  Popover,
-  Transition,
-} from '@headlessui/react';
+import { Dialog, Transition } from '@headlessui/react';
 import { ChevronDownIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import { FunnelIcon, MinusIcon, PlusIcon } from '@heroicons/react/20/solid';
 

@@ -40,7 +40,7 @@ export default function Page() {
                   Login
                 </Link>
                 {/* <a
-                  href="#"
+                 
                   className="text-sm font-semibold leading-6 text-gray-900"
                 >
                   Learn more <span aria-hidden="true">→</span>
@@ -51,8 +51,10 @@ export default function Page() {
           <div className="relative lg:col-span-5 lg:-mr-8 xl:absolute xl:inset-0 xl:left-1/2 xl:mr-0">
             <Image
               className="lg:aspect-auto aspect-[3/2] w-full bg-gray-50 object-cover lg:absolute lg:inset-0 lg:h-full"
+              width={100}
+              height={100}
               src="https://images.unsplash.com/photo-1498758536662-35b82cd15e29?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2102&q=80"
-              alt=""
+              alt="home img"
             />
           </div>
         </div>

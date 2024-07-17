@@ -2,7 +2,7 @@
 'use client';
 import { useParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { fetchOrderById, downloadInvoice } from '@/app/lib/api/orders'; // Assume this function fetches the order details from your API
+import { fetchOrderById, downloadInvoice } from '@/app/lib/api/orders';
 import { PaperClipIcon } from '@heroicons/react/20/solid';
 import { getStatusStyles } from '@/app/lib/utils';
 

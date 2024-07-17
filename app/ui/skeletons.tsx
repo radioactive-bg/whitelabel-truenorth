@@ -1,3 +1,5 @@
+import { getStatusStyles } from '@/app/lib/utils';
+
 // Loading animation
 const shimmer =
   'before:absolute before:inset-0 before:-translate-x-full before:animate-[shimmer_2s_infinite] before:bg-gradient-to-r before:from-transparent before:via-white/60 before:to-transparent';
@@ -34,7 +36,7 @@ export function RevenueChartSkeleton() {
     <div className={`${shimmer} relative w-full overflow-hidden md:col-span-4`}>
       <div className="mb-4 h-8 w-36 rounded-md bg-gray-100" />
       <div className="rounded-xl bg-gray-100 p-4">
-        <div className="mt-0 grid h-[410px] grid-cols-12 items-end gap-2 rounded-md bg-white p-4 sm:grid-cols-13 md:gap-4" />
+        <div className="sm:grid-cols-13 mt-0 grid h-[410px] grid-cols-12 items-end gap-2 rounded-md bg-white p-4 md:gap-4" />
         <div className="flex items-center pb-2 pt-6">
           <div className="h-5 w-5 rounded-full bg-gray-200" />
           <div className="ml-2 h-4 w-20 rounded-md bg-gray-200" />
@@ -139,6 +141,44 @@ export function TableRowSkeleton() {
   );
 }
 
+export function TableRowSkeletonTwo() {
+  return (
+    <tr className="divide-y divide-gray-200 bg-white">
+      <td className="whitespace-nowrap py-5 pr-3 text-sm sm:pl-0">
+        <div className="flex items-center">
+          <div className="ml-4">
+            <div className="h-6 w-32 rounded bg-gray-100"></div>
+          </div>
+        </div>
+      </td>
+      <td className="whitespace-nowrap px-3 py-5 text-sm text-gray-500">
+        <div className="h-6 w-32 rounded bg-gray-100"></div>
+      </td>
+      <td className="whitespace-nowrap px-3 py-5 text-sm text-gray-500">
+        <div className="h-6 w-32 rounded bg-gray-100"></div>
+      </td>
+      <td className="whitespace-nowrap px-3 py-5 text-sm text-gray-500">
+        <div className="h-6 w-32 rounded bg-gray-100"></div>
+      </td>
+      <td className="whitespace-nowrap px-3 py-5 text-sm text-gray-500">
+        <span
+          className={`'Loading' ringring-ring-black-600/20 inline-flex items-center rounded-md bg-gray-50 px-2 py-1 text-xs font-medium ring-1 ring-inset`}
+        >
+          <div className="h-6 w-32 rounded bg-gray-100"></div>
+        </span>
+      </td>
+
+      <td className="relative whitespace-nowrap py-5 pr-4 text-center text-sm font-medium sm:pr-0">
+        <button
+          className={`$ ml-4 rounded-md px-3 py-1 text-indigo-600 transition duration-150 hover:bg-indigo-100 hover:text-indigo-500 active:bg-indigo-200 active:text-indigo-700`}
+        >
+          View
+        </button>
+      </td>
+    </tr>
+  );
+}
+
 export function InvoicesMobileSkeleton() {
   return (
     <div className="mb-2 w-full rounded-md bg-white p-4">
@@ -179,36 +219,54 @@ export function InvoicesTableSkeleton() {
           <table className="hidden min-w-full text-gray-900 md:table">
             <thead className="rounded-lg text-left text-sm font-normal">
               <tr>
-                <th scope="col" className="px-4 py-5 font-medium sm:pl-6">
-                  Customer
+                <th
+                  scope="col"
+                  className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                >
+                  ID
                 </th>
-                <th scope="col" className="px-3 py-5 font-medium">
-                  Email
+                <th
+                  scope="col"
+                  className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0"
+                >
+                  Client
                 </th>
-                <th scope="col" className="px-3 py-5 font-medium">
-                  Amount
+                <th
+                  scope="col"
+                  className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                >
+                  Price
                 </th>
-                <th scope="col" className="px-3 py-5 font-medium">
-                  Date
+                <th
+                  scope="col"
+                  className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                >
+                  Create Date
                 </th>
-                <th scope="col" className="px-3 py-5 font-medium">
+                <th
+                  scope="col"
+                  className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                >
                   Status
                 </th>
                 <th
                   scope="col"
-                  className="relative pb-4 pl-3 pr-6 pt-2 sm:pr-6"
+                  className="px-3 py-3.5 text-center text-sm font-semibold text-gray-900"
                 >
+                  Actions
+                </th>
+                <th scope="col" className="relative py-3.5 pl-3 pr-4 sm:pr-0">
                   <span className="sr-only">Edit</span>
                 </th>
               </tr>
             </thead>
             <tbody className="bg-white">
-              <TableRowSkeleton />
-              <TableRowSkeleton />
-              <TableRowSkeleton />
-              <TableRowSkeleton />
-              <TableRowSkeleton />
-              <TableRowSkeleton />
+              <TableRowSkeletonTwo />
+              <TableRowSkeletonTwo />
+              <TableRowSkeletonTwo />
+              <TableRowSkeletonTwo />
+              <TableRowSkeletonTwo />
+              <TableRowSkeletonTwo />
             </tbody>
           </table>
         </div>

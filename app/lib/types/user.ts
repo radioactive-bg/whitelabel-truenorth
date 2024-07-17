@@ -58,7 +58,7 @@ interface ACLFilters {
   };
 }
 
-interface ACL {
+export interface ACL {
   orders: ACLOrder;
   wallet: ACLWallet;
   transactions: ACLTransactions;

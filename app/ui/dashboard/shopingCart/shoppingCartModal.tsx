@@ -2,6 +2,7 @@ import { Fragment, useEffect, useState } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import { XMarkIcon } from '@heroicons/react/24/outline';
 import { useCartStore } from '../../../../state/shoppingCart';
+import { useRouter } from 'next/navigation';
 
 export default function ShoppingCartModal({
   open,
@@ -12,6 +13,7 @@ export default function ShoppingCartModal({
 }) {
   const { cartItems, addToCart, removeFromCart, updateQuantity, clearCart } =
     useCartStore();
+  const router = useRouter();
 
   const [subtotal, setSubtotal] = useState('0.00');
   const [tax, setTax] = useState('0.00');
@@ -23,6 +25,10 @@ export default function ShoppingCartModal({
         return total + parseFloat(item.price) * item.quantity;
       }, 0)
       .toFixed(2);
+  };
+
+  const continueToPayment = () => {
+    router.push(`/dashboard/checkout`);
   };
 
   const calculateTax = (subtotal: string) => {
@@ -201,6 +207,7 @@ export default function ShoppingCartModal({
 
                   <div className="mt-8 flex justify-end px-4 sm:px-6 lg:px-8">
                     <button
+                      onClick={continueToPayment}
                       type="submit"
                       className="rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-50"
                     >
