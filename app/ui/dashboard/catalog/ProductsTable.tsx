@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
-
 import { getPreview } from '@/app/lib/api/priceList';
 import axios, { CancelTokenSource } from 'axios';
 import Pagination from '../../../ui/dashboard/pagination';
 import { useCartStore } from '../../../../state/shoppingCart';
+import { ProductsTableSkeleton } from '@/app/ui/skeletons';
 
 const ProductsTable = ({
   allFilters,
@@ -32,13 +32,14 @@ const ProductsTable = ({
   const [products, setProducts] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [loading, setLoading] = useState(true);
 
-  // we must focus on htese filters
+  // we must focus on these filters
   const [regionIDs, setRegionIDs] = useState([]);
   const [currencies, setCurrencies] = useState([]);
   const [productGroupIDs, setProductGroupIDs] = useState([]);
 
-  //functionallity for these will be aded later
+  //functionality for these will be added later
   const [availability, setAvailability] = useState(null);
   const [hasBasePrice, setHasBasePrice] = useState(null);
   const [hasSalePrice, setHasSalePrice] = useState(null);
@@ -49,8 +50,9 @@ const ProductsTable = ({
   const latestRequestId = useRef<number>(0);
 
   const fetchData = async () => {
-    // Cancel the previous request if there was one
+    setLoading(true); // Set loading to true before fetching data
 
+    // Cancel the previous request if there was one
     if (cancelTokenSource.current) {
       cancelTokenSource.current.cancel(
         'Operation canceled due to new request.',
@@ -71,11 +73,10 @@ const ProductsTable = ({
         null,
         null,
       );
-      //console.log(' fetchData getPreview  response.data: ', response.data);
+
       if (requestId === latestRequestId.current) {
         let data = response.data ? response.data : [];
 
-        console.log('fetchData response: ', JSON.stringify(response));
         setCurrentPage(response.meta.current_page);
         setTotalPages(response.meta.last_page);
         setProducts(data);
@@ -86,6 +87,8 @@ const ProductsTable = ({
       } else {
         console.error('Fetch Error:', error);
       }
+    } finally {
+      setLoading(false); // Set loading to false after fetching data
     }
   };
 
@@ -124,12 +127,14 @@ const ProductsTable = ({
     <div className="w-full">
       {/* ProductsTable */}
       <div className="bg-white">
-        <div className="mx-auto max-w-7xl px-4  sm:px-6 lg:px-8 lg:pb-24">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 lg:pb-24">
           <div className="">
             <h2 className="sr-only">Recent orders</h2>
 
             <div className="space-y-20">
-              {products.length > 0 ? (
+              {loading ? (
+                <ProductsTableSkeleton />
+              ) : products.length > 0 ? (
                 <div key={'test'}>
                   <h3 className="sr-only">
                     Order placed on <time dateTime={'test'}>{'test'}</time>
@@ -271,7 +276,7 @@ const ProductsTable = ({
                   </table>
                 </div>
               ) : (
-                <div> No Products Found</div>
+                <div className="text-center text-gray-500">No items found</div>
               )}
             </div>
           </div>

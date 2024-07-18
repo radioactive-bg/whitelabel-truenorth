@@ -1,274 +1,174 @@
 import { getStatusStyles } from '@/app/lib/utils';
+import Skeleton from 'react-loading-skeleton';
+import 'react-loading-skeleton/dist/skeleton.css';
 
 // Loading animation
 const shimmer =
   'before:absolute before:inset-0 before:-translate-x-full before:animate-[shimmer_2s_infinite] before:bg-gradient-to-r before:from-transparent before:via-white/60 before:to-transparent';
 
-export function CardSkeleton() {
-  return (
-    <div
-      className={`${shimmer} relative overflow-hidden rounded-xl bg-gray-100 p-2 shadow-sm`}
-    >
-      <div className="flex p-4">
-        <div className="h-5 w-5 rounded-md bg-gray-200" />
-        <div className="ml-2 h-6 w-16 rounded-md bg-gray-200 text-sm font-medium" />
-      </div>
-      <div className="flex items-center justify-center truncate rounded-xl bg-white px-4 py-8">
-        <div className="h-7 w-20 rounded-md bg-gray-200" />
-      </div>
-    </div>
-  );
-}
-
-export function CardsSkeleton() {
-  return (
-    <>
-      <CardSkeleton />
-      <CardSkeleton />
-      <CardSkeleton />
-      <CardSkeleton />
-    </>
-  );
-}
-
-export function RevenueChartSkeleton() {
-  return (
-    <div className={`${shimmer} relative w-full overflow-hidden md:col-span-4`}>
-      <div className="mb-4 h-8 w-36 rounded-md bg-gray-100" />
-      <div className="rounded-xl bg-gray-100 p-4">
-        <div className="sm:grid-cols-13 mt-0 grid h-[410px] grid-cols-12 items-end gap-2 rounded-md bg-white p-4 md:gap-4" />
-        <div className="flex items-center pb-2 pt-6">
-          <div className="h-5 w-5 rounded-full bg-gray-200" />
-          <div className="ml-2 h-4 w-20 rounded-md bg-gray-200" />
-        </div>
-      </div>
-    </div>
-  );
-}
-
-export function InvoiceSkeleton() {
-  return (
-    <div className="flex flex-row items-center justify-between border-b border-gray-100 py-4">
-      <div className="flex items-center">
-        <div className="mr-2 h-8 w-8 rounded-full bg-gray-200" />
-        <div className="min-w-0">
-          <div className="h-5 w-40 rounded-md bg-gray-200" />
-          <div className="mt-2 h-4 w-12 rounded-md bg-gray-200" />
-        </div>
-      </div>
-      <div className="mt-2 h-4 w-12 rounded-md bg-gray-200" />
-    </div>
-  );
-}
-
-export function LatestInvoicesSkeleton() {
-  return (
-    <div
-      className={`${shimmer} relative flex w-full flex-col overflow-hidden md:col-span-4`}
-    >
-      <div className="mb-4 h-8 w-36 rounded-md bg-gray-100" />
-      <div className="flex grow flex-col justify-between rounded-xl bg-gray-100 p-4">
-        <div className="bg-white px-6">
-          <InvoiceSkeleton />
-          <InvoiceSkeleton />
-          <InvoiceSkeleton />
-          <InvoiceSkeleton />
-          <InvoiceSkeleton />
-          <div className="flex items-center pb-2 pt-6">
-            <div className="h-5 w-5 rounded-full bg-gray-200" />
-            <div className="ml-2 h-4 w-20 rounded-md bg-gray-200" />
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-export default function DashboardSkeleton() {
-  return (
-    <>
-      <div
-        className={`${shimmer} relative mb-4 h-8 w-36 overflow-hidden rounded-md bg-gray-100`}
-      />
-      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-        <CardSkeleton />
-        <CardSkeleton />
-        <CardSkeleton />
-        <CardSkeleton />
-      </div>
-      <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-4 lg:grid-cols-8">
-        <RevenueChartSkeleton />
-        <LatestInvoicesSkeleton />
-      </div>
-    </>
-  );
-}
-
-export function TableRowSkeleton() {
-  return (
-    <tr className="w-full border-b border-gray-100 last-of-type:border-none [&:first-child>td:first-child]:rounded-tl-lg [&:first-child>td:last-child]:rounded-tr-lg [&:last-child>td:first-child]:rounded-bl-lg [&:last-child>td:last-child]:rounded-br-lg">
-      {/* Customer Name and Image */}
-      <td className="relative overflow-hidden whitespace-nowrap py-3 pl-6 pr-3">
-        <div className="flex items-center gap-3">
-          <div className="h-8 w-8 rounded-full bg-gray-100"></div>
-          <div className="h-6 w-24 rounded bg-gray-100"></div>
-        </div>
-      </td>
-      {/* Email */}
-      <td className="whitespace-nowrap px-3 py-3">
-        <div className="h-6 w-32 rounded bg-gray-100"></div>
-      </td>
-      {/* Amount */}
-      <td className="whitespace-nowrap px-3 py-3">
-        <div className="h-6 w-16 rounded bg-gray-100"></div>
-      </td>
-      {/* Date */}
-      <td className="whitespace-nowrap px-3 py-3">
-        <div className="h-6 w-16 rounded bg-gray-100"></div>
-      </td>
-      {/* Status */}
-      <td className="whitespace-nowrap px-3 py-3">
-        <div className="h-6 w-16 rounded bg-gray-100"></div>
-      </td>
-      {/* Actions */}
-      <td className="whitespace-nowrap py-3 pl-6 pr-3">
-        <div className="flex justify-end gap-3">
-          <div className="h-[38px] w-[38px] rounded bg-gray-100"></div>
-          <div className="h-[38px] w-[38px] rounded bg-gray-100"></div>
-        </div>
-      </td>
-    </tr>
-  );
-}
-
-export function TableRowSkeletonTwo() {
-  return (
-    <tr className="divide-y divide-gray-200 bg-white">
-      <td className="whitespace-nowrap py-5 pr-3 text-sm sm:pl-0">
-        <div className="flex items-center">
-          <div className="ml-4">
-            <div className="h-6 w-32 rounded bg-gray-100"></div>
-          </div>
-        </div>
-      </td>
-      <td className="whitespace-nowrap px-3 py-5 text-sm text-gray-500">
-        <div className="h-6 w-32 rounded bg-gray-100"></div>
-      </td>
-      <td className="whitespace-nowrap px-3 py-5 text-sm text-gray-500">
-        <div className="h-6 w-32 rounded bg-gray-100"></div>
-      </td>
-      <td className="whitespace-nowrap px-3 py-5 text-sm text-gray-500">
-        <div className="h-6 w-32 rounded bg-gray-100"></div>
-      </td>
-      <td className="whitespace-nowrap px-3 py-5 text-sm text-gray-500">
-        <span
-          className={`'Loading' ringring-ring-black-600/20 inline-flex items-center rounded-md bg-gray-50 px-2 py-1 text-xs font-medium ring-1 ring-inset`}
-        >
-          <div className="h-6 w-32 rounded bg-gray-100"></div>
-        </span>
-      </td>
-
-      <td className="relative whitespace-nowrap py-5 pr-4 text-center text-sm font-medium sm:pr-0">
-        <button
-          className={`$ ml-4 rounded-md px-3 py-1 text-indigo-600 transition duration-150 hover:bg-indigo-100 hover:text-indigo-500 active:bg-indigo-200 active:text-indigo-700`}
-        >
-          View
-        </button>
-      </td>
-    </tr>
-  );
-}
-
-export function InvoicesMobileSkeleton() {
-  return (
-    <div className="mb-2 w-full rounded-md bg-white p-4">
-      <div className="flex items-center justify-between border-b border-gray-100 pb-8">
-        <div className="flex items-center">
-          <div className="mr-2 h-8 w-8 rounded-full bg-gray-100"></div>
-          <div className="h-6 w-16 rounded bg-gray-100"></div>
-        </div>
-        <div className="h-6 w-16 rounded bg-gray-100"></div>
-      </div>
-      <div className="flex w-full items-center justify-between pt-4">
-        <div>
-          <div className="h-6 w-16 rounded bg-gray-100"></div>
-          <div className="mt-2 h-6 w-24 rounded bg-gray-100"></div>
-        </div>
-        <div className="flex justify-end gap-2">
-          <div className="h-10 w-10 rounded bg-gray-100"></div>
-          <div className="h-10 w-10 rounded bg-gray-100"></div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
 export function InvoicesTableSkeleton() {
   return (
-    <div className="mt-6 flow-root">
-      <div className="inline-block min-w-full align-middle">
-        <div className="rounded-lg bg-gray-50 p-2 md:pt-0">
-          <div className="md:hidden">
-            <InvoicesMobileSkeleton />
-            <InvoicesMobileSkeleton />
-            <InvoicesMobileSkeleton />
-            <InvoicesMobileSkeleton />
-            <InvoicesMobileSkeleton />
-            <InvoicesMobileSkeleton />
+    <>
+      <div className="px-4 sm:px-6 lg:px-8">
+        <div className="mt-8 flow-root">
+          <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+            <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
+              <table className="min-w-full divide-y divide-gray-300">
+                <thead>
+                  <tr>
+                    <th
+                      scope="col"
+                      className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                    >
+                      ID
+                    </th>
+                    <th
+                      scope="col"
+                      className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0"
+                    >
+                      Client
+                    </th>
+                    <th
+                      scope="col"
+                      className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                    >
+                      Price
+                    </th>
+                    <th
+                      scope="col"
+                      className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                    >
+                      Create Date
+                    </th>
+                    <th
+                      scope="col"
+                      className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                    >
+                      Status
+                    </th>
+                    <th
+                      scope="col"
+                      className="px-3 py-3.5 text-center text-sm font-semibold text-gray-900"
+                    >
+                      Actions
+                    </th>
+                    <th
+                      scope="col"
+                      className="relative py-3.5 pl-3 pr-4 sm:pr-0"
+                    >
+                      <span className="sr-only">Edit</span>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-200 bg-white">
+                  {[...Array(10)].map((_, index) => (
+                    <tr key={index}>
+                      <td className="whitespace-nowrap py-5 pr-3 text-sm sm:pl-0">
+                        <div className="flex items-center">
+                          <div className="ml-4">
+                            <Skeleton width={50} />
+                          </div>
+                        </div>
+                      </td>
+                      <td className="whitespace-nowrap px-3 py-5 text-sm text-gray-500">
+                        <Skeleton width={100} />
+                      </td>
+                      <td className="whitespace-nowrap px-3 py-5 text-sm text-gray-500">
+                        <Skeleton width={70} />
+                      </td>
+                      <td className="whitespace-nowrap px-3 py-5 text-sm text-gray-500">
+                        <Skeleton width={120} />
+                      </td>
+                      <td className="whitespace-nowrap px-3 py-5 text-sm text-gray-500">
+                        <Skeleton width={80} />
+                      </td>
+                      <td className="relative whitespace-nowrap py-5 pr-4 text-center text-sm font-medium sm:pr-0">
+                        <Skeleton width={60} />
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
-          <table className="hidden min-w-full text-gray-900 md:table">
-            <thead className="rounded-lg text-left text-sm font-normal">
-              <tr>
-                <th
-                  scope="col"
-                  className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
-                >
-                  ID
-                </th>
-                <th
-                  scope="col"
-                  className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0"
-                >
-                  Client
-                </th>
-                <th
-                  scope="col"
-                  className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
-                >
-                  Price
-                </th>
-                <th
-                  scope="col"
-                  className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
-                >
-                  Create Date
-                </th>
-                <th
-                  scope="col"
-                  className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
-                >
-                  Status
-                </th>
-                <th
-                  scope="col"
-                  className="px-3 py-3.5 text-center text-sm font-semibold text-gray-900"
-                >
-                  Actions
-                </th>
-                <th scope="col" className="relative py-3.5 pl-3 pr-4 sm:pr-0">
-                  <span className="sr-only">Edit</span>
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-white">
-              <TableRowSkeletonTwo />
-              <TableRowSkeletonTwo />
-              <TableRowSkeletonTwo />
-              <TableRowSkeletonTwo />
-              <TableRowSkeletonTwo />
-              <TableRowSkeletonTwo />
-            </tbody>
-          </table>
+        </div>
+      </div>
+
+      {/* Pagination */}
+      <div className="mt-8 flex items-center justify-between">
+        <Skeleton width={100} />
+        <Skeleton width={100} />
+      </div>
+    </>
+  );
+}
+
+export function ProductsTableSkeleton() {
+  return (
+    <div className="w-full">
+      <div className="bg-white">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 lg:pb-24">
+          <div className="space-y-20">
+            <div>
+              <h3 className="sr-only">Loading products...</h3>
+              <table className="mt-4 w-full text-gray-500 sm:mt-6">
+                <caption className="sr-only">Loading products</caption>
+                <thead className="sr-only text-left text-sm text-gray-500 sm:not-sr-only">
+                  <tr>
+                    <th className="py-3 pr-8 font-normal sm:w-2/5 lg:w-1/3">
+                      Product
+                    </th>
+                    <th className="hidden w-1/5 py-3 pr-8 font-normal sm:table-cell">
+                      Group
+                    </th>
+                    <th className="hidden w-1/5 py-3 pr-8 font-normal sm:table-cell">
+                      Price
+                    </th>
+                    <th className="hidden w-1/5 py-3 pr-8 font-normal sm:table-cell">
+                      Quantity
+                    </th>
+                    <th className="hidden py-3 pr-8 font-normal sm:table-cell">
+                      Status
+                    </th>
+                    <th className="w-0 py-3 text-right font-normal">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-200 border-b border-gray-200 text-sm sm:border-t">
+                  {[...Array(10)].map((_, index) => (
+                    <tr key={index}>
+                      <td className="py-6 pr-8">
+                        <div className="flex items-center">
+                          <Skeleton
+                            width={64}
+                            height={64}
+                            className="mr-6 h-16 w-16 rounded object-cover object-center"
+                          />
+                          <div>
+                            <Skeleton width={150} />
+                          </div>
+                        </div>
+                      </td>
+                      <td className="hidden py-6 pr-8 sm:table-cell">
+                        <Skeleton width={100} />
+                      </td>
+                      <td className="hidden py-6 pr-8 sm:table-cell">
+                        <Skeleton width={50} />
+                      </td>
+                      <td className="py-6 sm:table-cell sm:pr-8">
+                        <Skeleton width={50} />
+                      </td>
+                      <td className="hidden py-6 pr-8 sm:table-cell">
+                        <Skeleton width={75} />
+                      </td>
+                      <td className="whitespace-nowrap py-6 text-right font-medium">
+                        <Skeleton width={75} />
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
         </div>
       </div>
     </div>
