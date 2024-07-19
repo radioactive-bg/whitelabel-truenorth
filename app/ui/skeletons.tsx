@@ -174,3 +174,43 @@ export function ProductsTableSkeleton() {
     </div>
   );
 }
+
+export const SkeletonCheckout = () => {
+  return (
+    <div className="animate-pulse">
+      <div className="flex space-x-4">
+        <div className="flex-shrink-0">
+          <div className="h-20 w-20 rounded-md bg-gray-200"></div>
+        </div>
+        <div className="flex flex-1 flex-col space-y-2">
+          <div className="h-4 rounded bg-gray-200"></div>
+          <div className="h-4 w-1/2 rounded bg-gray-200"></div>
+          <div className="h-4 rounded bg-gray-200"></div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export const SkeletonWallet = () => {
+  return (
+    <div className="mt-4 grid grid-cols-1 gap-y-6 sm:grid-cols-2 sm:gap-x-4">
+      {Array(2)
+        .fill(null)
+        .map((_, index) => (
+          <div
+            key={index}
+            className="flex animate-pulse cursor-pointer rounded-lg border bg-gray-200 p-4 shadow-sm"
+          >
+            <div className="flex flex-1">
+              <div className="flex flex-col">
+                <div className="mb-1 block h-4 w-1/3 rounded bg-gray-300"></div>
+                <div className="mt-1 flex h-4 w-2/3 items-center rounded bg-gray-300"></div>
+                <div className="mt-6 h-4 w-1/2 rounded bg-gray-300"></div>
+              </div>
+            </div>
+          </div>
+        ))}
+    </div>
+  );
+};

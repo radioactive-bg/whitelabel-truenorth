@@ -12,6 +12,7 @@ export default function Logo() {
         width={130}
         height={40}
         alt="Screenshots of the dashboard project showing desktop version"
+        priority
       />
     </div>
   );

@@ -4,43 +4,17 @@ import { useState, useEffect } from 'react';
 import { Radio, RadioGroup } from '@headlessui/react';
 import { CheckCircleIcon, TrashIcon } from '@heroicons/react/20/solid';
 import { getWalletsList } from '@/app/lib/api/wallet';
+import { useCartStore } from '@/state/shoppingCart';
+
+import { SkeletonCheckout, SkeletonWallet } from '@/app/ui/skeletons';
 
 const Checkout = () => {
-  const products = [
-    {
-      id: 1,
-      title: 'Basic Tee',
-      href: '#',
-      price: '$32.00',
-      color: 'Black',
-      size: 'Large',
-      imageSrc:
-        'https://tailwindui.com/img/ecommerce-images/checkout-page-02-product-01.jpg',
-      imageAlt: "Front of men's Basic Tee in black.",
-    },
-    // More products...
-  ];
+  const { cartItems, addToCart, removeFromCart, updateQuantity, clearCart } =
+    useCartStore();
 
-  const deliveryMethods = [
-    {
-      id: 1,
-      title: 'Standard',
-      turnaround: '4–10 business days',
-      price: '$5.00',
-    },
-    {
-      id: 2,
-      title: 'Express',
-      turnaround: '2–5 business days',
-      price: '$16.00',
-    },
-  ];
-
-  const [selectedDeliveryMethod, setSelectedDeliveryMethod] = useState(
-    deliveryMethods[0],
-  );
-
-  const [walletsInfo, setWalletsInfo] = useState({});
+  const [walletsInfo, setWalletsInfo] = useState([]);
+  const [loadingWallets, setLoadingWallets] = useState(true);
+  const [selectedDeliveryMethod, setSelectedDeliveryMethod] = useState(null);
 
   useEffect(() => {
     fetchWallet();
@@ -48,32 +22,35 @@ const Checkout = () => {
 
   const fetchWallet = async () => {
     let walletInfo = await getWalletsList();
-    console.log('walletInfo in checkout:', walletInfo);
     setWalletsInfo(walletInfo);
+    setLoadingWallets(false);
   };
+
   return (
-    <div className="mt-[20px] rounded-md  bg-gray-50">
+    <div className="mt-[20px] rounded-md bg-gray-50">
       <div className="mx-auto max-w-2xl px-4 pb-24 pt-16 sm:px-6 lg:max-w-7xl lg:px-8">
         <h2 className="sr-only">Checkout</h2>
 
         <form className="lg:grid lg:grid-cols-2 lg:gap-x-12 xl:gap-x-16">
           <div>
-            <div className="mt-10 border-t border-gray-200 pt-10">
-              <fieldset>
-                <legend className="text-lg font-medium text-gray-900">
-                  Wallet
-                </legend>
+            <fieldset>
+              <legend className="text-lg font-medium text-gray-900">
+                Wallet
+              </legend>
+              {loadingWallets ? (
+                <SkeletonWallet />
+              ) : (
                 <RadioGroup
                   value={selectedDeliveryMethod}
                   onChange={setSelectedDeliveryMethod}
                   className="mt-4 grid grid-cols-1 gap-y-6 sm:grid-cols-2 sm:gap-x-4"
                 >
-                  {deliveryMethods.map((deliveryMethod) => (
+                  {walletsInfo.map((walletInfo: any) => (
                     <Radio
-                      key={deliveryMethod.id}
-                      value={deliveryMethod}
-                      aria-label={deliveryMethod.title}
-                      aria-description={`${deliveryMethod.turnaround} for ${deliveryMethod.price}`}
+                      key={walletInfo.id}
+                      value={walletInfo.availableAmount}
+                      aria-label={walletInfo.currency}
+                      aria-description={`${walletInfo.currency} for ${walletInfo.availableAmount}`}
                       className={({ checked, focus }) =>
                         `${checked ? 'border-transparent' : 'border-gray-300'}
                           ${focus ? 'ring-2 ring-indigo-500' : ''}
@@ -86,13 +63,13 @@ const Checkout = () => {
                           <span className="flex flex-1">
                             <span className="flex flex-col">
                               <span className="block text-sm font-medium text-gray-900">
-                                {deliveryMethod.title}
+                                {walletInfo.currency}
                               </span>
                               <span className="mt-1 flex items-center text-sm text-gray-500">
-                                {deliveryMethod.turnaround}
+                                {walletInfo.turnaround}
                               </span>
                               <span className="mt-6 text-sm font-medium text-gray-900">
-                                {deliveryMethod.price}
+                                {walletInfo.availableAmount}
                               </span>
                             </span>
                           </span>
@@ -102,25 +79,13 @@ const Checkout = () => {
                               aria-hidden="true"
                             />
                           ) : null}
-                          {/* <span
-                            className={`${
-                              checked
-                                ? 'border-indigo-500'
-                                : 'border-transparent'
-                            }
-                              ${focus ? 'border' : 'border-2'}
-                             
-                              'pointer-events-none rounded-lg', absolute -inset-px
-                            `}
-                            aria-hidden="true"
-                          /> */}
                         </>
                       )}
                     </Radio>
                   ))}
                 </RadioGroup>
-              </fieldset>
-            </div>
+              )}
+            </fieldset>
           </div>
 
           {/* Order summary */}
@@ -130,74 +95,77 @@ const Checkout = () => {
             <div className="mt-4 rounded-lg border border-gray-200 bg-white shadow-sm">
               <h3 className="sr-only">Items in your cart</h3>
               <ul role="list" className="divide-y divide-gray-200">
-                {products.map((product) => (
-                  <li key={product.id} className="flex px-4 py-6 sm:px-6">
-                    <div className="flex-shrink-0">
-                      <img
-                        src={product.imageSrc}
-                        alt={product.imageAlt}
-                        className="w-20 rounded-md"
-                      />
-                    </div>
-
-                    <div className="ml-6 flex flex-1 flex-col">
-                      <div className="flex">
-                        <div className="min-w-0 flex-1">
-                          <h4 className="text-sm">
-                            <a
-                              href={product.href}
-                              className="font-medium text-gray-700 hover:text-gray-800"
-                            >
-                              {product.title}
-                            </a>
-                          </h4>
-                          <p className="mt-1 text-sm text-gray-500">
-                            {product.color}
-                          </p>
-                          <p className="mt-1 text-sm text-gray-500">
-                            {product.size}
-                          </p>
+                {cartItems.length === 0
+                  ? Array(3)
+                      .fill(0)
+                      .map((_, index) => (
+                        <li key={index} className="flex px-4 py-6 sm:px-6">
+                          <SkeletonCheckout />
+                        </li>
+                      ))
+                  : cartItems.map((product) => (
+                      <li key={product.id} className="flex px-4 py-6 sm:px-6">
+                        <div className="flex-shrink-0">
+                          <img
+                            src={product.logo}
+                            alt={product.groupName}
+                            className="w-20 rounded-md"
+                          />
                         </div>
 
-                        <div className="ml-4 flow-root flex-shrink-0">
-                          <button
-                            type="button"
-                            className="-m-2.5 flex items-center justify-center bg-white p-2.5 text-gray-400 hover:text-gray-500"
-                          >
-                            <span className="sr-only">Remove</span>
-                            <TrashIcon className="h-5 w-5" aria-hidden="true" />
-                          </button>
-                        </div>
-                      </div>
+                        <div className="ml-6 flex flex-1 flex-col">
+                          <div className="flex">
+                            <div className="min-w-0 flex-1">
+                              <h4 className="text-sm">
+                                <p className="font-medium text-gray-700 hover:text-gray-800">
+                                  {product.groupName}
+                                </p>
+                              </h4>
 
-                      <div className="flex flex-1 items-end justify-between pt-2">
-                        <p className="mt-1 text-sm font-medium text-gray-900">
-                          {product.price}
-                        </p>
+                              <p className="mt-1 text-sm text-gray-500">
+                                {product.quantity}
+                              </p>
+                            </div>
 
-                        <div className="ml-4">
-                          <label htmlFor="quantity" className="sr-only">
-                            Quantity
-                          </label>
-                          <select
-                            id="quantity"
-                            name="quantity"
-                            className="rounded-md border border-gray-300 text-left text-base font-medium text-gray-700 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:text-sm"
-                          >
-                            <option value={1}>1</option>
-                            <option value={2}>2</option>
-                            <option value={3}>3</option>
-                            <option value={4}>4</option>
-                            <option value={5}>5</option>
-                            <option value={6}>6</option>
-                            <option value={7}>7</option>
-                            <option value={8}>8</option>
-                          </select>
+                            <div className="ml-4 flow-root flex-shrink-0">
+                              <button
+                                type="button"
+                                className="-m-2.5 flex items-center justify-center bg-white p-2.5 text-gray-400 hover:text-gray-500"
+                              >
+                                <span className="sr-only">Remove</span>
+                                <TrashIcon
+                                  className="h-5 w-5"
+                                  aria-hidden="true"
+                                />
+                              </button>
+                            </div>
+                          </div>
+
+                          <div className="flex flex-1 items-end justify-between pt-2">
+                            <p className="mt-1 text-sm font-medium text-gray-900">
+                              {product.basePrice}
+                            </p>
+
+                            <div className="ml-4">
+                              <label htmlFor="quantity" className="sr-only">
+                                Quantity
+                              </label>
+                              <select
+                                id="quantity"
+                                name="quantity"
+                                className="rounded-md border border-gray-300 text-left text-base font-medium text-gray-700 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:text-sm"
+                              >
+                                {[...Array(8)].map((_, i) => (
+                                  <option key={i} value={i + 1}>
+                                    {i + 1}
+                                  </option>
+                                ))}
+                              </select>
+                            </div>
+                          </div>
                         </div>
-                      </div>
-                    </div>
-                  </li>
-                ))}
+                      </li>
+                    ))}
               </ul>
               <dl className="space-y-6 border-t border-gray-200 px-4 py-6 sm:px-6">
                 <div className="flex items-center justify-between">
