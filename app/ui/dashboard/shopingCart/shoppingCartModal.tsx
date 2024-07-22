@@ -1,7 +1,12 @@
 import { Fragment, useEffect, useState } from 'react';
-import { Dialog, Transition } from '@headlessui/react';
+import {
+  Dialog,
+  Transition,
+  DialogPanel,
+  TransitionChild,
+} from '@headlessui/react';
 import { XMarkIcon } from '@heroicons/react/24/outline';
-import { useCartStore } from '../../../../state/shoppingCart';
+import { useCartStore } from '@/state/shoppingCart';
 import { useRouter } from 'next/navigation';
 
 export default function ShoppingCartModal({
@@ -28,6 +33,7 @@ export default function ShoppingCartModal({
   };
 
   const continueToPayment = () => {
+    setOpen(false);
     router.push(`/dashboard/checkout`);
   };
 
@@ -66,7 +72,7 @@ export default function ShoppingCartModal({
         {/*remove the margin top mt-[40px] if we do not need it */}
         <div className="fixed inset-0 z-10 mt-[60px] w-screen overflow-y-auto">
           <div className="flex min-h-full items-stretch justify-center text-center sm:items-center sm:px-6 lg:px-8">
-            <Transition.Child
+            <TransitionChild
               enter="ease-out duration-300"
               enterFrom="opacity-0 scale-105"
               enterTo="opacity-100 scale-100"
@@ -74,7 +80,7 @@ export default function ShoppingCartModal({
               leaveFrom="opacity-100 scale-100"
               leaveTo="opacity-0 scale-105"
             >
-              <Dialog.Panel className="flex w-full max-w-3xl transform text-left text-base transition sm:my-8">
+              <DialogPanel className="flex w-full max-w-3xl transform text-left text-base transition sm:my-8">
                 <form className="relative flex w-full flex-col overflow-hidden bg-white pb-8 pt-6 sm:rounded-lg sm:pb-6 lg:py-8">
                   <div className="flex items-center justify-between px-4 sm:px-6 lg:px-8">
                     <h2 className="text-lg font-medium text-gray-900">
@@ -119,7 +125,7 @@ export default function ShoppingCartModal({
                             </div>
                             <p className=" row-span-2 row-end-2 ml-[20px] font-medium text-gray-900 sm:order-1 sm:ml-6 sm:w-1/3 sm:flex-none sm:text-center">
                               {cartItem.currency === 'USD' ? '$' : '€'}
-                              {cartItem.price}
+                              {Number(cartItem.price) * cartItem.quantity}
                             </p>
                             <div className="flex items-center sm:block sm:flex-none sm:text-center">
                               <label
@@ -208,15 +214,15 @@ export default function ShoppingCartModal({
                   <div className="mt-8 flex justify-end px-4 sm:px-6 lg:px-8">
                     <button
                       onClick={continueToPayment}
-                      type="submit"
+                      type="button"
                       className="rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-50"
                     >
                       Continue to Payment
                     </button>
                   </div>
                 </form>
-              </Dialog.Panel>
-            </Transition.Child>
+              </DialogPanel>
+            </TransitionChild>
           </div>
         </div>
       </Dialog>

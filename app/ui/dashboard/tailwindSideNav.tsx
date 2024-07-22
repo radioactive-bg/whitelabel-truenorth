@@ -30,7 +30,8 @@ import { useRouter } from 'next/navigation';
 
 import ShoppingCartModal from '../../ui/dashboard/shopingCart/shoppingCartModal';
 
-import { getWalletsList } from '@/app/lib/api/wallet';
+//import { getWalletsList } from '@/app/lib/api/wallet';
+import { useWalletStore, Wallet } from '@/state/wallets';
 
 function classNames(...classes: any[]) {
   return classes.filter(Boolean).join(' ');
@@ -42,7 +43,10 @@ export default function TailwindSideNav({
   children: React.ReactNode;
 }) {
   const [openShoppingCart, setOpenShoppingCart] = useState(false);
-  const [wallet, setWallet] = useState([{ availableAmount: '$ 0' }]);
+
+  //const [wallet, setWallet] = useState([{ availableAmount: '$ 0' }]);
+  const { wallets, loadingWallets, error, fetchWallets, removeWallet } =
+    useWalletStore();
 
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const { auth, setAuth } = authStore() as {
@@ -71,12 +75,11 @@ export default function TailwindSideNav({
   }, []);
 
   const fetchWallet = async () => {
-    let walletInfo = await getWalletsList();
+    let walletInfo = await fetchWallets();
     console.log('walletInfo:', JSON.stringify(walletInfo));
-    setWallet(walletInfo);
   };
   const handleUserProfile = () => {
-    router.push('/dashboard/userProfile');
+    router.push('/dashboard/profile');
   };
 
   const handleLogout = async (e: any) => {
@@ -234,9 +237,13 @@ export default function TailwindSideNav({
                   {'Wallet'}
                 </dt>
               </div>
-              <dd className="w-full flex-none text-2xl font-medium leading-10 tracking-tight text-gray-900">
-                {`${wallet[0].availableAmount}`}
-              </dd>
+              {loadingWallets ? (
+                <div className=" h-10 w-40 animate-pulse rounded-md bg-gray-200"></div>
+              ) : (
+                <dd className="w-full flex-none text-2xl font-medium leading-10 tracking-tight text-gray-900">
+                  {`${wallets[0].availableAmount}`}
+                </dd>
+              )}
             </div>
 
             <nav className="flex flex-1 flex-col">
@@ -321,7 +328,7 @@ export default function TailwindSideNav({
 
                       <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-50">
                         <p className="text-blue-600">
-                          {user.name[0].toLocaleUpperCase()}
+                          {user?.name?.[0]?.toLocaleUpperCase() || ''}
                         </p>
                       </div>
                       <span className="hidden lg:flex lg:items-center">
@@ -329,7 +336,7 @@ export default function TailwindSideNav({
                           className="ml-4 text-sm font-semibold leading-6 text-gray-900"
                           aria-hidden="true"
                         >
-                          {user.name}
+                          {user?.name || ''}
                         </span>
                         <ChevronDownIcon
                           className="ml-2 h-5 w-5 text-gray-400"

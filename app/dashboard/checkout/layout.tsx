@@ -1,9 +1,10 @@
 import React from 'react';
 
 const layout = ({ children }: { children: React.ReactNode }) => {
+  //status can either be 'complete', 'current', or 'upcoming'
   const steps = [
-    { id: 'Step 1', name: 'Checkout', href: '#', status: 'complete' },
-    { id: 'Step 2', name: 'Payment', href: '#', status: 'current' },
+    { id: 'Step 1', name: 'Checkout', href: '#', status: 'current' },
+    { id: 'Step 2', name: 'Payment', href: '#', status: 'upcoming' },
     { id: 'Step 3', name: 'Download', href: '#', status: 'upcoming' },
   ];
   return (

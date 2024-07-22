@@ -1,6 +1,7 @@
 import { getStatusStyles } from '@/app/lib/utils';
 import Skeleton from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css';
+import { TrashIcon } from '@heroicons/react/20/solid';
 
 // Loading animation
 const shimmer =
@@ -177,20 +178,68 @@ export function ProductsTableSkeleton() {
 
 export const SkeletonCheckout = () => {
   return (
-    <div className="animate-pulse">
-      <div className="flex space-x-4">
-        <div className="flex-shrink-0">
-          <div className="h-20 w-20 rounded-md bg-gray-200"></div>
+    <>
+      <img
+        src={'/NoPhoto.jpg'}
+        alt={'NoPhoto'}
+        className="h-20 w-20 flex-shrink-0 rounded-md"
+      />
+      <div className="ml-6 flex flex-1 flex-col">
+        <div className="flex">
+          <div className="min-w-0 flex-1">
+            <h4 className="text-sm">
+              <p className="animate-pulse font-medium text-gray-700"></p>
+            </h4>
+            {/* <p className="mt-1 text-sm text-gray-500">
+                                {product.name}
+                              </p> */}
+          </div>
+
+          <div className="ml-4 flow-root flex-shrink-0">
+            <button
+              type="button"
+              className="-m-2.5 flex items-center justify-center bg-white p-2.5 text-gray-400 hover:text-gray-500"
+            >
+              <span className="sr-only">Remove</span>
+              <TrashIcon className="h-5 w-5" aria-hidden="true" />
+            </button>
+          </div>
         </div>
-        <div className="flex flex-1 flex-col space-y-2">
-          <div className="h-4 rounded bg-gray-200"></div>
-          <div className="h-4 w-1/2 rounded bg-gray-200"></div>
-          <div className="h-4 rounded bg-gray-200"></div>
+
+        <div className="flex flex-1 items-end justify-between pt-2">
+          <select
+            id="quantity"
+            name="quantity"
+            className="rounded-md border border-gray-300 text-left text-base font-medium text-gray-700 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:text-sm"
+          >
+            {[...Array(8)].map((_, i) => (
+              <option key={i} value={i + 1}>
+                {i + 1}
+              </option>
+            ))}
+          </select>
+
+          <div className="ml-4">
+            <p className="mt-1 text-sm font-medium text-gray-900"></p>
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
+
+//  <div className="animate-pulse">
+//    <div className="flex space-x-4">
+//      <div className="flex-shrink-0">
+//        <div className="h-20 w-20 rounded-md bg-gray-200"></div>
+//      </div>
+//      <div className="flex flex-1 flex-col space-y-2">
+//        <div className="h-4 rounded bg-gray-200"></div>
+//        <div className="h-4 w-1/2 "></div>
+//        <div className="h-4 rounded bg-gray-200"></div>
+//      </div>
+//    </div>
+//  </div>
 
 export const SkeletonWallet = () => {
   return (

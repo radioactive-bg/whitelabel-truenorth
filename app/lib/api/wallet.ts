@@ -12,7 +12,7 @@ export async function getWalletsList() {
         },
       },
     );
-    console.log('getWalletsList response.data.data: ', response.data.data);
+    // console.log('getWalletsList response.data.data: ', response.data.data);
     return response.data.data;
   } catch (error) {
     console.error('Fetch Error:', error);
