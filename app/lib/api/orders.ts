@@ -152,3 +152,45 @@ export async function getInvoice(ID: number, access_token: string) {
     throw new Error('Failed to fetch invoice by ID.');
   }
 }
+
+export async function createOrder(products: any[], vat: number | null) {
+  let requestBody = {
+    products: products,
+    vat: vat,
+  };
+
+  const token = localStorage.getItem('access_token');
+
+  if (!token) {
+    throw new Error('No access token found');
+  }
+
+  console.log('requestBody in createOrder :', requestBody);
+  console.log('access_token in createOrder :', token);
+
+  try {
+    const response = await axios.post(
+      `${API_URL}/distributor-crm/v1/orders`,
+      requestBody,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
+
+    console.log('Axios response.data.data from createOrder:', response.data);
+
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      console.error('Axios error response data:', error.response?.data);
+      console.error('Axios error response status:', error.response?.status);
+      console.error('Axios error response headers:', error.response?.headers);
+    } else {
+      console.error('Unexpected error:', error);
+    }
+    throw new Error('Failed to create order.');
+  }
+}

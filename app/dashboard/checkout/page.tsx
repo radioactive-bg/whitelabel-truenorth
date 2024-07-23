@@ -3,7 +3,9 @@ import React, { useState, useEffect } from 'react';
 import { Radio, RadioGroup } from '@headlessui/react';
 import { CheckCircleIcon, TrashIcon } from '@heroicons/react/20/solid';
 import { getWalletsList } from '@/app/lib/api/wallet';
+import { createOrder } from '@/app/lib/api/orders';
 import { useCartStore } from '@/state/shoppingCart';
+import { useRouter } from 'next/navigation';
 
 import { Dialog, DialogPanel, DialogTitle } from '@headlessui/react';
 import { ExclamationTriangleIcon } from '@heroicons/react/24/outline';
@@ -14,6 +16,7 @@ import {
 } from '@/app/ui/skeletons';
 import { useWalletStore, Wallet } from '@/state/wallets';
 
+//put this into themskeelton folder once you have fixed the issue
 const SkeletonCheckout = () => {
   return (
     <li className="flex px-4 py-6 sm:px-6">
@@ -42,6 +45,8 @@ const SkeletonCheckout = () => {
 };
 
 const Checkout = () => {
+  const router = useRouter();
+
   const { cartItems, addToCart, removeFromCart, updateQuantity, clearCart } =
     useCartStore();
   const [cartItemToDelete, setCartItemToDelete] = useState<number | null>(null);
@@ -49,11 +54,9 @@ const Checkout = () => {
   const {
     wallets,
     loadingWallets,
-    error,
     selectedWallet,
     setSelectedWallet,
     fetchWallets,
-    removeWallet,
   } = useWalletStore();
   //const [selectedWallet, setSelectedWallet] = useState<Wallet | null>(null);
 
@@ -84,9 +87,30 @@ const Checkout = () => {
     setOpen(false);
   };
 
+  const submitOrder = async (e: any) => {
+    e.preventDefault();
+    console.log('cartItems: ', cartItems);
+
+    const products = cartItems.map((item) => ({
+      productId: item.id,
+      quantity: item.quantity,
+    }));
+
+    const vat = null;
+
+    let createdOrderData = await createOrder(products, vat);
+    console.log('createdOrderData: ', JSON.stringify(createdOrderData));
+    const orderId = createdOrderData.data.id;
+    //clearCart();
+    router.push(`/dashboard/checkout/payment?orderId=${orderId}`);
+  };
+
   useEffect(() => {
     const fetchWalletInfo = async () => {
-      await fetchWallets();
+      if (wallets.length === 0) {
+        await fetchWallets();
+      }
+
       if (wallets.length > 0) {
         setSelectedWallet(wallets[0]);
       }
@@ -156,7 +180,10 @@ const Checkout = () => {
             </div>
           </div>
         </Dialog>
-        <form className="lg:grid lg:grid-cols-2 lg:gap-x-12 xl:gap-x-16">
+        <form
+          className="lg:grid lg:grid-cols-2 lg:gap-x-12 xl:gap-x-16"
+          onSubmit={submitOrder}
+        >
           <div>
             <fieldset>
               <legend className="text-lg font-medium text-gray-900">

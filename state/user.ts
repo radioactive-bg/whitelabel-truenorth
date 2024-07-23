@@ -48,12 +48,12 @@ export async function getUserProfile(access_token: string) {
         },
       },
     );
-    console.error('response.data.data: ', response.data.data);
+    console.log('response.data.data: ', response.data.data);
     userStore.setState({ user: response.data.data });
 
     localStorage.setItem('username', response.data.data.name);
 
-    console.error('userStore: ', JSON.stringify(userStore.getState()));
+    console.log('userStore: ', JSON.stringify(userStore.getState()));
 
     return response.data.data;
   } catch (error) {

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Dialog, DialogPanel, TransitionChild } from '@headlessui/react';
 import {
   ChartBarSquareIcon,
@@ -12,6 +12,9 @@ import {
   XMarkIcon,
 } from '@heroicons/react/24/outline';
 import { Bars3Icon, MagnifyingGlassIcon } from '@heroicons/react/20/solid';
+
+import { userStore, getUserProfile } from '@/state/user';
+import { User } from '@/app/lib/types/user';
 
 const navigation = [
   { name: 'Projects', href: '#', icon: FolderIcon, current: false },
@@ -27,19 +30,19 @@ function classNames(...classes: any) {
 }
 
 export default function Example() {
+  const { user, setUser } = userStore() as {
+    user: User;
+    setUser: (user: User) => void;
+  };
+
   const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
+
+  useEffect(() => {
+    getUserProfile(localStorage.getItem('access_token') as string);
+  }, []);
 
   return (
     <>
-      {/*
-        This example requires updating your template:
-
-        ```
-        <html class="h-full bg-gray-900">
-        <body class="h-full">
-        ```
-      */}
-
       <div>
         <main>
           <h1 className="sr-only">Account Settings</h1>
@@ -67,7 +70,7 @@ export default function Example() {
                     <div>
                       <button
                         type="button"
-                        className="rounded-md bg-white/10 px-3 py-2 text-sm font-semibold text-black shadow-sm hover:bg-white/20"
+                        className="bg-indigo/10 rounded-md px-3 py-2 text-sm font-semibold text-black shadow-sm hover:bg-white/20"
                       >
                         Change avatar
                       </button>
@@ -180,7 +183,7 @@ export default function Example() {
                 <div className="mt-8 flex">
                   <button
                     type="submit"
-                    className="rounded-md bg-indigo-500 px-3 py-2 text-sm font-semibold text-black shadow-sm hover:bg-indigo-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
+                    className="rounded-md bg-indigo-500 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
                   >
                     Save
                   </button>
@@ -258,7 +261,7 @@ export default function Example() {
                 <div className="mt-8 flex">
                   <button
                     type="submit"
-                    className="rounded-md bg-indigo-500 px-3 py-2 text-sm font-semibold text-black shadow-sm hover:bg-indigo-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
+                    className="rounded-md bg-indigo-500 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
                   >
                     Save
                   </button>
@@ -301,7 +304,7 @@ export default function Example() {
                 <div className="mt-8 flex">
                   <button
                     type="submit"
-                    className="rounded-md bg-indigo-500 px-3 py-2 text-sm font-semibold text-black shadow-sm hover:bg-indigo-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
+                    className="rounded-md bg-indigo-500 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
                   >
                     Log out other sessions
                   </button>
@@ -324,7 +327,7 @@ export default function Example() {
               <form className="flex items-center md:col-span-2">
                 <button
                   type="submit"
-                  className="rounded-md bg-red-500 px-3 py-2 text-sm font-semibold text-black shadow-sm hover:bg-red-400"
+                  className="rounded-md bg-red-500 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-400"
                 >
                   Yes, delete my account
                 </button>
