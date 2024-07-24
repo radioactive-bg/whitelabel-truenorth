@@ -1,13 +1,4 @@
 'use client';
-import { lusitana } from '@/app/ui/fonts';
-import {
-  AtSymbolIcon,
-  KeyIcon,
-  ExclamationCircleIcon,
-} from '@heroicons/react/24/outline';
-import { ArrowRightIcon } from '@heroicons/react/20/solid';
-import { Button } from '../button';
-
 import {
   InputOTP,
   InputOTPGroup,
@@ -15,18 +6,27 @@ import {
   InputOTPSlot,
 } from '@/components/ui/input-otp';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
 export default function OTPForm({
   handleVerifyOtp,
+  showOtpForm,
 }: {
   handleVerifyOtp: (e: any, otp: string) => void;
+  showOtpForm: boolean;
 }) {
   const [otp, setOtp] = useState('');
+  const firstInputRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (showOtpForm && firstInputRef.current) {
+      firstInputRef.current.focus();
+    }
+  }, [showOtpForm]);
 
   return (
     <div className="space-y-3">
-      <div className="flex-1 rounded-lg px-6 pb-4 pt-8">
+      <form className="flex-1 rounded-lg px-6 pb-4 pt-8">
         <h1 className="mb-5 mt-5 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
           Please enter OTP to continue.
         </h1>
@@ -39,7 +39,7 @@ export default function OTPForm({
             }}
           >
             <InputOTPGroup>
-              <InputOTPSlot index={0} />
+              <InputOTPSlot index={0} ref={firstInputRef} />
               <InputOTPSlot index={1} />
               <InputOTPSlot index={2} />
             </InputOTPGroup>
@@ -55,7 +55,7 @@ export default function OTPForm({
         <div className="flex h-8 items-end space-x-1">
           {/* Add form errors here */}
         </div>
-      </div>
+      </form>
     </div>
   );
 }
@@ -70,6 +70,7 @@ function OTPButton({
 }) {
   return (
     <button
+      type="submit"
       className="mt-10 flex w-full justify-center rounded-md bg-[#50C8ED] px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
       onClick={(e) => onClick(e, otp)}
     >

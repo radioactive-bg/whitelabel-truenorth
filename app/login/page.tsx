@@ -1,5 +1,5 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Logo from '@/app/ui/logo';
 import LoginForm from '@/app/ui/login/login-form';
 import OTPForm from '@/app/ui/login/OTP-form';
@@ -108,7 +108,10 @@ export default function LoginPage() {
     <main className="flex items-center justify-center md:h-screen">
       <div className="relative mx-auto flex w-full max-w-[400px] flex-col space-y-2.5 p-4 md:-mt-32">
         {showOtpForm ? (
-          <OTPForm handleVerifyOtp={handleVerifyOtp} />
+          <OTPForm
+            handleVerifyOtp={handleVerifyOtp}
+            showOtpForm={showOtpForm}
+          />
         ) : (
           <LoginForm handleLogin={handleLogin} />
         )}

@@ -1,13 +1,11 @@
-// pages/dashboard/orders/[id].tsx
 'use client';
-import { useParams, useSearchParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { fetchOrderById, downloadInvoice } from '@/app/lib/api/orders';
 import { PaperClipIcon } from '@heroicons/react/20/solid';
 import { getStatusStyles } from '@/app/lib/utils';
 
-const OrderDetails = () => {
-  // const { orderId } = useParams();
+const OrderDetailsContent = () => {
   const searchParams = useSearchParams();
   const orderId = searchParams.get('orderId');
   const [order, setOrder] = useState<any>(null);
@@ -89,7 +87,7 @@ const OrderDetails = () => {
             </div>
             <div className="border-t border-gray-100 px-4 py-6 sm:col-span-1 sm:px-0">
               <dt className="text-sm font-bold leading-6 text-gray-900">
-                Ammount
+                Amount
               </dt>
               <dd className="mt-1 text-sm leading-6 text-gray-700 sm:mt-2">
                 {order.orderDetails.amountTotal}
@@ -170,4 +168,10 @@ const OrderDetails = () => {
   );
 };
 
-export default OrderDetails;
+const OrderDetailsPage = () => (
+  <Suspense fallback={<div>Loading...</div>}>
+    <OrderDetailsContent />
+  </Suspense>
+);
+
+export default OrderDetailsPage;

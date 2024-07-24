@@ -1,5 +1,5 @@
 'use client';
-import { useState, CSSProperties, useEffect } from 'react';
+import { useState, CSSProperties, useEffect, Suspense } from 'react';
 import ClipLoader from 'react-spinners/ClipLoader';
 import { useRouter, useSearchParams } from 'next/navigation';
 
@@ -21,7 +21,7 @@ const Payment = () => {
       //setLoading(false);
       router.push(`/dashboard/checkout/downloadCodes?orderId=${orderId}`);
     }, 3000);
-  }, [orderId, router]);
+  }, [orderId]);
 
   return (
     <div className="sweet-loading mt-32">
@@ -37,4 +37,10 @@ const Payment = () => {
   );
 };
 
-export default Payment;
+const PaymentPage = () => (
+  <Suspense fallback={<div>Loading...</div>}>
+    <Payment />
+  </Suspense>
+);
+
+export default PaymentPage;

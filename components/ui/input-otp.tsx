@@ -1,27 +1,39 @@
 'use client';
-import React, { useEffect, useRef } from 'react';
+import React, {
+  useEffect,
+  useRef,
+  useContext,
+  forwardRef,
+  useCallback,
+} from 'react';
 import { OTPInput, OTPInputContext } from 'input-otp';
 import { Dot } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
 
-const InputOTP = React.forwardRef<
+const InputOTP = forwardRef<
   React.ElementRef<typeof OTPInput>,
   React.ComponentPropsWithoutRef<typeof OTPInput>
->(({ className, containerClassName, ...props }, ref) => (
-  <OTPInput
-    ref={ref}
-    containerClassName={cn(
-      'flex items-center gap-2 has-[:disabled]:opacity-50',
-      containerClassName,
-    )}
-    className={cn('disabled:cursor-not-allowed', className)}
-    {...props}
-  />
-));
+>(({ className, containerClassName, ...props }, ref) => {
+  // Determine the container class name based on whether ref is passed
+  const finalContainerClassName = cn(
+    'flex items-center gap-2 has-[:disabled]:opacity-50',
+    ref ? 'focus:ring-2 focus:ring-indigo-600 focus:border-transparent' : '',
+    containerClassName,
+  );
+
+  return (
+    <OTPInput
+      ref={ref}
+      containerClassName={finalContainerClassName}
+      className={cn('disabled:cursor-not-allowed', className)}
+      {...props}
+    />
+  );
+});
 InputOTP.displayName = 'InputOTP';
 
-const InputOTPGroup = React.forwardRef<
+const InputOTPGroup = forwardRef<
   React.ElementRef<'div'>,
   React.ComponentPropsWithoutRef<'div'>
 >(({ className, ...props }, ref) => (
@@ -29,34 +41,35 @@ const InputOTPGroup = React.forwardRef<
 ));
 InputOTPGroup.displayName = 'InputOTPGroup';
 
-const InputOTPSlot = React.forwardRef<
+const InputOTPSlot = forwardRef<
   React.ElementRef<'div'>,
   React.ComponentPropsWithoutRef<'div'> & { index: number }
 >(({ index, className, ...props }, forwardedRef) => {
-  const inputOTPContext = React.useContext(OTPInputContext) as any;
+  const inputOTPContext = useContext(OTPInputContext) as any;
   const { char, hasFakeCaret, isActive } = inputOTPContext.slots[index];
 
-  const ref = useRef(null);
+  const localRef = useRef<HTMLDivElement>(null);
 
-  // Combine refs received from forwardRef and the local ref
-  const combinedRef = React.useCallback(
-    (node: any) => {
+  const combinedRef = useCallback(
+    (node: HTMLDivElement) => {
       if (forwardedRef) {
         if (typeof forwardedRef === 'function') {
           forwardedRef(node);
-        } else {
-          forwardedRef.current = node;
+        } else if (forwardedRef) {
+          (
+            forwardedRef as React.MutableRefObject<HTMLDivElement | null>
+          ).current = node;
         }
       }
-      ref.current = node;
+      (localRef as React.MutableRefObject<HTMLDivElement | null>).current =
+        node;
     },
     [forwardedRef],
   );
 
-  // Effect to auto-focus the first slot when component mounts
   useEffect(() => {
-    if (index === 0 && ref.current) {
-      (ref.current as HTMLElement).focus();
+    if (index === 0 && localRef.current) {
+      localRef.current.focus();
     }
   }, [index]);
 
@@ -68,7 +81,7 @@ const InputOTPSlot = React.forwardRef<
         isActive && 'z-10 ring-2 ring-ring ring-offset-background',
         className,
       )}
-      autoFocus={index === 0}
+      tabIndex={index === 0 ? 0 : -1} // Make the first slot focusable
       {...props}
     >
       {char}
@@ -82,7 +95,7 @@ const InputOTPSlot = React.forwardRef<
 });
 InputOTPSlot.displayName = 'InputOTPSlot';
 
-const InputOTPSeparator = React.forwardRef<
+const InputOTPSeparator = forwardRef<
   React.ElementRef<'div'>,
   React.ComponentPropsWithoutRef<'div'>
 >(({ ...props }, ref) => (
