@@ -11,12 +11,28 @@ const OrderDetailsContent = () => {
   const [order, setOrder] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
+  const [intervalId, setIntervalId] = useState<NodeJS.Timeout | null>(null);
+
   useEffect(() => {
     if (orderId) {
       console.log('id:', orderId, typeof orderId);
       fetchOrderDetails(orderId as string);
     }
   }, [orderId]);
+
+  useEffect(() => {
+    if (order?.orderDetails?.statusText === 'In Progress') {
+      const id = setInterval(() => {
+        fetchOrderDetails(orderId as string);
+      }, 5000); // Fetch order details every 5 seconds
+
+      setIntervalId(id);
+
+      return () => clearInterval(id); // Cleanup interval on component unmount
+    } else if (intervalId) {
+      clearInterval(intervalId);
+    }
+  }, [order?.orderDetails?.statusText]);
 
   const fetchOrderDetails = async (orderId: string) => {
     setLoading(true);
@@ -70,7 +86,7 @@ const OrderDetailsContent = () => {
         <div className="mt-6">
           <dl className="grid grid-cols-1 sm:grid-cols-2">
             <div className="border-t border-gray-100 px-4 py-6 sm:col-span-1 sm:px-0">
-              <dt className="text-sm font-bold  leading-6 text-gray-900">
+              <dt className="text-sm font-bold leading-6 text-gray-900">
                 Order Number
               </dt>
               <dd className="mt-1 text-sm leading-6 text-gray-700 sm:mt-2">
@@ -102,7 +118,7 @@ const OrderDetailsContent = () => {
                   getStatusStyles(order.orderDetails.status).bgColor
                 } inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ${
                   getStatusStyles(order.orderDetails.status).textColor
-                } ring-1 ring-inset ringring-${
+                } ring-1 ring-inset ring-${
                   getStatusStyles(order.orderDetails.status).ringColor
                 }/20`}
               >
@@ -152,7 +168,11 @@ const OrderDetailsContent = () => {
                     <div className="ml-4 flex-shrink-0">
                       <button
                         onClick={() => handleDownload(order.orderDetails.id)}
-                        className={`$ ml-4 rounded-md px-3 py-1 text-indigo-600 transition duration-150 hover:bg-indigo-100 hover:text-indigo-500 active:bg-indigo-200 active:text-indigo-700`}
+                        className={`$ ml-4 rounded-md px-3 py-1 text-indigo-600 transition duration-150 hover:bg-indigo-100 hover:text-indigo-500 active:bg-indigo-200 active:text-indigo-700 ${
+                          order.orderDetails.statusText !== 'Complete' &&
+                          'cursor-not-allowed opacity-50'
+                        }`}
+                        disabled={order.orderDetails.statusText !== 'Complete'}
                       >
                         Download
                       </button>

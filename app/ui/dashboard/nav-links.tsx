@@ -23,8 +23,10 @@ const links = [
 
 export default function NavLinks({
   setSidebarOpen,
+  setOpenShoppingCart,
 }: {
   setSidebarOpen: (open: any) => void;
+  setOpenShoppingCart: (open: any) => void;
 }) {
   const pathname = usePathname();
 
@@ -38,7 +40,10 @@ export default function NavLinks({
           <Link
             key={link.name}
             href={link.href}
-            onClick={() => setSidebarOpen(false)}
+            onClick={() => {
+              setSidebarOpen(false);
+              setOpenShoppingCart(false);
+            }}
             className={clsx(
               'group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6',
 

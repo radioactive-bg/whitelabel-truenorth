@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { Switch } from '@headlessui/react';
 import { Dialog, DialogPanel, TransitionChild } from '@headlessui/react';
 import {
   ChartBarSquareIcon,
@@ -36,6 +37,8 @@ export default function Example() {
   };
 
   const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
+
+  const [enable2FA, setEnable2FA] = useState(false);
 
   useEffect(() => {
     getUserProfile(localStorage.getItem('access_token') as string);
@@ -80,12 +83,12 @@ export default function Example() {
                     </div>
                   </div>
 
-                  <div className="sm:col-span-3">
+                  <div className="sm:col-span-full">
                     <label
                       htmlFor="first-name"
                       className="block text-sm font-medium leading-6 text-black"
                     >
-                      First name
+                      Name
                     </label>
                     <div className="mt-2">
                       <input
@@ -93,24 +96,6 @@ export default function Example() {
                         name="first-name"
                         type="text"
                         autoComplete="given-name"
-                        className="block w-full rounded-md border border-indigo-600 bg-white/5 py-1.5 text-black shadow-sm ring-1 ring-inset ring-white/10 hover:border-2 hover:border-indigo-500 focus:ring-2 focus:ring-inset focus:ring-indigo-500 sm:text-sm sm:leading-6"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="sm:col-span-3">
-                    <label
-                      htmlFor="last-name"
-                      className="block text-sm font-medium leading-6 text-black"
-                    >
-                      Last name
-                    </label>
-                    <div className="mt-2">
-                      <input
-                        id="last-name"
-                        name="last-name"
-                        type="text"
-                        autoComplete="family-name"
                         className="block w-full rounded-md border border-indigo-600 bg-white/5 py-1.5 text-black shadow-sm ring-1 ring-inset ring-white/10 hover:border-2 hover:border-indigo-500 focus:ring-2 focus:ring-inset focus:ring-indigo-500 sm:text-sm sm:leading-6"
                       />
                     </div>
@@ -132,50 +117,30 @@ export default function Example() {
                         className="block w-full rounded-md border border-indigo-600 bg-white/5 py-1.5 text-black shadow-sm ring-1 ring-inset ring-white/10 hover:border-2 hover:border-indigo-500 focus:ring-2 focus:ring-inset focus:ring-indigo-500 sm:text-sm sm:leading-6"
                       />
                     </div>
-                  </div>
-
-                  <div className="col-span-full">
-                    <label
-                      htmlFor="username"
-                      className="block text-sm font-medium leading-6 text-black"
-                    >
-                      Username
-                    </label>
-                    <div className="mt-2">
-                      <div className="flex rounded-md bg-white/5 ring-1 ring-inset ring-white/10 focus-within:ring-2 focus-within:ring-inset focus-within:ring-indigo-500">
-                        <span className="flex select-none items-center pl-3 text-gray-400 sm:text-sm">
-                          example.com/
-                        </span>
-                        <input
-                          id="username"
-                          name="username"
-                          type="text"
-                          placeholder="janesmith"
-                          autoComplete="username"
-                          //className="flex-1 border-0 bg-transparent py-1.5 pl-1 text-black focus:ring-0 sm:text-sm sm:leading-6"
-                          className="block w-full rounded-md border border-indigo-600 bg-white/5 py-1.5 text-black shadow-sm ring-1 ring-inset ring-white/10 hover:border-2 hover:border-indigo-500 focus:ring-2 focus:ring-inset focus:ring-indigo-500 sm:text-sm sm:leading-6"
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="col-span-full">
-                    <label
-                      htmlFor="timezone"
-                      className="block text-sm font-medium leading-6 text-black"
-                    >
-                      Timezone
-                    </label>
-                    <div className="mt-2">
-                      <select
-                        id="timezone"
-                        name="timezone"
-                        className="block w-full rounded-md border border-indigo-600 bg-white/5 py-1.5 text-black shadow-sm ring-1 ring-inset ring-white/10 hover:border-2 hover:border-indigo-500 focus:ring-2 focus:ring-inset focus:ring-indigo-500 sm:text-sm sm:leading-6"
+                    <div className="mt-4 flex items-center gap-x-2">
+                      <label
+                        htmlFor="email"
+                        className="block text-sm font-medium leading-6 text-black"
                       >
-                        <option>Pacific Standard Time</option>
-                        <option>Eastern Standard Time</option>
-                        <option>Greenwich Mean Time</option>
-                      </select>
+                        2FA Status
+                      </label>
+                      <Switch
+                        checked={enable2FA}
+                        onChange={setEnable2FA}
+                        className="group relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent bg-gray-200 transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2 data-[checked]:bg-indigo-600"
+                      >
+                        <span className="sr-only">Use setting</span>
+                        <span
+                          aria-hidden="true"
+                          className="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out group-data-[checked]:translate-x-5"
+                        />
+                      </Switch>
+                      <label
+                        htmlFor="email"
+                        className="block text-sm font-medium leading-6 text-black"
+                      >
+                        {enable2FA ? 'Enabled' : 'Disabled'}
+                      </label>
                     </div>
                   </div>
                 </div>

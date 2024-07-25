@@ -88,8 +88,8 @@ export const getStatusStyles = (status: number) => {
       return {
         text: 'In process',
         bgColor: 'bg-[#FAAD14]',
-        textColor: 'text-[#FAAD14]',
-        ringColor: 'ring-[#FAAD14]',
+        textColor: 'text-[#FFF]',
+        ringColor: 'ring-[#FFF]',
       };
 
     default:

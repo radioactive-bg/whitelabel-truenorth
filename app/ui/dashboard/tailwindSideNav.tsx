@@ -185,7 +185,10 @@ export default function TailwindSideNav({
                       <ul role="list" className="flex flex-1 flex-col gap-y-7">
                         <li>
                           <ul role="list" className="-mx-2 space-y-1">
-                            <NavLinks setSidebarOpen={setSidebarOpen} />
+                            <NavLinks
+                              setSidebarOpen={setSidebarOpen}
+                              setOpenShoppingCart={setOpenShoppingCart}
+                            />
                           </ul>
                         </li>
                         <li className="mt-auto">
@@ -250,7 +253,10 @@ export default function TailwindSideNav({
               <ul role="list" className="flex flex-1 flex-col gap-y-7">
                 <li>
                   <ul role="list" className="-mx-2 space-y-1">
-                    <NavLinks setSidebarOpen={setSidebarOpen} />
+                    <NavLinks
+                      setSidebarOpen={setSidebarOpen}
+                      setOpenShoppingCart={setOpenShoppingCart}
+                    />
                   </ul>
                 </li>
 

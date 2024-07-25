@@ -135,7 +135,7 @@ export function ProductsTableSkeleton() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200 border-b border-gray-200 text-sm sm:border-t">
-                  {[...Array(10)].map((_, index) => (
+                  {[...Array(5)].map((_, index) => (
                     <tr key={index}>
                       <td className="py-6 pr-8">
                         <div className="flex items-center">
