@@ -266,7 +266,11 @@ const Checkout = () => {
                 {cartItems.length === 0
                   ? Array(2)
                       .fill(0)
-                      .map((_, index) => <SkeletonCheckout />)
+                      .map((_, index) => (
+                        <>
+                          <SkeletonCheckout />
+                        </>
+                      ))
                   : cartItems.map((product) => (
                       <li key={product.id} className="flex px-4 py-6 sm:px-6">
                         <img
