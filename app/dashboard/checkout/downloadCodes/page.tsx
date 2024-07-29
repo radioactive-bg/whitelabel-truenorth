@@ -11,28 +11,28 @@ const OrderDetailsContent = () => {
   const [order, setOrder] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
-  const [intervalId, setIntervalId] = useState<NodeJS.Timeout | null>(null);
-
   useEffect(() => {
     if (orderId) {
-      console.log('id:', orderId, typeof orderId);
       fetchOrderDetails(orderId as string);
     }
   }, [orderId]);
 
   useEffect(() => {
-    if (order?.orderDetails?.statusText === 'In Progress') {
-      const id = setInterval(() => {
+    let intervalId: NodeJS.Timeout | null = null;
+    if (
+      order?.orderDetails?.statusText === 'In Progress' ||
+      order?.orderDetails?.statusText === 'Waiting for cancel'
+    ) {
+      intervalId = setInterval(() => {
         fetchOrderDetails(orderId as string);
-      }, 5000); // Fetch order details every 5 seconds
-
-      setIntervalId(id);
-
-      return () => clearInterval(id); // Cleanup interval on component unmount
-    } else if (intervalId) {
-      clearInterval(intervalId);
+      }, 3000); // Fetch order details every 3 seconds
     }
-  }, [order?.orderDetails?.statusText]);
+    return () => {
+      if (intervalId) {
+        clearInterval(intervalId); // Cleanup interval on component unmount
+      }
+    };
+  }, [order?.orderDetails?.statusText, orderId]);
 
   const fetchOrderDetails = async (orderId: string) => {
     setLoading(true);

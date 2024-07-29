@@ -25,8 +25,7 @@ export default function CatalogPage() {
       <section
         className="rounded bg-gradient-to-r from-primary to-primary-foreground py-20 md:py-32"
         style={{
-          backgroundImage:
-            'url(https://hksglobal.group/wp-content/uploads/2024/07/product-hero.jpg)',
+          backgroundImage: 'url(/products-hero.webp)',
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           backgroundRepeat: 'no-repeat',
@@ -62,8 +61,7 @@ export default function CatalogPage() {
             <div
               className="relative overflow-hidden rounded-lg"
               style={{
-                backgroundImage:
-                  'url(https://hksglobal.group/wp-content/uploads/2024/07/cd-keys.png)',
+                backgroundImage: 'url(/cd-keys.webp)',
                 backgroundSize: 'cover',
                 backgroundPosition: 'center',
                 height: '200px',
@@ -79,8 +77,7 @@ export default function CatalogPage() {
             <div
               className="relative overflow-hidden rounded-lg"
               style={{
-                backgroundImage:
-                  'url(https://hksglobal.group/wp-content/uploads/2024/07/airtime.png)',
+                backgroundImage: 'url(/airtime.webp)',
                 backgroundSize: 'cover',
                 backgroundPosition: 'center',
                 height: '200px',
@@ -96,8 +93,7 @@ export default function CatalogPage() {
             <div
               className="relative overflow-hidden rounded-lg"
               style={{
-                backgroundImage:
-                  'url(https://hksglobal.group/wp-content/uploads/2024/07/prepaid-cards.png)',
+                backgroundImage: 'url(/prepaid-cards.webp)',
                 backgroundSize: 'cover',
                 backgroundPosition: 'center',
                 height: '200px',
@@ -113,8 +109,7 @@ export default function CatalogPage() {
             <div
               className="relative overflow-hidden rounded-lg"
               style={{
-                backgroundImage:
-                  'url(https://hksglobal.group/wp-content/uploads/2024/07/gift-cards-item.png)',
+                backgroundImage: 'url(/gift-cards-item.webp)',
                 backgroundSize: 'cover',
                 backgroundPosition: 'center',
                 height: '200px',
@@ -137,7 +132,7 @@ export default function CatalogPage() {
           <div className="grid grid-cols-2 gap-6 md:grid-cols-4 lg:grid-cols-6">
             <div className="flex items-center justify-center">
               <img
-                src="https://hksglobal.group/wp-content/uploads/2024/07/gift-card-10.png"
+                src="/gift-card-10.webp"
                 alt="Brand 1"
                 width={120}
                 height={60}
@@ -146,7 +141,7 @@ export default function CatalogPage() {
             </div>
             <div className="flex items-center justify-center">
               <img
-                src="https://hksglobal.group/wp-content/uploads/2024/07/gift-card-1.png"
+                src="/gift-card-1.webp"
                 alt="Brand 2"
                 width={120}
                 height={60}
@@ -155,7 +150,7 @@ export default function CatalogPage() {
             </div>
             <div className="flex items-center justify-center">
               <img
-                src="https://hksglobal.group/wp-content/uploads/2024/07/gift-card-15.png"
+                src="/gift-card-15.webp"
                 alt="Brand 3"
                 width={120}
                 height={60}
@@ -164,7 +159,7 @@ export default function CatalogPage() {
             </div>
             <div className="flex items-center justify-center">
               <img
-                src="https://hksglobal.group/wp-content/uploads/2024/07/gift-card-16.png"
+                src="/gift-card-16.webp"
                 alt="Brand 4"
                 width={120}
                 height={60}
@@ -173,7 +168,7 @@ export default function CatalogPage() {
             </div>
             <div className="flex items-center justify-center">
               <img
-                src="https://hksglobal.group/wp-content/uploads/2024/07/gift-card-4.png"
+                src="/gift-card-4.webp"
                 alt="Brand 5"
                 width={120}
                 height={60}
@@ -182,7 +177,7 @@ export default function CatalogPage() {
             </div>
             <div className="flex items-center justify-center">
               <img
-                src="https://hksglobal.group/wp-content/uploads/2024/07/gift-card-2.png"
+                src="/gift-card-2.webp"
                 alt="Brand 6"
                 width={120}
                 height={60}

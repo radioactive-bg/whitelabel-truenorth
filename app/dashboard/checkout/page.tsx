@@ -20,7 +20,12 @@ import { useWalletStore, Wallet } from '@/state/wallets';
 const SkeletonCheckout = () => {
   return (
     <li className="flex px-4 py-6 sm:px-6">
-      <div className="h-20 w-20 flex-shrink-0 rounded-md bg-gray-200"></div>
+      {/* <div className="h-20 w-20 flex-shrink-0 rounded-md bg-gray-200"></div> */}
+      <img
+        src={'/NoPhoto.jpg'}
+        alt={'NoPhoto'}
+        className="h-20 w-20 flex-shrink-0 rounded-md"
+      />
       <div className="ml-6 flex flex-1 flex-col">
         <div className="flex">
           <div className="min-w-0 flex-1">
@@ -199,6 +204,7 @@ const Checkout = () => {
                 >
                   {wallets.map((walletInfo: Wallet, index: number) => (
                     <Radio
+                      disabled={index !== 0}
                       defaultChecked={
                         selectedWallet !== null
                           ? walletInfo.id === selectedWallet.id
@@ -208,11 +214,16 @@ const Checkout = () => {
                       value={walletInfo}
                       // aria-label={walletInfo.currency}
                       // aria-description={`${walletInfo.currency} for ${walletInfo.availableAmount}`}
-                      className={({ checked, focus }) =>
-                        `${checked ? 'border-transparent' : 'border-gray-300'}
+                      className={
+                        ({ checked, focus }) =>
+                          `${checked ? 'border-transparent' : 'border-gray-300'}
                           ${focus ? 'ring-2 ring-indigo-500' : ''}
-                          'relative focus:outline-none', flex cursor-pointer rounded-lg border bg-white p-4 shadow-sm
-                        `
+                          'relative focus:outline-none', flex  rounded-lg border bg-white p-4 shadow-sm
+                          ${
+                            index !== 0
+                              ? 'cursor-not-allowed opacity-50'
+                              : 'cursor-pointer'
+                          }` // Add styles to show it is disabled
                       }
                     >
                       {({ checked, focus }) => (
@@ -255,11 +266,7 @@ const Checkout = () => {
                 {cartItems.length === 0
                   ? Array(2)
                       .fill(0)
-                      .map((_, index) => (
-                        <li key={index} className="flex px-4 py-6 sm:px-6">
-                          <SkeletonCheckout />
-                        </li>
-                      ))
+                      .map((_, index) => <SkeletonCheckout />)
                   : cartItems.map((product) => (
                       <li key={product.id} className="flex px-4 py-6 sm:px-6">
                         <img
