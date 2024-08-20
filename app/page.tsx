@@ -8,25 +8,13 @@ import userImage from '@/public/young-man-working.jpg';
 
 export default function Page() {
   return (
-    <main className="flex min-h-screen flex-col p-6">
-      <div className="relative bg-white">
-        <div className="mx-auto max-w-7xl lg:grid lg:grid-cols-12 lg:gap-x-8 lg:px-8">
-          <div className="px-6 pb-24 pt-10 sm:pb-32 lg:col-span-7 lg:px-0 lg:pb-56 lg:pt-48 xl:col-span-6">
+    <main className="flex h-screen w-screen flex-col p-6">
+      <div className="relative bg-white h-full w-full">
+        <div className="mx-auto max-w-7xl h-full lg:grid lg:grid-cols-12 lg:gap-x-8 lg:px-8">
+          <div className="px-6 pt-10 sm:pt-32 lg:col-span-7 lg:px-0 lg:pt-24 xl:col-span-6 h-full flex flex-col justify-center">
             <div className="mx-auto max-w-2xl lg:mx-0">
               <Logo />
-              <div className="hidden sm:mt-32 sm:flex lg:mt-16">
-                {/* <div className="relative rounded-full px-3 py-1 text-sm leading-6 text-gray-500 ring-1 ring-gray-900/10 hover:ring-gray-900/20">
-                  Anim aute id magna aliqua ad ad non deserunt sunt.{' '}
-                  <a
-                    href="#"
-                    className="whitespace-nowrap font-semibold text-indigo-600"
-                  >
-                    <span className="absolute inset-0" aria-hidden="true" />
-                    Read more <span aria-hidden="true">&rarr;</span>
-                  </a>
-                </div> */}
-              </div>
-              <h1 className="mt-24 text-4xl font-bold tracking-tight text-gray-900 sm:mt-10 sm:text-6xl">
+              <h1 className="mt-6 text-4xl font-bold tracking-tight text-gray-900 sm:mt-10 sm:text-6xl">
                 Enrich your business with HKS
               </h1>
               <p className="mt-6 text-lg leading-8 text-gray-600">
@@ -41,22 +29,16 @@ export default function Page() {
                 >
                   Login
                 </Link>
-                {/* <a
-                 
-                  className="text-sm font-semibold leading-6 text-gray-900"
-                >
-                  Learn more <span aria-hidden="true">→</span>
-                </a> */}
               </div>
             </div>
           </div>
-          <div className="relative lg:col-span-5 lg:-mr-8 xl:absolute xl:inset-0 xl:left-1/2 xl:mr-0">
+          <div className="relative lg:col-span-5 xl:absolute xl:inset-0 xl:left-1/2">
             <Image
-              className="lg:aspect-auto aspect-[3/2] w-full bg-gray-50 object-cover lg:absolute lg:inset-0 lg:h-full"
+              className="lg:aspect-auto aspect-[3/2] bg-gray-50 object-cover lg:absolute lg:inset-0"
+              style={{ width: '80vw', height: '80vh' }} // 80% of the viewport width and height
               width={800}
               height={800}
               src="https://images.unsplash.com/photo-1498758536662-35b82cd15e29?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2102&q=80"
-              //src={userImage}
               alt="home img"
             />
           </div>
