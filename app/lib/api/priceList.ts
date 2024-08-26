@@ -46,6 +46,10 @@ export async function getPreview(
     });
   }
 
+  //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  //maybe from here down if the .env var says iraq we can remove the regions and currencyIso
+  //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
   // Add each region ID to the queryString
   if (regionId) {
     regionId.forEach((id) => {
