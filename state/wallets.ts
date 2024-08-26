@@ -45,7 +45,12 @@ export const useWalletStore = create<WalletStore>()(
                 },
               },
             );
-            const wallets = response.data.data;
+            let wallets = response.data.data;
+            // Rearrange the wallets array to ensure USD wallet is first
+            wallets = wallets.sort((a: any, b: any) =>
+              a.currency === 'USD' ? -1 : 1,
+            );
+
             set({ wallets, loadingWallets: false });
             if (wallets.length > 0) {
               set({ selectedWallet: response.data.data[0] });

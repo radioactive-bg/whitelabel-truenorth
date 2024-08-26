@@ -244,7 +244,11 @@ export default function TailwindSideNav({
                 <div className=" h-10 w-40 animate-pulse rounded-md bg-gray-200"></div>
               ) : (
                 <dd className="w-full flex-none text-2xl font-medium leading-10 tracking-tight text-gray-900">
-                  {`${wallets[0].availableAmount}`}
+                  {`${
+                    wallets[0].availableAmount
+                      ? wallets[0].availableAmount
+                      : '$ 0'
+                  }`}
                 </dd>
               )}
             </div>
