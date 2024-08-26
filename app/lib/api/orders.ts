@@ -158,6 +158,7 @@ export async function createOrder(products: any[], vat: number | null) {
     products: products,
     vat: vat,
   };
+  console.log('requestBody in createOrder :', JSON.stringify(requestBody));
 
   const token = localStorage.getItem('access_token');
 

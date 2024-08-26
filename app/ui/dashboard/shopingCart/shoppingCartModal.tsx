@@ -193,9 +193,7 @@ export default function ShoppingCartModal({
                           <div className="flex items-center justify-between py-4">
                             <dt className="text-gray-600">Tax</dt>
                             <dd className="font-medium text-gray-900">
-                              <dd className="font-medium text-gray-900">
-                                {tax}
-                              </dd>
+                              <p className="font-medium text-gray-900">{tax}</p>
                             </dd>
                           </div>
                           <div className="flex items-center justify-between py-4">

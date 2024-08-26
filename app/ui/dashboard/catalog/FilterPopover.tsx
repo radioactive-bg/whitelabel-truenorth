@@ -24,9 +24,6 @@ const FilterPopover = ({
 
   const handleCheckbox = (option: any) => {
     const newValue = !option.checked;
-    console.log('newValue: ' + newValue);
-
-    console.log('options before: ' + JSON.stringify(options));
 
     const newOptions = fullFilter.options.map((opt: any) => {
       if (opt.value === option.value) {
@@ -34,7 +31,7 @@ const FilterPopover = ({
       }
       return opt;
     });
-    console.log('newOptions: ' + JSON.stringify(newOptions));
+
     setOptions(newOptions);
     setFullFilter({ ...fullFilter, options: newOptions });
 
