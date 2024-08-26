@@ -28,6 +28,7 @@ export default function CatalogPage() {
 
   // filter states
   const [allFilters, setAllFilters] = useState(filters);
+  const [updatedAllFilters, setUpdatedAllFilters] = useState(filters);
   const [filtersActive, setFiltersActive] = useState(false);
 
   const router = useRouter();
