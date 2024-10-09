@@ -47,7 +47,8 @@ export default function Page({}: {}) {
   const fetchOrders = async (page: number) => {
     setLoading(true);
     try {
-      const response = await getOrdersList(auth.access_token, page, [3, 7]);
+      // 3 and 7 in the array are the statuses for 'Completed' and 'Pending' orders
+      const response = await getOrdersList(page, [3, 7]);
       setOrders(response.data.data);
       const urlObject = new URL(response.data.links.last);
       const queryParams = new URLSearchParams(urlObject.search);

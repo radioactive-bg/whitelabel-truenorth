@@ -17,7 +17,6 @@ interface FetchInvoicesParams {
 }
 
 export async function getOrdersList(
-  access_token: string,
   currentPage: number | null,
   statuses: number[],
 ) {
@@ -189,9 +188,13 @@ export async function createOrder(products: any[], vat: number | null) {
       console.error('Axios error response data:', error.response?.data);
       console.error('Axios error response status:', error.response?.status);
       console.error('Axios error response headers:', error.response?.headers);
+      throw new Error('Failed to create order:', error.response?.data.message);
+      // return error.response?.data;
     } else {
-      console.error('Unexpected error:', error);
+      console.error('Unexpected error:');
+      throw new Error('Failed to create order:');
     }
-    throw new Error('Failed to create order.');
+    //console.error('Failed to create order:', error.message);
+    //throw new Error('Failed to create order:');
   }
 }

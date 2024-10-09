@@ -72,7 +72,11 @@ export default function LoginPage() {
     }
   };
 
-  const handleVerifyOtp = async (e: any, otp: string) => {
+  const handleVerifyOtp = async (
+    e: any,
+    otp: string,
+    setOtpError: (msg: string) => void,
+  ) => {
     e.preventDefault();
 
     try {
@@ -97,10 +101,12 @@ export default function LoginPage() {
         router.push('/dashboard'); // Redirects to the dashboard page
       } else {
         // alert(data.message);
+        setOtpError('The OTP code is incorrect. Please try again.');
       }
     } catch (error) {
       console.error('OTP Error:', error);
       //alert('Failed to verify OTP');
+      setOtpError('Failed to verify OTP. Please try again later.');
     }
   };
 

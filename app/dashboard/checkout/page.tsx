@@ -71,6 +71,11 @@ const Checkout = () => {
   const [tax, setTax] = useState('0.00');
   const [total, setTotal] = useState('0.00');
 
+  // Add state for error messages
+  const [errorMessages, setErrorMessages] = useState<{ [key: number]: string }>(
+    {},
+  );
+
   const calculateSubtotal = () => {
     return cartItems
       .reduce((total, item) => {
@@ -85,6 +90,13 @@ const Checkout = () => {
 
   const handleQuantityChange = (productId: any, quantity: number) => {
     updateQuantity(productId, quantity);
+
+    // Remove error message for this product if any
+    setErrorMessages((prevErrors) => {
+      const newErrors = { ...prevErrors };
+      delete newErrors[productId];
+      return newErrors;
+    });
   };
 
   const confirmDelete = (id: any) => {
@@ -96,18 +108,41 @@ const Checkout = () => {
     e.preventDefault();
     console.log('cartItems: ', cartItems);
 
-    const products = cartItems.map((item) => ({
-      productId: item.id,
-      quantity: item.quantity,
-    }));
+    const newErrorMessages: { [key: number]: string } = {};
 
-    const vat = null;
+    cartItems.forEach((item) => {
+      if (item.quantity > 4) {
+        // should change 4 with an actual number we get from the DB
+        newErrorMessages[item.id] =
+          'You cannot purchase more than 4 from this product';
+      }
+    });
 
-    let createdOrderData = await createOrder(products, vat);
-    console.log('createdOrderData: ', JSON.stringify(createdOrderData));
-    const orderId = createdOrderData.data.id;
-    //clearCart();
-    router.push(`/dashboard/checkout/payment?orderId=${orderId}`);
+    if (Object.keys(newErrorMessages).length > 0) {
+      setErrorMessages(newErrorMessages);
+
+      // Do not proceed with order submission
+
+      return;
+    } else {
+      setErrorMessages({});
+
+      // Proceed with order submission
+
+      const products = cartItems.map((item) => ({
+        productId: item.id,
+        quantity: item.quantity,
+      }));
+
+      const vat = null;
+
+      let createdOrderData = await createOrder(products, vat);
+      console.log('createdOrderData: ', JSON.stringify(createdOrderData));
+
+      const orderId = createdOrderData.data.id;
+      //clearCart();
+      router.push(`/dashboard/checkout/payment?orderId=${orderId}`);
+    }
   };
 
   useEffect(() => {
@@ -312,24 +347,31 @@ const Checkout = () => {
                           </div>
 
                           <div className="flex flex-1 items-end justify-between pt-2">
-                            <select
-                              id="quantity"
-                              name="quantity"
-                              className="rounded-md border border-gray-300 text-left text-base font-medium text-gray-700 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:text-sm"
-                              value={product.quantity}
-                              onChange={(e) =>
-                                handleQuantityChange(
-                                  product.id,
-                                  Number(e.target.value),
-                                )
-                              }
-                            >
-                              {[...Array(8)].map((_, i) => (
-                                <option key={i} value={i + 1}>
-                                  {i + 1}
-                                </option>
-                              ))}
-                            </select>
+                            <div className="flex flex-col">
+                              {errorMessages[product.id] && (
+                                <div className="mb-1 text-sm text-red-500">
+                                  {errorMessages[product.id]}
+                                </div>
+                              )}
+                              <select
+                                id="quantity"
+                                name="quantity"
+                                className="max-w-[65px] rounded-md border border-gray-300 text-left text-base font-medium text-gray-700 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:text-sm"
+                                value={product.quantity}
+                                onChange={(e) =>
+                                  handleQuantityChange(
+                                    product.id,
+                                    Number(e.target.value),
+                                  )
+                                }
+                              >
+                                {[...Array(8)].map((_, i) => (
+                                  <option key={i} value={i + 1}>
+                                    {i + 1}
+                                  </option>
+                                ))}
+                              </select>
+                            </div>
 
                             <div className="ml-4">
                               <p className="mt-1 text-sm font-medium text-gray-900">

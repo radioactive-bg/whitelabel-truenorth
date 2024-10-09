@@ -4,6 +4,7 @@ import axios, { CancelTokenSource } from 'axios';
 import Pagination from '../../../ui/dashboard/pagination';
 import { useCartStore } from '../../../../state/shoppingCart';
 import { ProductsTableSkeleton } from '@/app/ui/skeletons';
+//import ErrorNotification from '@/components/shared/ErrorNotification';
 
 const ProductsTable = ({
   allFilters,
@@ -14,6 +15,14 @@ const ProductsTable = ({
 }) => {
   const { cartItems, addToCart, removeFromCart, updateQuantity, clearCart } =
     useCartStore();
+
+  // State for error notification
+  // const [showError, setShowError] = useState(false);
+  // const [errorText, setErrorText] = useState({
+  //   mainText: '',
+  //   secondairyText: '',
+  // });
+
   const [selectedQuantities, setSelectedQuantities] = useState<{
     [key: number]: number;
   }>({});
@@ -26,6 +35,26 @@ const ProductsTable = ({
 
   const handleAddToCart = (product: any) => {
     const quantity = selectedQuantities[product.id] || 1;
+    //const existingItem = cartItems.find((item: any) => item.id === product.id);
+
+    // const totalQuantity = existingItem
+    //   ? existingItem.quantity + quantity
+    //   : quantity;
+
+    // const orderLimit = 4; // Example limit; adjust based on product or user settings
+
+    // if (totalQuantity > orderLimit) {
+    //   setErrorText({
+    //     mainText: 'Order Limit Exceeded',
+
+    //     secondairyText: `You can only order a maximum of ${orderLimit} units for this product.`,
+    //   });
+
+    //   setShowError(true);
+
+    //   return;
+    // }
+
     addToCart({ ...product, quantity });
   };
 
@@ -125,6 +154,15 @@ const ProductsTable = ({
 
   return (
     <div className="w-full">
+      {/* Error Notification */}
+
+      {/* <ErrorNotification
+        show={showError}
+        setShow={setShowError}
+        mainText={errorText.mainText}
+        secondairyText={errorText.secondairyText}
+      /> */}
+
       {/* ProductsTable */}
       <div className="bg-white">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 lg:pb-24">
@@ -230,7 +268,7 @@ const ProductsTable = ({
                               className="max-h-24 max-w-full overflow-y-auto rounded-md border border-gray-300 py-1.5 text-left text-base font-medium leading-5 text-gray-700 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:text-sm"
                             >
                               {product.isEnabled ? (
-                                Array.from({ length: 50 }, (_, i) => (
+                                Array.from({ length: 8 }, (_, i) => (
                                   <option key={i + 1} value={i + 1}>
                                     {i + 1}
                                   </option>
