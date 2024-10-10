@@ -96,7 +96,7 @@ export default function Example() {
                         name="first-name"
                         type="text"
                         autoComplete="given-name"
-                        className="block w-full rounded-md border border-indigo-600 bg-white/5 py-1.5 text-black shadow-sm ring-1 ring-inset ring-white/10 hover:border-2 hover:border-indigo-500 focus:ring-2 focus:ring-inset focus:ring-indigo-500 sm:text-sm sm:leading-6"
+                        className=" block w-full rounded-md border border-indigo-600 bg-white/5 py-1.5 text-black shadow-sm ring-1 ring-inset ring-white/10 hover:border-indigo-500 focus:ring-2 focus:ring-inset focus:ring-indigo-500 sm:text-sm sm:leading-6"
                       />
                     </div>
                   </div>
@@ -114,7 +114,7 @@ export default function Example() {
                         name="email"
                         type="email"
                         autoComplete="email"
-                        className="block w-full rounded-md border border-indigo-600 bg-white/5 py-1.5 text-black shadow-sm ring-1 ring-inset ring-white/10 hover:border-2 hover:border-indigo-500 focus:ring-2 focus:ring-inset focus:ring-indigo-500 sm:text-sm sm:leading-6"
+                        className="block w-full rounded-md border border-indigo-600 bg-white/5 py-1.5 text-black shadow-sm ring-1 ring-inset ring-white/10 hover:border-indigo-500 focus:ring-2 focus:ring-inset focus:ring-indigo-500 sm:text-sm sm:leading-6"
                       />
                     </div>
                     <div className="mt-4 flex items-center gap-x-2">
@@ -181,7 +181,7 @@ export default function Example() {
                         name="current_password"
                         type="password"
                         autoComplete="current-password"
-                        className="block w-full rounded-md border border-indigo-600 bg-white/5 py-1.5 text-black shadow-sm ring-1 ring-inset ring-white/10 hover:border-2 hover:border-indigo-500 focus:ring-2 focus:ring-inset focus:ring-indigo-500 sm:text-sm sm:leading-6"
+                        className="block w-full rounded-md border border-indigo-600 bg-white/5 py-1.5 text-black shadow-sm ring-1 ring-inset ring-white/10 hover:border-indigo-500 focus:ring-2 focus:ring-inset focus:ring-indigo-500 sm:text-sm sm:leading-6"
                       />
                     </div>
                   </div>
@@ -199,7 +199,7 @@ export default function Example() {
                         name="new_password"
                         type="password"
                         autoComplete="new-password"
-                        className="block w-full rounded-md border border-indigo-600 bg-white/5 py-1.5 text-black shadow-sm ring-1 ring-inset ring-white/10 hover:border-2 hover:border-indigo-500 focus:ring-2 focus:ring-inset focus:ring-indigo-500 sm:text-sm sm:leading-6"
+                        className="block w-full rounded-md border border-indigo-600 bg-white/5 py-1.5 text-black shadow-sm ring-1 ring-inset ring-white/10 hover:border-indigo-500 focus:ring-2 focus:ring-inset focus:ring-indigo-500 sm:text-sm sm:leading-6"
                       />
                     </div>
                   </div>
@@ -217,7 +217,7 @@ export default function Example() {
                         name="confirm_password"
                         type="password"
                         autoComplete="new-password"
-                        className="block w-full rounded-md border border-indigo-600 bg-white/5 py-1.5 text-black shadow-sm ring-1 ring-inset ring-white/10 hover:border-2 hover:border-indigo-500 focus:ring-2 focus:ring-inset focus:ring-indigo-500 sm:text-sm sm:leading-6"
+                        className="block w-full rounded-md border border-indigo-600 bg-white/5 py-1.5 text-black shadow-sm ring-1 ring-inset ring-white/10 hover:border-indigo-500 focus:ring-2 focus:ring-inset focus:ring-indigo-500 sm:text-sm sm:leading-6"
                       />
                     </div>
                   </div>
@@ -260,7 +260,7 @@ export default function Example() {
                         name="password"
                         type="password"
                         autoComplete="current-password"
-                        className="block w-full rounded-md border border-indigo-600 bg-white/5 py-1.5 text-black shadow-sm ring-1 ring-inset ring-white/10 hover:border-2 hover:border-indigo-500 focus:ring-2 focus:ring-inset focus:ring-indigo-500 sm:text-sm sm:leading-6"
+                        className="block w-full rounded-md border border-indigo-600 bg-white/5 py-1.5 text-black shadow-sm ring-1 ring-inset ring-white/10 hover:border-indigo-500 focus:ring-2 focus:ring-inset focus:ring-indigo-500 sm:text-sm sm:leading-6"
                       />
                     </div>
                   </div>

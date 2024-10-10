@@ -7,18 +7,35 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   // const router = useRouter();
 
   const secondaryNavigation = [
-    { name: 'Account', href: '/dashboard/profile', current: true },
+    {
+      name: 'Account',
+      href: '/dashboard/profile',
+      current: true,
+      disabled: false,
+    },
     {
       name: 'Notifications',
       href: '/dashboard/profile/notifications',
       current: false,
+      disabled: true,
     },
-    { name: 'Billing', href: '/dashboard/profile/billing', current: false },
-    { name: 'Teams', href: '/dashboard/profile/teams', current: false },
+    {
+      name: 'Billing',
+      href: '/dashboard/profile/billing',
+      current: false,
+      disabled: true,
+    },
+    {
+      name: 'Teams',
+      href: '/dashboard/profile/teams',
+      current: false,
+      disabled: true,
+    },
     {
       name: 'Integrations',
       href: '/dashboard/profile/integrations',
       current: false,
+      disabled: true,
     },
   ];
 
@@ -36,11 +53,17 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             >
               {secondaryNavigation.map((item) => (
                 <li key={item.name}>
-                  <Link href={item.href}>
-                    <p className={item.current ? 'text-indigo-400' : ''}>
+                  {item.disabled ? (
+                    <p className="cursor-not-allowed text-gray-500">
                       {item.name}
                     </p>
-                  </Link>
+                  ) : (
+                    <Link href={item.href}>
+                      <p className={item.current ? 'text-indigo-400' : ''}>
+                        {item.name}
+                      </p>
+                    </Link>
+                  )}
                 </li>
               ))}
             </ul>
