@@ -25,6 +25,7 @@ import NavLinks from '@/app/ui/dashboard/nav-links';
 import Logo from '@/app/ui/logo';
 import { authStore, Auth } from '@/state/auth';
 import { userStore } from '@/state/user';
+import { useCartStore } from '@/state/shoppingCart';
 import { User } from '@/app/lib/types/user';
 import { useRouter } from 'next/navigation';
 
@@ -43,6 +44,12 @@ export default function TailwindSideNav({
   children: React.ReactNode;
 }) {
   const [openShoppingCart, setOpenShoppingCart] = useState(false);
+
+  const { cartItems } = useCartStore(); // Access cart items from the cart store
+  const totalItemsInCart = cartItems.reduce(
+    (total, item) => total + item.quantity,
+    0,
+  );
 
   //const [wallet, setWallet] = useState([{ availableAmount: '$ 0' }]);
   const { wallets, loadingWallets, error, fetchWallets, removeWallet } =
@@ -316,6 +323,8 @@ export default function TailwindSideNav({
                     <span className="sr-only">View notifications</span>
                     <BellIcon className="h-6 w-6" aria-hidden="true" />
                   </button>
+
+                  {/* Shopping Cart Button with Badge */}
                   <button
                     onClick={() => setOpenShoppingCart(!openShoppingCart)}
                     type="button"
@@ -323,6 +332,11 @@ export default function TailwindSideNav({
                   >
                     <span className="sr-only">View picked items</span>
                     <ShoppingBagIcon className="h-6 w-6" aria-hidden="true" />
+                    {totalItemsInCart > 0 && (
+                      <span className="absolute flex h-4 min-w-[18px] items-center justify-center rounded-full bg-red-600 px-1 text-[10px] text-white">
+                        {totalItemsInCart > 99 ? '99+' : totalItemsInCart}
+                      </span>
+                    )}
                   </button>
 
                   {/* Separator */}
