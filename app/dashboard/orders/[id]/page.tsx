@@ -109,7 +109,7 @@ const OrderDetails = () => {
                 {order.orderDetails.statusText}
               </dd>
             </div>
-            <div className="border-t border-gray-100 px-4 py-6 sm:col-span-2 sm:px-0">
+            {/* <div className="border-t border-gray-100 px-4 py-6 sm:col-span-2 sm:px-0">
               <dt className="text-sm font-bold leading-6 text-gray-900">
                 About
               </dt>
@@ -122,6 +122,36 @@ const OrderDetails = () => {
                 order includes a variety of items/services that were carefully
                 selected by the customer. For more details, please refer to the
                 attached invoice.
+              </dd>
+            </div> */}
+            {/* New Section for Products */}
+            <div className="border-t border-gray-100 px-4 py-6 sm:col-span-2 sm:px-0">
+              <dt className="text-sm font-bold leading-6 text-gray-900">
+                Products
+              </dt>
+              <dd className="mt-2 text-sm text-gray-900">
+                <ul role="list" className="divide-y divide-gray-100">
+                  {order.orderProducts.map((product: any, index: number) => (
+                    <li
+                      key={index}
+                      className="flex justify-between py-4 text-sm"
+                    >
+                      <div className="flex-1">
+                        <p className="font-medium">{product.name}</p>
+                        <p className="text-gray-500">
+                          {product.groupName} - {product.clientPrice} ×{' '}
+                          {product.count}
+                        </p>
+                      </div>
+                      <p className="font-medium">
+                        Total: $
+                        {parseFloat(
+                          product.clientPrice.replace(/[^0-9.-]+/g, ''),
+                        ) * product.count}
+                      </p>
+                    </li>
+                  ))}
+                </ul>
               </dd>
             </div>
             <div className="border-t border-gray-100 px-4 py-6 sm:col-span-2 sm:px-0">
