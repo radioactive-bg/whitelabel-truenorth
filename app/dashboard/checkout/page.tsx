@@ -110,12 +110,13 @@ const Checkout = () => {
 
     const newErrorMessages: { [key: number]: string } = {};
 
+    //fix when you can - take this from the backend
     cartItems.forEach((item) => {
-      if (item.quantity > 4) {
-        // should change 4 with an actual number we get from the DB
-        newErrorMessages[item.id] =
-          'You cannot purchase more than 4 from this product';
-      }
+      // if (item.quantity > 4) {
+      //   // should change 4 with an actual number we get from the DB
+      //   newErrorMessages[item.id] =
+      //     'You cannot purchase more than 4 from this product';
+      // }
     });
 
     if (Object.keys(newErrorMessages).length > 0) {

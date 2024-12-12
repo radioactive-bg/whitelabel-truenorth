@@ -1,7 +1,7 @@
 'use client';
 import { useEffect } from 'react';
 import { authStore, Auth } from '@/state/auth';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 import { Fragment, useState } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
@@ -21,6 +21,8 @@ function classNames(...classes: any) {
 export default function CatalogPage() {
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const searchParams = useSearchParams(); // Move this to the top of your component
+
   // do we need this ???
   const [productGroups, setProductGroups] = useState([]);
 
@@ -47,10 +49,24 @@ export default function CatalogPage() {
       return;
     }
 
+    //get the ProductGroup query parameter from the URL if there is one
+    let productGroup = findQueryParam('ProductGroup');
+    //if there is one, set the filter to that product group
+    if (productGroup !== '') {
+      handleSelectProductGroupIcon(productGroup);
+    }
+
     //fetchProducts();
   }, [auth.access_token]);
 
+  const findQueryParam = (param: string) => {
+    const productGroup = searchParams.get(param);
+
+    return productGroup ? productGroup : '';
+  };
+
   const handleSelectProductGroupIcon = (productLabel: any) => {
+    console.log('handleSelectProductGroupIcon productLabel: ', productLabel);
     let newAllFilters = allFilters.map((filter) => {
       if (filter.id === allFilters[0].id) {
         let newOptions = filter.options.map((option: any) => {

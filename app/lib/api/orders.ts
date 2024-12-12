@@ -166,7 +166,6 @@ export async function createOrder(products: any[], vat: number | null) {
   }
 
   console.log('requestBody in createOrder :', requestBody);
-  console.log('access_token in createOrder :', token);
 
   try {
     const response = await axios.post(
