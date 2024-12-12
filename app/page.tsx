@@ -9,18 +9,17 @@ import userImage from '@/public/young-man-working.jpg';
 export default function Page() {
   return (
     <main className="flex h-screen w-screen flex-col p-6">
-      <div className="relative bg-white h-full w-full">
-        <div className="mx-auto max-w-7xl h-full lg:grid lg:grid-cols-12 lg:gap-x-8 lg:px-8">
-          <div className="px-6 pt-10 sm:pt-32 lg:col-span-7 lg:px-0 lg:pt-24 xl:col-span-6 h-full flex flex-col justify-center">
+      <div className="relative h-full w-full bg-white">
+        <div className="mx-auto h-full max-w-7xl lg:grid lg:grid-cols-12 lg:gap-x-8 lg:px-8">
+          <div className="flex h-full flex-col justify-center px-6 pt-10 sm:pt-32 lg:col-span-7 lg:px-0 lg:pt-24 xl:col-span-6">
             <div className="mx-auto max-w-2xl lg:mx-0">
               <Logo />
               <h1 className="mt-6 text-4xl font-bold tracking-tight text-gray-900 sm:mt-10 sm:text-6xl">
-                Enrich your business with HKS
+                Distribution Hub
               </h1>
               <p className="mt-6 text-lg leading-8 text-gray-600">
-                Anim aute id magna aliqua ad ad non deserunt sunt. Qui irure qui
-                lorem cupidatat commodo. Elit sunt amet fugiat veniam occaecat
-                fugiat aliqua.
+                Empower your business with streamlined distribution of digital
+                products
               </p>
               <div className="mt-10 flex items-center gap-x-6">
                 <Link
