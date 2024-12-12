@@ -27,4 +27,7 @@ jobs:
       - name: Restart Swarm Deployment-b2b-hksglobal-prod
         run: |
           curl -X POST --header 'Content-Type: application/json' --header 'Accept: application/json' --header 'authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzd2FybXBpdC1hcGkiLCJleHAiOm51bGwsImlhdCI6MTcxNTMzNzM0MSwidXNyIjp7InVzZXJuYW1lIjoiYWRtaW4iLCJyb2xlIjoiYWRtaW4ifSwianRpIjoiYjQyYzQxNDktYzdkZi00NDU2LWIzZTQtY2RmZjQ3ZDQ1NzNlIn0.8easGDbup9aOXOuTPLluxea37QQ8YFSlnJAZpiPoSXw' 'http://5.181.83.11:888/api/stacks/b2b-hksglobal-prod/redeploy'
+
+      - name: Restart Swarm Deployment-b2b-hksglobal-prod-staging
+        run: |
           curl -X POST --header 'Content-Type: application/json' --header 'Accept: application/json' --header 'authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzd2FybXBpdC1hcGkiLCJleHAiOm51bGwsImlhdCI6MTcxNTMzNzM0MSwidXNyIjp7InVzZXJuYW1lIjoiYWRtaW4iLCJyb2xlIjoiYWRtaW4ifSwianRpIjoiYjQyYzQxNDktYzdkZi00NDU2LWIzZTQtY2RmZjQ3ZDQ1NzNlIn0.8easGDbup9aOXOuTPLluxea37QQ8YFSlnJAZpiPoSXw' 'http://5.181.83.11:888/api/stacks/b2b-hksglobal-prod-staging/redeploy'
