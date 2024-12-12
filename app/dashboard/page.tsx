@@ -3,6 +3,7 @@ import { useEffect } from 'react';
 import { authStore, Auth } from '@/state/auth';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 
 export default function CatalogPage() {
   const router = useRouter();
@@ -135,7 +136,7 @@ export default function CatalogPage() {
               prefetch={false}
             >
               <div className="flex items-center justify-center">
-                <img
+                <Image
                   src="/gift-card-10.webp"
                   alt="Brand 1"
                   width={120}
@@ -146,7 +147,7 @@ export default function CatalogPage() {
             </Link>
             <Link href="/dashboard/catalog?ProductGroup=PSN" prefetch={false}>
               <div className="flex items-center justify-center">
-                <img
+                <Image
                   src="https://crm-duegate-public-staging.s3.eu-central-1.amazonaws.com/product_group_logo/1400cd8f-bcca-47fc-9476-afd3ca52f9bd.png"
                   alt="Brand 2"
                   width={120}
@@ -160,7 +161,7 @@ export default function CatalogPage() {
               prefetch={false}
             >
               <div className="flex items-center justify-center">
-                <img
+                <Image
                   src="/gift-card-15.webp"
                   alt="Brand 3"
                   width={120}
@@ -174,7 +175,7 @@ export default function CatalogPage() {
               prefetch={false}
             >
               <div className="flex items-center justify-center">
-                <img
+                <Image
                   src="/gift-card-16.webp"
                   alt="Brand 4"
                   width={120}
@@ -188,7 +189,7 @@ export default function CatalogPage() {
               prefetch={false}
             >
               <div className="flex items-center justify-center">
-                <img
+                <Image
                   src="/gift-card-4.webp"
                   alt="Brand 5"
                   width={120}
@@ -202,7 +203,7 @@ export default function CatalogPage() {
               prefetch={false}
             >
               <div className="flex items-center justify-center">
-                <img
+                <Image
                   src="/gift-card-2.webp"
                   alt="Brand 6"
                   width={120}

@@ -4,6 +4,7 @@ import axios, { CancelTokenSource } from 'axios';
 import Pagination from '../../../ui/dashboard/pagination';
 import { useCartStore } from '../../../../state/shoppingCart';
 import { ProductsTableSkeleton } from '@/app/ui/skeletons';
+import Image from 'next/image';
 //import ErrorNotification from '@/components/shared/ErrorNotification';
 
 const ProductsTable = ({
@@ -225,7 +226,7 @@ const ProductsTable = ({
                         <tr key={product.id}>
                           <td className="py-6 pr-8">
                             <div className="flex items-center">
-                              <img
+                              <Image
                                 src={
                                   product.logo ? product.logo : '/NoPhoto.jpg'
                                 }

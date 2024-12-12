@@ -2,6 +2,7 @@ import { getStatusStyles } from '@/app/lib/utils';
 import Skeleton from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css';
 import { TrashIcon } from '@heroicons/react/20/solid';
+import Image from 'next/image';
 
 // Loading animation
 const shimmer =
@@ -179,7 +180,7 @@ export function ProductsTableSkeleton() {
 export const SkeletonCheckout = () => {
   return (
     <>
-      <img
+      <Image
         src={'/NoPhoto.jpg'}
         alt={'NoPhoto'}
         className="h-20 w-20 flex-shrink-0 rounded-md"

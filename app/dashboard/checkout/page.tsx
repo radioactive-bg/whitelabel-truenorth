@@ -15,13 +15,14 @@ import {
   SkeletonWallet,
 } from '@/app/ui/skeletons';
 import { useWalletStore, Wallet } from '@/state/wallets';
+import Image from 'next/image';
 
 //put this into themskeelton folder once you have fixed the issue
 const SkeletonCheckout = () => {
   return (
     <li className="flex px-4 py-6 sm:px-6">
       {/* <div className="h-20 w-20 flex-shrink-0 rounded-md bg-gray-200"></div> */}
-      <img
+      <Image
         src={'/NoPhoto.jpg'}
         alt={'NoPhoto'}
         className="h-20 w-20 flex-shrink-0 rounded-md"
@@ -309,7 +310,7 @@ const Checkout = () => {
                       ))
                   : cartItems.map((product) => (
                       <li key={product.id} className="flex px-4 py-6 sm:px-6">
-                        <img
+                        <Image
                           src={product.logo ? product.logo : '/NoPhoto.jpg'}
                           alt={product.groupName}
                           className="h-20 w-20 flex-shrink-0 rounded-md"

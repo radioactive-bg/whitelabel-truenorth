@@ -2,6 +2,7 @@
 import { useEffect } from 'react';
 import { authStore, Auth } from '@/state/auth';
 import { useRouter, useSearchParams } from 'next/navigation';
+import Image from 'next/image';
 
 import { Fragment, useState } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
@@ -21,7 +22,7 @@ function classNames(...classes: any) {
 export default function CatalogPage() {
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const [loading, setLoading] = useState(false);
-  const searchParams = useSearchParams(); // Move this to the top of your component
+  //const searchParams = useSearchParams();
 
   // do we need this ???
   const [productGroups, setProductGroups] = useState([]);
@@ -49,21 +50,24 @@ export default function CatalogPage() {
       return;
     }
 
-    //get the ProductGroup query parameter from the URL if there is one
-    let productGroup = findQueryParam('ProductGroup');
-    //if there is one, set the filter to that product group
-    if (productGroup !== '') {
-      handleSelectProductGroupIcon(productGroup);
-    }
+    // //get the ProductGroup query parameter from the URL if there is one
+    // let productGroup = findQueryParam('ProductGroup');
+    //  //if there is one, set the filter to that product group
+    // if (productGroup !== '') {
+    //   handleSelectProductGroupIcon(productGroup);
+    // }
 
     //fetchProducts();
   }, [auth.access_token]);
 
-  const findQueryParam = (param: string) => {
-    const productGroup = searchParams.get(param);
+  // const findQueryParam = (param: string) => {
+  //   const productGroup = searchParams?.get('ProductGroup') || '';
+  //   if (productGroup) {
+  //     handleSelectProductGroupIcon(productGroup);
+  //   }
 
-    return productGroup ? productGroup : '';
-  };
+  //   return productGroup ? productGroup : '';
+  // };
 
   const handleSelectProductGroupIcon = (productLabel: any) => {
     console.log('handleSelectProductGroupIcon productLabel: ', productLabel);
@@ -240,7 +244,7 @@ export default function CatalogPage() {
                           className="group flex flex-col items-center"
                         >
                           <div className="aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-lg bg-gray-200 xl:aspect-h-7 xl:aspect-w-7">
-                            <img
+                            <Image
                               src={product.logo ? product.logo : '/NoPhoto.jpg'}
                               alt={
                                 product.imageAlt

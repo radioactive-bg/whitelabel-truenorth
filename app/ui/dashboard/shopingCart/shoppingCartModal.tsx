@@ -8,6 +8,7 @@ import {
 import { XMarkIcon } from '@heroicons/react/24/outline';
 import { useCartStore } from '@/state/shoppingCart';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 
 export default function ShoppingCartModal({
   open,
@@ -109,7 +110,7 @@ export default function ShoppingCartModal({
                           key={cartItem.id}
                           className="flex py-8 text-sm sm:items-center"
                         >
-                          <img
+                          <Image
                             src={cartItem.logo ? cartItem.logo : '/NoPhoto.jpg'}
                             alt={cartItem.groupName}
                             className="h-24 w-24 flex-none rounded-lg border border-gray-200 sm:h-32 sm:w-32"
