@@ -113,6 +113,7 @@ export default function ShoppingCartModal({
                           <Image
                             width={200}
                             height={200}
+
                             src={cartItem.logo ? cartItem.logo : '/NoPhoto.jpg'}
                             alt={cartItem.groupName}
                             className="h-24 w-24 flex-none rounded-lg border border-gray-200 sm:h-32 sm:w-32"
@@ -137,6 +138,7 @@ export default function ShoppingCartModal({
                               >
                                 Quantity, {cartItem.name}
                               </label>
+
                               <input
                                 type="number"
                                 id={`quantity-${cartItemIdx}`}
@@ -154,10 +156,12 @@ export default function ShoppingCartModal({
                                 className="ml-[10px] w-20 rounded-md border border-gray-300 py-1.5 text-center text-base font-medium text-gray-700 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:text-sm"
                               />
 
+
                               <button
                                 onClick={() => removeFromCart(cartItem.id)}
                                 type="button"
                                 className=" ml-4 font-medium text-indigo-600 hover:text-indigo-500 sm:ml-0 sm:mt-2 lg:ml-6"
+
                               >
                                 <span>Remove</span>
                               </button>

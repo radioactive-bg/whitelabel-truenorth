@@ -4,6 +4,7 @@ import 'react-loading-skeleton/dist/skeleton.css';
 import { TrashIcon } from '@heroicons/react/20/solid';
 import Image from 'next/image';
 
+
 // Loading animation
 const shimmer =
   'before:absolute before:inset-0 before:-translate-x-full before:animate-[shimmer_2s_infinite] before:bg-gradient-to-r before:from-transparent before:via-white/60 before:to-transparent';
@@ -183,6 +184,7 @@ export const SkeletonCheckout = () => {
       <Image
         width={200}
         height={200}
+
         src={'/NoPhoto.jpg'}
         alt={'NoPhoto'}
         className="h-20 w-20 flex-shrink-0 rounded-md"

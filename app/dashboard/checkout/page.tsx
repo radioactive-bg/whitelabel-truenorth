@@ -22,6 +22,7 @@ const SkeletonCheckout = () => {
   return (
     <li className="flex px-4 py-6 sm:px-6">
       {/* <div className="h-20 w-20 flex-shrink-0 rounded-md bg-gray-200"></div> */}
+
       <Image
         width={200}
         height={200}
@@ -120,6 +121,7 @@ const Checkout = () => {
       //   newErrorMessages[item.id] =
       //     'You cannot purchase more than 4 from this product';
       // }
+
     });
 
     if (Object.keys(newErrorMessages).length > 0) {
@@ -315,6 +317,7 @@ const Checkout = () => {
                         <Image
                           width={200}
                           height={200}
+
                           src={product.logo ? product.logo : '/NoPhoto.jpg'}
                           alt={product.groupName}
                           className="h-20 w-20 flex-shrink-0 rounded-md"

@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 
+
 export default function CatalogPage() {
   const router = useRouter();
   const { auth, initializeAuth } = authStore() as {
@@ -212,6 +213,7 @@ export default function CatalogPage() {
                 />
               </div>
             </Link>
+
           </div>
         </div>
       </section>

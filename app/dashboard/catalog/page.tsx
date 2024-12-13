@@ -24,6 +24,7 @@ export default function CatalogPage() {
   const [loading, setLoading] = useState(false);
   //const searchParams = useSearchParams();
 
+
   // do we need this ???
   const [productGroups, setProductGroups] = useState([]);
 
@@ -247,6 +248,7 @@ export default function CatalogPage() {
                           className="group flex flex-col items-center"
                         >
                           <div className="aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-lg bg-gray-200 xl:aspect-h-7 xl:aspect-w-7">
+
                             <Image
                               src={product.logo ? product.logo : '/NoPhoto.jpg'}
                               width={200}

@@ -5,6 +5,7 @@ import Pagination from '../../../ui/dashboard/pagination';
 import { useCartStore } from '../../../../state/shoppingCart';
 import { ProductsTableSkeleton } from '@/app/ui/skeletons';
 import Image from 'next/image';
+
 //import ErrorNotification from '@/components/shared/ErrorNotification';
 
 const ProductsTable = ({
@@ -229,6 +230,7 @@ const ProductsTable = ({
                               <Image
                                 width={200}
                                 height={200}
+
                                 src={
                                   product.logo ? product.logo : '/NoPhoto.jpg'
                                 }
@@ -275,6 +277,7 @@ const ProductsTable = ({
                               }}
                               className="w-20 rounded-md border border-gray-300 py-1.5 text-center text-base font-medium text-gray-700 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:text-sm"
                             />
+
                           </td>
 
                           {product.isEnabled ? (

@@ -12,6 +12,7 @@ const nextConfig = {
         pathname: '/product_group_logo/**',
       },
     ],
+
   },
 };
 
