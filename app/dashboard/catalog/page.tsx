@@ -50,24 +50,27 @@ export default function CatalogPage() {
       return;
     }
 
-    // //get the ProductGroup query parameter from the URL if there is one
-    // let productGroup = findQueryParam('ProductGroup');
-    //  //if there is one, set the filter to that product group
-    // if (productGroup !== '') {
-    //   handleSelectProductGroupIcon(productGroup);
-    // }
+    const productGroup = findQueryParam('ProductGroup');
+
+    if (productGroup !== '') {
+      handleSelectProductGroupIcon(productGroup);
+    }
 
     //fetchProducts();
   }, [auth.access_token]);
 
-  // const findQueryParam = (param: string) => {
-  //   const productGroup = searchParams?.get('ProductGroup') || '';
-  //   if (productGroup) {
-  //     handleSelectProductGroupIcon(productGroup);
-  //   }
+  const findQueryParam = (param: string) => {
+    if (typeof window === 'undefined') return ''; // Ensure code doesn't break on server-side
 
-  //   return productGroup ? productGroup : '';
-  // };
+    const searchParams = new URLSearchParams(window.location.search); // Use the browser's URL
+    const productGroup = searchParams.get(param) || '';
+
+    if (productGroup) {
+      handleSelectProductGroupIcon(productGroup);
+    }
+
+    return productGroup;
+  };
 
   const handleSelectProductGroupIcon = (productLabel: any) => {
     console.log('handleSelectProductGroupIcon productLabel: ', productLabel);
@@ -246,6 +249,8 @@ export default function CatalogPage() {
                           <div className="aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-lg bg-gray-200 xl:aspect-h-7 xl:aspect-w-7">
                             <Image
                               src={product.logo ? product.logo : '/NoPhoto.jpg'}
+                              width={200}
+                              height={200}
                               alt={
                                 product.imageAlt
                                   ? product.imageAlt

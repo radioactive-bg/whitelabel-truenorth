@@ -181,6 +181,8 @@ export const SkeletonCheckout = () => {
   return (
     <>
       <Image
+        width={200}
+        height={200}
         src={'/NoPhoto.jpg'}
         alt={'NoPhoto'}
         className="h-20 w-20 flex-shrink-0 rounded-md"

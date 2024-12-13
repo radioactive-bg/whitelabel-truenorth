@@ -16,6 +16,7 @@ import { Bars3Icon, MagnifyingGlassIcon } from '@heroicons/react/20/solid';
 
 import { userStore, getUserProfile } from '@/state/user';
 import { User } from '@/app/lib/types/user';
+import Image from 'next/image';
 
 const navigation = [
   { name: 'Projects', href: '#', icon: FolderIcon, current: false },
@@ -65,7 +66,9 @@ export default function Example() {
               <form className="md:col-span-2">
                 <div className="grid grid-cols-1 gap-x-6 gap-y-8 sm:max-w-xl sm:grid-cols-6">
                   <div className="col-span-full flex items-center gap-x-8">
-                    <img
+                    <Image
+                      width={80}
+                      height={80}
                       alt=""
                       src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
                       className="h-24 w-24 flex-none rounded-lg bg-gray-800 object-cover"

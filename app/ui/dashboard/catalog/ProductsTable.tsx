@@ -227,6 +227,8 @@ const ProductsTable = ({
                           <td className="py-6 pr-8">
                             <div className="flex items-center">
                               <Image
+                                width={200}
+                                height={200}
                                 src={
                                   product.logo ? product.logo : '/NoPhoto.jpg'
                                 }
@@ -257,27 +259,22 @@ const ProductsTable = ({
                           </td>
 
                           <td className=" py-6 sm:table-cell sm:pr-8">
-                            <select
+                            <input
+                              type="number"
                               id={`quantity-${product.id}`}
                               name={`quantity-${product.id}`}
-                              onChange={(e) =>
-                                handleQuantityChange(
-                                  product.id,
-                                  parseInt(e.target.value),
-                                )
-                              }
-                              className="max-h-24 max-w-full overflow-y-auto rounded-md border border-gray-300 py-1.5 text-left text-base font-medium leading-5 text-gray-700 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:text-sm"
-                            >
-                              {product.isEnabled ? (
-                                Array.from({ length: 8 }, (_, i) => (
-                                  <option key={i + 1} value={i + 1}>
-                                    {i + 1}
-                                  </option>
-                                ))
-                              ) : (
-                                <option value="0">0</option>
-                              )}
-                            </select>
+                              min="1"
+                              max="1000"
+                              value={selectedQuantities[product.id] || 1}
+                              onChange={(e) => {
+                                const value = Math.min(
+                                  1000,
+                                  Math.max(1, parseInt(e.target.value) || 1),
+                                );
+                                handleQuantityChange(product.id, value);
+                              }}
+                              className="w-20 rounded-md border border-gray-300 py-1.5 text-center text-base font-medium text-gray-700 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:text-sm"
+                            />
                           </td>
 
                           {product.isEnabled ? (

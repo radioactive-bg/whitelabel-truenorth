@@ -111,6 +111,8 @@ export default function ShoppingCartModal({
                           className="flex py-8 text-sm sm:items-center"
                         >
                           <Image
+                            width={200}
+                            height={200}
                             src={cartItem.logo ? cartItem.logo : '/NoPhoto.jpg'}
                             alt={cartItem.groupName}
                             className="h-24 w-24 flex-none rounded-lg border border-gray-200 sm:h-32 sm:w-32"
@@ -135,32 +137,27 @@ export default function ShoppingCartModal({
                               >
                                 Quantity, {cartItem.name}
                               </label>
-                              <select
-                                defaultValue={cartItem.quantity}
+                              <input
+                                type="number"
                                 id={`quantity-${cartItemIdx}`}
                                 name={`quantity-${cartItemIdx}`}
-                                className="block max-w-full rounded-md border border-gray-300 py-1.5 text-left text-base font-medium leading-5 text-gray-700 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:text-sm"
-                                onChange={(e) =>
-                                  handleQuantityChange(
-                                    cartItem.id,
-                                    Number(e.target.value),
-                                  )
-                                }
-                              >
-                                <option value={1}>1</option>
-                                <option value={2}>2</option>
-                                <option value={3}>3</option>
-                                <option value={4}>4</option>
-                                <option value={5}>5</option>
-                                <option value={6}>6</option>
-                                <option value={7}>7</option>
-                                <option value={8}>8</option>
-                              </select>
+                                min="1"
+                                max="1000"
+                                value={cartItem.quantity}
+                                onChange={(e) => {
+                                  const value = Math.min(
+                                    1000,
+                                    Math.max(1, Number(e.target.value) || 1),
+                                  );
+                                  handleQuantityChange(cartItem.id, value);
+                                }}
+                                className="ml-[10px] w-20 rounded-md border border-gray-300 py-1.5 text-center text-base font-medium text-gray-700 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:text-sm"
+                              />
 
                               <button
                                 onClick={() => removeFromCart(cartItem.id)}
                                 type="button"
-                                className="ml-4 font-medium text-indigo-600 hover:text-indigo-500 sm:ml-0 sm:mt-2"
+                                className=" ml-4 font-medium text-indigo-600 hover:text-indigo-500 sm:ml-0 sm:mt-2 lg:ml-6"
                               >
                                 <span>Remove</span>
                               </button>
