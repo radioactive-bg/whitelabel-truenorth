@@ -1,3 +1,4 @@
+'use client';
 import { ArrowRightIcon } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 import { roboto } from '@/app/ui/fonts';
@@ -12,7 +13,6 @@ export default function Page() {
       <div className="relative h-full w-full bg-white">
         <div className="mx-auto h-full max-w-7xl lg:grid lg:grid-cols-12 lg:gap-x-8 lg:px-8">
           <div className="justify-top flex h-full flex-col px-6 pt-10 sm:pt-32 lg:col-span-7 lg:px-0 lg:pt-24 xl:col-span-6">
-
             <div className="mx-auto max-w-2xl lg:mx-0">
               <Logo />
               <h1 className="mt-6 text-4xl font-bold tracking-tight text-gray-900 sm:mt-10 sm:text-6xl">
