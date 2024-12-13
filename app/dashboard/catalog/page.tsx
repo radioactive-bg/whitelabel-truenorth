@@ -1,7 +1,8 @@
 'use client';
 import { useEffect } from 'react';
 import { authStore, Auth } from '@/state/auth';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
+import Image from 'next/image';
 
 import { Fragment, useState } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
@@ -21,6 +22,9 @@ function classNames(...classes: any) {
 export default function CatalogPage() {
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  //const searchParams = useSearchParams();
+
+
   // do we need this ???
   const [productGroups, setProductGroups] = useState([]);
 
@@ -47,10 +51,30 @@ export default function CatalogPage() {
       return;
     }
 
+    const productGroup = findQueryParam('ProductGroup');
+
+    if (productGroup !== '') {
+      handleSelectProductGroupIcon(productGroup);
+    }
+
     //fetchProducts();
   }, [auth.access_token]);
 
+  const findQueryParam = (param: string) => {
+    if (typeof window === 'undefined') return ''; // Ensure code doesn't break on server-side
+
+    const searchParams = new URLSearchParams(window.location.search); // Use the browser's URL
+    const productGroup = searchParams.get(param) || '';
+
+    if (productGroup) {
+      handleSelectProductGroupIcon(productGroup);
+    }
+
+    return productGroup;
+  };
+
   const handleSelectProductGroupIcon = (productLabel: any) => {
+    console.log('handleSelectProductGroupIcon productLabel: ', productLabel);
     let newAllFilters = allFilters.map((filter) => {
       if (filter.id === allFilters[0].id) {
         let newOptions = filter.options.map((option: any) => {
@@ -224,8 +248,11 @@ export default function CatalogPage() {
                           className="group flex flex-col items-center"
                         >
                           <div className="aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-lg bg-gray-200 xl:aspect-h-7 xl:aspect-w-7">
-                            <img
+
+                            <Image
                               src={product.logo ? product.logo : '/NoPhoto.jpg'}
+                              width={200}
+                              height={200}
                               alt={
                                 product.imageAlt
                                   ? product.imageAlt

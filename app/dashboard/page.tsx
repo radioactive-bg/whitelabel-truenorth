@@ -3,6 +3,8 @@ import { useEffect } from 'react';
 import { authStore, Auth } from '@/state/auth';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
+
 
 export default function CatalogPage() {
   const router = useRouter();
@@ -130,60 +132,88 @@ export default function CatalogPage() {
             Popular Brands
           </h2>
           <div className="grid grid-cols-2 gap-6 md:grid-cols-4 lg:grid-cols-6">
-            <div className="flex items-center justify-center">
-              <img
-                src="/gift-card-10.webp"
-                alt="Brand 1"
-                width={120}
-                height={60}
-                className="h-auto w-full rounded-md object-contain"
-              />
-            </div>
-            <div className="flex items-center justify-center">
-              <img
-                src="/gift-card-1.webp"
-                alt="Brand 2"
-                width={120}
-                height={60}
-                className="h-auto w-full rounded-md object-contain"
-              />
-            </div>
-            <div className="flex items-center justify-center">
-              <img
-                src="/gift-card-15.webp"
-                alt="Brand 3"
-                width={120}
-                height={60}
-                className="h-auto w-full rounded-md object-contain"
-              />
-            </div>
-            <div className="flex items-center justify-center">
-              <img
-                src="/gift-card-16.webp"
-                alt="Brand 4"
-                width={120}
-                height={60}
-                className="h-auto w-full rounded-md object-contain"
-              />
-            </div>
-            <div className="flex items-center justify-center">
-              <img
-                src="/gift-card-4.webp"
-                alt="Brand 5"
-                width={120}
-                height={60}
-                className="h-auto w-full rounded-md object-contain"
-              />
-            </div>
-            <div className="flex items-center justify-center">
-              <img
-                src="/gift-card-2.webp"
-                alt="Brand 6"
-                width={120}
-                height={60}
-                className="h-auto w-full rounded-md object-contain"
-              />
-            </div>
+            <Link
+              href="/dashboard/catalog?ProductGroup=Amazon US"
+              prefetch={false}
+            >
+              <div className="flex items-center justify-center">
+                <Image
+                  src="/gift-card-10.webp"
+                  alt="Brand 1"
+                  width={120}
+                  height={60}
+                  className="h-auto w-full rounded-md object-contain"
+                />
+              </div>
+            </Link>
+            <Link href="/dashboard/catalog?ProductGroup=PSN" prefetch={false}>
+              <div className="flex items-center justify-center">
+                <Image
+                  src="https://crm-duegate-public-staging.s3.eu-central-1.amazonaws.com/product_group_logo/1400cd8f-bcca-47fc-9476-afd3ca52f9bd.png"
+                  alt="Brand 2"
+                  width={120}
+                  height={60}
+                  className="h-auto w-full rounded-md object-contain"
+                />
+              </div>
+            </Link>
+            <Link
+              href="/dashboard/catalog?ProductGroup=Google Play USA"
+              prefetch={false}
+            >
+              <div className="flex items-center justify-center">
+                <Image
+                  src="/gift-card-15.webp"
+                  alt="Brand 3"
+                  width={120}
+                  height={60}
+                  className="h-auto w-full rounded-md object-contain"
+                />
+              </div>
+            </Link>
+            <Link
+              href="/dashboard/catalog?ProductGroup=Apple Card US"
+              prefetch={false}
+            >
+              <div className="flex items-center justify-center">
+                <Image
+                  src="/gift-card-16.webp"
+                  alt="Brand 4"
+                  width={120}
+                  height={60}
+                  className="h-auto w-full rounded-md object-contain"
+                />
+              </div>
+            </Link>
+            <Link
+              href="/dashboard/catalog?ProductGroup=Steam USA"
+              prefetch={false}
+            >
+              <div className="flex items-center justify-center">
+                <Image
+                  src="/gift-card-4.webp"
+                  alt="Brand 5"
+                  width={120}
+                  height={60}
+                  className="h-auto w-full rounded-md object-contain"
+                />
+              </div>
+            </Link>
+            <Link
+              href="/dashboard/catalog?ProductGroup=Nintendo"
+              prefetch={false}
+            >
+              <div className="flex items-center justify-center">
+                <Image
+                  src="/gift-card-2.webp"
+                  alt="Brand 6"
+                  width={120}
+                  height={60}
+                  className="h-auto w-full rounded-md object-contain"
+                />
+              </div>
+            </Link>
+
           </div>
         </div>
       </section>

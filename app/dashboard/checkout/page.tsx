@@ -15,13 +15,17 @@ import {
   SkeletonWallet,
 } from '@/app/ui/skeletons';
 import { useWalletStore, Wallet } from '@/state/wallets';
+import Image from 'next/image';
 
 //put this into themskeelton folder once you have fixed the issue
 const SkeletonCheckout = () => {
   return (
     <li className="flex px-4 py-6 sm:px-6">
       {/* <div className="h-20 w-20 flex-shrink-0 rounded-md bg-gray-200"></div> */}
-      <img
+
+      <Image
+        width={200}
+        height={200}
         src={'/NoPhoto.jpg'}
         alt={'NoPhoto'}
         className="h-20 w-20 flex-shrink-0 rounded-md"
@@ -110,12 +114,14 @@ const Checkout = () => {
 
     const newErrorMessages: { [key: number]: string } = {};
 
+    //fix when you can - take this from the backend
     cartItems.forEach((item) => {
-      if (item.quantity > 4) {
-        // should change 4 with an actual number we get from the DB
-        newErrorMessages[item.id] =
-          'You cannot purchase more than 4 from this product';
-      }
+      // if (item.quantity > 4) {
+      //   // should change 4 with an actual number we get from the DB
+      //   newErrorMessages[item.id] =
+      //     'You cannot purchase more than 4 from this product';
+      // }
+
     });
 
     if (Object.keys(newErrorMessages).length > 0) {
@@ -308,7 +314,10 @@ const Checkout = () => {
                       ))
                   : cartItems.map((product) => (
                       <li key={product.id} className="flex px-4 py-6 sm:px-6">
-                        <img
+                        <Image
+                          width={200}
+                          height={200}
+
                           src={product.logo ? product.logo : '/NoPhoto.jpg'}
                           alt={product.groupName}
                           className="h-20 w-20 flex-shrink-0 rounded-md"
@@ -353,24 +362,22 @@ const Checkout = () => {
                                   {errorMessages[product.id]}
                                 </div>
                               )}
-                              <select
-                                id="quantity"
+                              <input
+                                type="number"
+                                id={`quantity-${product.id}`}
                                 name="quantity"
-                                className="max-w-[65px] rounded-md border border-gray-300 text-left text-base font-medium text-gray-700 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:text-sm"
+                                min="1"
+                                max="1000"
                                 value={product.quantity}
-                                onChange={(e) =>
-                                  handleQuantityChange(
-                                    product.id,
-                                    Number(e.target.value),
-                                  )
-                                }
-                              >
-                                {[...Array(8)].map((_, i) => (
-                                  <option key={i} value={i + 1}>
-                                    {i + 1}
-                                  </option>
-                                ))}
-                              </select>
+                                onChange={(e) => {
+                                  const value = Math.min(
+                                    1000,
+                                    Math.max(1, Number(e.target.value) || 1),
+                                  );
+                                  handleQuantityChange(product.id, value);
+                                }}
+                                className="w-20 rounded-md border border-gray-300 py-1.5 text-center text-base font-medium text-gray-700 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:text-sm"
+                              />
                             </div>
 
                             <div className="ml-4">

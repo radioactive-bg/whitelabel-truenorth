@@ -11,13 +11,14 @@ export default function Page() {
     <main className="flex h-screen w-screen flex-col p-6">
       <div className="relative h-full w-full bg-white">
         <div className="mx-auto h-full max-w-7xl lg:grid lg:grid-cols-12 lg:gap-x-8 lg:px-8">
-          <div className="flex h-full flex-col justify-center px-6 pt-10 sm:pt-32 lg:col-span-7 lg:px-0 lg:pt-24 xl:col-span-6">
+          <div className="justify-top flex h-full flex-col px-6 pt-10 sm:pt-32 lg:col-span-7 lg:px-0 lg:pt-24 xl:col-span-6">
+
             <div className="mx-auto max-w-2xl lg:mx-0">
               <Logo />
               <h1 className="mt-6 text-4xl font-bold tracking-tight text-gray-900 sm:mt-10 sm:text-6xl">
                 Distribution Hub
               </h1>
-              <p className="mt-6 text-lg leading-8 text-gray-600">
+              <p className="mt-6 whitespace-nowrap text-lg leading-8  text-gray-600">
                 Empower your business with streamlined distribution of digital
                 products
               </p>
