@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 
-
 export default function CatalogPage() {
   const router = useRouter();
   const { auth, initializeAuth } = authStore() as {
@@ -56,7 +55,7 @@ export default function CatalogPage() {
       </section>
       <section className="py-16 md:py-24">
         <div className="container mx-auto px-4 md:px-6">
-          <h2 className="mb-8 text-2xl font-bold md:text-3xl">
+          {/* <h2 className="mb-8 text-2xl font-bold md:text-3xl">
             Featured Categories
           </h2>
           <div className="grid grid-cols-2 gap-6 md:grid-cols-4">
@@ -123,10 +122,96 @@ export default function CatalogPage() {
                 </h3>
               </div>
             </div>
+          </div> */}
+          <h2 className="mb-8 text-2xl font-bold md:text-3xl">
+            Popular Brands
+          </h2>
+          <div className="grid grid-cols-2 gap-6 md:grid-cols-4 lg:grid-cols-6">
+            <Link
+              href="/dashboard/catalog?ProductGroup=Amazon US"
+              prefetch={false}
+            >
+              <div className="flex items-center justify-center">
+                <Image
+                  src="/gift-card-10.webp"
+                  alt="Brand 1"
+                  width={120}
+                  height={60}
+                  className="h-auto w-full rounded-md object-contain"
+                />
+              </div>
+            </Link>
+            <Link href="/dashboard/catalog?ProductGroup=PSN" prefetch={false}>
+              <div className="flex items-center justify-center">
+                <Image
+                  src="https://crm-duegate-public-staging.s3.eu-central-1.amazonaws.com/product_group_logo/1400cd8f-bcca-47fc-9476-afd3ca52f9bd.png"
+                  alt="Brand 2"
+                  width={120}
+                  height={60}
+                  className="h-auto w-full rounded-md object-contain"
+                />
+              </div>
+            </Link>
+            <Link
+              href="/dashboard/catalog?ProductGroup=Google Play USA"
+              prefetch={false}
+            >
+              <div className="flex items-center justify-center">
+                <Image
+                  src="/gift-card-15.webp"
+                  alt="Brand 3"
+                  width={120}
+                  height={60}
+                  className="h-auto w-full rounded-md object-contain"
+                />
+              </div>
+            </Link>
+            <Link
+              href="/dashboard/catalog?ProductGroup=Apple Card US"
+              prefetch={false}
+            >
+              <div className="flex items-center justify-center">
+                <Image
+                  src="/gift-card-16.webp"
+                  alt="Brand 4"
+                  width={120}
+                  height={60}
+                  className="h-auto w-full rounded-md object-contain"
+                />
+              </div>
+            </Link>
+            <Link
+              href="/dashboard/catalog?ProductGroup=Steam USA"
+              prefetch={false}
+            >
+              <div className="flex items-center justify-center">
+                <Image
+                  src="/gift-card-4.webp"
+                  alt="Brand 5"
+                  width={120}
+                  height={60}
+                  className="h-auto w-full rounded-md object-contain"
+                />
+              </div>
+            </Link>
+            <Link
+              href="/dashboard/catalog?ProductGroup=Nintendo"
+              prefetch={false}
+            >
+              <div className="flex items-center justify-center">
+                <Image
+                  src="/gift-card-2.webp"
+                  alt="Brand 6"
+                  width={120}
+                  height={60}
+                  className="h-auto w-full rounded-md object-contain"
+                />
+              </div>
+            </Link>
           </div>
         </div>
       </section>
-      <section className="rounded bg-muted py-16 md:py-24">
+      {/* <section className="rounded bg-muted py-16 md:py-24">
         <div className="container mx-auto rounded-md px-4 md:px-6">
           <h2 className="mb-8 text-2xl font-bold md:text-3xl">
             Popular Brands
@@ -213,10 +298,9 @@ export default function CatalogPage() {
                 />
               </div>
             </Link>
-
           </div>
         </div>
-      </section>
+      </section> */}
     </div>
   );
 }
