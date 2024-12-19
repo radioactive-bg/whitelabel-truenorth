@@ -88,7 +88,7 @@ const Checkout = () => {
       .toFixed(2);
   };
   const calculateTax = (subtotal: string) => {
-    const taxRate = 0.1; // Assuming a tax rate of 10%
+    const taxRate = 0.0; // Assuming a tax rate of 10%
     return (parseFloat(subtotal) * taxRate).toFixed(2);
   };
 
@@ -121,7 +121,6 @@ const Checkout = () => {
       //   newErrorMessages[item.id] =
       //     'You cannot purchase more than 4 from this product';
       // }
-
     });
 
     if (Object.keys(newErrorMessages).length > 0) {
@@ -146,8 +145,9 @@ const Checkout = () => {
       console.log('createdOrderData: ', JSON.stringify(createdOrderData));
 
       const orderId = createdOrderData.data.id;
-      //clearCart();
       router.push(`/dashboard/checkout/payment?orderId=${orderId}`);
+      clearCart();
+      fetchWallets();
     }
   };
 
@@ -317,7 +317,6 @@ const Checkout = () => {
                         <Image
                           width={200}
                           height={200}
-
                           src={product.logo ? product.logo : '/NoPhoto.jpg'}
                           alt={product.groupName}
                           className="h-20 w-20 flex-shrink-0 rounded-md"

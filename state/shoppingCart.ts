@@ -81,7 +81,9 @@ export const useCartStore = create<CartState>((set) => ({
       };
     }),
   clearCart: () => {
-    setCartItemsInLocalStorage([]);
-    return { cartItems: [] };
+    set(() => {
+      setCartItemsInLocalStorage([]); // Clear local storage
+      return { cartItems: [] }; // Update Zustand state
+    });
   },
 }));
