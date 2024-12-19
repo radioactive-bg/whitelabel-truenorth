@@ -25,7 +25,7 @@ export async function getPreview(
   page: number,
   regionId: any[] | null,
   currencyIso: any[] | null,
-  productGroupName: string | null,
+  productName: string | null,
   productGroupIds: any[] | null,
   availability: boolean | null,
   hasBasePrice: boolean | null,
@@ -33,8 +33,8 @@ export async function getPreview(
 ) {
   let queryString = `perPage=10&page=${page}`;
 
-  if (productGroupName !== null)
-    queryString += `&productGroupName=${encodeURIComponent(productGroupName)}`;
+  if (productName !== null)
+    queryString += `&productName=${encodeURIComponent(productName)}`;
   if (availability !== null) queryString += `&availability=${availability}`;
   if (hasBasePrice !== null) queryString += `&hasBasePrice=${hasBasePrice}`;
   if (hasSalePrice !== null) queryString += `&hasSalePrice=${hasSalePrice}`;

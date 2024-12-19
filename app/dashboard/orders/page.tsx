@@ -4,7 +4,7 @@ import Search from '@/app/ui/search';
 import { lusitana } from '@/app/ui/fonts';
 import { InvoicesTableSkeleton } from '@/app/ui/skeletons';
 import { Suspense } from 'react';
-import { getOrdersList } from '@/app/lib/api/orders';
+import { getOrdersList, FetchInvoicesParams } from '@/app/lib/api/orders';
 import { authStore, Auth } from '@/state/auth';
 import { useRouter } from 'next/navigation';
 import { getStatusStyles } from '@/app/lib/utils';
@@ -15,6 +15,8 @@ import { useEffect, useState } from 'react';
 
 import Skeleton from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css';
+
+import FiltersSection from '@/app/ui/dashboard/orders/FiltersSection';
 
 export default function Page({}: {}) {
   const router = useRouter();
@@ -33,6 +35,14 @@ export default function Page({}: {}) {
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(12);
+  const [filters, setFilters] = useState<FetchInvoicesParams>({
+    status: null,
+    dateFrom: '',
+    dateTo: '',
+    orderId: '',
+    perPage: 10,
+    page: 1,
+  });
 
   useEffect(() => {
     const localValue = localStorage.getItem('access_token') || 'no value';
@@ -41,28 +51,38 @@ export default function Page({}: {}) {
       router.push('/login');
       return;
     }
-    fetchOrders(currentPage);
+    fetchOrders(currentPage, filters);
   }, [currentPage, auth.access_token, router]);
 
-  const fetchOrders = async (page: number) => {
+  const fetchOrders = async (page: number, appliedFilters: any) => {
     setLoading(true);
     try {
-      // 3 and 7 in the array are the statuses for 'Completed' and 'Pending' orders
-      const response = await getOrdersList(page, [3, 7]);
+      const requestFilters = { ...appliedFilters, page };
+      const response = await getOrdersList(requestFilters);
+
       setOrders(response.data.data);
       const urlObject = new URL(response.data.links.last);
-      const queryParams = new URLSearchParams(urlObject.search);
-      const lastPage = queryParams.get('page');
-      setTotalPages(Number(lastPage)); // Assuming API returns totalPages
-      setLoading(false);
+      const lastPage = new URLSearchParams(urlObject.search).get('page');
+      setTotalPages(Number(lastPage));
     } catch (error) {
       console.error('Error fetching orders:', error);
+      setOrders([]);
+    } finally {
       setLoading(false);
     }
   };
 
   return (
     <div className="w-full">
+      <FiltersSection
+        fetchOrders={fetchOrders}
+        setFilters={setFilters}
+        setOrders={setOrders}
+        setLoading={setLoading}
+        setCurrentPage={setCurrentPage}
+        page={currentPage}
+      />
+
       <div className="px-4 sm:px-6 lg:px-8">
         <div className="sm:flex sm:items-center">
           <div className="sm:flex-auto">
@@ -147,7 +167,7 @@ export default function Page({}: {}) {
                             <div className="flex items-center">
                               <div className="ml-4">
                                 <div className="font-medium text-gray-900">
-                                  {order.id}
+                                  {order.displayId}
                                 </div>
                               </div>
                             </div>

@@ -1,5 +1,5 @@
 'use client';
-import { Fragment, useEffect, useState } from 'react';
+import { Fragment, useEffect, useState, useRef } from 'react';
 import {
   Dialog,
   Menu,
@@ -30,12 +30,32 @@ import { User } from '@/app/lib/types/user';
 import { useRouter } from 'next/navigation';
 
 import ShoppingCartModal from '../../ui/dashboard/shopingCart/shoppingCartModal';
+import axios from 'axios';
+import { usePathname } from 'next/navigation';
 
 //import { getWalletsList } from '@/app/lib/api/wallet';
 import { useWalletStore, Wallet } from '@/state/wallets';
 
 function classNames(...classes: any[]) {
   return classes.filter(Boolean).join(' ');
+}
+
+// Debounce function
+function debounce(func: (...args: any[]) => void, delay: number) {
+  let timer: NodeJS.Timeout | null = null;
+  let firstCall = true;
+
+  return (...args: any[]) => {
+    if (firstCall) {
+      func(...args); // Execute immediately on first call
+      firstCall = false;
+    }
+
+    if (timer) clearTimeout(timer);
+    timer = setTimeout(() => {
+      func(...args);
+    }, delay);
+  };
 }
 
 export default function TailwindSideNav({
@@ -51,6 +71,13 @@ export default function TailwindSideNav({
     0,
   );
 
+  const [searchTerm, setSearchTerm] = useState(''); // Input state
+  const [searchProductGroup, setSearchProductGroup] = useState(''); // Input state
+  const [loading, setLoading] = useState(false); // Loading state
+  const [results, setResults] = useState([]); // Search results
+
+  const [isFocused, setIsFocused] = useState(false); // Track input focus state
+
   //const [wallet, setWallet] = useState([{ availableAmount: '$ 0' }]);
   const { wallets, loadingWallets, error, fetchWallets, removeWallet } =
     useWalletStore();
@@ -65,6 +92,7 @@ export default function TailwindSideNav({
     updateUserProperty: (propertyKey: keyof User, propertyValue: any) => void;
   };
   const router = useRouter();
+  const pathname = usePathname(); // Get the current path
 
   useEffect(() => {
     const localValue = localStorage.getItem('username') || '';
@@ -120,6 +148,71 @@ export default function TailwindSideNav({
       console.error('catch handleLogout Error:', error);
       alert('Failed to logout');
     }
+  };
+
+  const fetchSearchResults = async (query: string) => {
+    console.log('fetchSearchResults');
+    if (!query) {
+      console.log('No query');
+      setResults([]);
+      return;
+    }
+    setLoading(true);
+
+    try {
+      // Use axios.get with query parameters
+      const response = await axios.get(
+        'https://proxy.duegate.com/staging/distributor-crm/v1/price-lists/company/preview',
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${localStorage.getItem('access_token')}`,
+          },
+          params: {
+            productName: query,
+          },
+        },
+      );
+      // Check if the current page is the Catalog Page
+      //const pathname = window.location.pathname; // Get current page path
+      // if (pathname === '/dashboard/catalog') {
+      //   router.replace(
+      //     `/dashboard/catalog?ProductGroup=${encodeURIComponent(
+      //       response.data.data[0].group,
+      //     )}&search=${encodeURIComponent(query)}`,
+      //     undefined,
+      //     // Force a full reload
+      //   );
+      //   return;
+      // }
+
+      setSearchProductGroup(response.data.data[0].group);
+      setResults(response.data.data || []); // Adjust according to the API response
+    } catch (error) {
+      console.error('Error fetching search results:', error);
+      setResults([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Function to handle search action
+  const handleSearchAction = () => {
+    if (searchTerm) {
+      router.replace(
+        `/dashboard/catalog?ProductGroup=${encodeURIComponent(
+          searchProductGroup,
+        )}&search=${encodeURIComponent(searchTerm)}`,
+      );
+    }
+  };
+
+  const debouncedFetch = useRef(debounce(fetchSearchResults, 1000)).current;
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const query = e.target.value;
+    setSearchTerm(query);
+    debouncedFetch(query);
   };
 
   const userNavigation = [
@@ -312,10 +405,71 @@ export default function TailwindSideNav({
               />
 
               <div className="flex flex-1 gap-x-4 self-stretch lg:gap-x-6">
-                {/*added this div istead of the search bar*/}
-                <div className="relative flex flex-1"></div>
+                {pathname !== '/dashboard/orders' && (
+                  <div className=" flex items-center">
+                    {/* Search Input */}
+                    <div className="relative flex w-[400px] items-center">
+                      <input
+                        type="text"
+                        placeholder="Search"
+                        className="w-full rounded-md border border-gray-300 bg-white py-2 pl-10 text-sm text-black placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-blue-600"
+                        value={searchTerm}
+                        onChange={handleSearchChange}
+                        onFocus={() => setIsFocused(true)} // Input gained focus
+                        onBlur={() => setIsFocused(false)} // Input lost focus
+                      />
 
-                <div className="flex items-center gap-x-4 lg:gap-x-6">
+                      <button
+                        onClick={handleSearchAction}
+                        className="absolute left-3 top-1/2 h-8 w-8 -translate-y-1/2 transform"
+                      >
+                        <MagnifyingGlassIcon className="h-5 w-5" />
+                      </button>
+                      {/* Loading Indicator and Results */}
+                      {isFocused && ( // Only show if input is focused
+                        <>
+                          {loading && (
+                            <div className="absolute top-[100%] w-full rounded-md bg-gray-800 p-2 text-center text-white shadow-md">
+                              Loading...
+                            </div>
+                          )}
+
+                          {!loading && results.length > 0 && (
+                            <ul className="absolute top-[100%] w-full rounded-md bg-white text-black shadow-md">
+                              {results.map((result: any, index) => (
+                                <li
+                                  key={index}
+                                  className="cursor-pointer px-4 py-2 hover:bg-gray-100"
+                                  onMouseDown={(e) => e.preventDefault()} // Prevent input blur
+                                  onClick={() =>
+                                    router.push(
+                                      `/dashboard/catalog?ProductGroup=${encodeURIComponent(
+                                        result.group,
+                                      )}&search=${encodeURIComponent(
+                                        result.groupName,
+                                      )}`,
+                                    )
+                                  }
+                                >
+                                  {result.groupName || 'Unnamed Result'}
+                                </li>
+                              ))}
+                            </ul>
+                          )}
+                        </>
+                      )}
+
+                      {/* No Results */}
+                      {!loading && searchTerm && results.length === 0 && (
+                        <div className="absolute top-[100%] w-[400px] rounded-md bg-gray-100 text-center text-sm text-gray-400 shadow-md">
+                          No results found
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                <div className="ml-auto flex items-center gap-x-4 lg:gap-x-6">
                   <button
                     type="button"
                     className="-m-2.5 p-2.5 text-gray-400 hover:text-gray-500"

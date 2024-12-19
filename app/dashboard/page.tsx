@@ -1,5 +1,5 @@
 'use client';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { authStore, Auth } from '@/state/auth';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
@@ -10,6 +10,19 @@ export default function CatalogPage() {
   const { auth, initializeAuth } = authStore() as {
     auth: Auth;
     initializeAuth: () => void;
+  };
+
+  // Image loading states
+  const [loadingStates, setLoadingStates] = useState<boolean[]>(
+    Array(6).fill(true),
+  );
+
+  const handleImageLoad = (index: number) => {
+    setLoadingStates((prev) => {
+      const newState = [...prev];
+      newState[index] = false; // Set the state to false when the image loads
+      return newState;
+    });
   };
 
   useEffect(() => {
@@ -35,7 +48,7 @@ export default function CatalogPage() {
       >
         <div className="container mx-auto px-4 md:px-6">
           <div className="grid grid-cols-1 items-center gap-8 md:grid-cols-2">
-            <div className="test">
+            <div>
               <h1 className="mb-4 text-4xl font-bold text-background md:text-6xl">
                 Find the Perfect Gift Card
               </h1>
@@ -53,254 +66,62 @@ export default function CatalogPage() {
           </div>
         </div>
       </section>
+
+      {/* Popular Brands Section */}
       <section className="py-16 md:py-24">
         <div className="container mx-auto px-4 md:px-6">
-          {/* <h2 className="mb-8 text-2xl font-bold md:text-3xl">
-            Featured Categories
-          </h2>
-          <div className="grid grid-cols-2 gap-6 md:grid-cols-4">
-            <div
-              className="relative overflow-hidden rounded-lg"
-              style={{
-                backgroundImage: 'url(/cd-keys.webp)',
-                backgroundSize: 'cover',
-                backgroundPosition: 'center',
-                height: '200px',
-              }}
-            >
-              <div className="absolute inset-0 flex items-center justify-center bg-black/50">
-                <h3 className="text-lg font-medium text-background md:text-xl">
-                  Birthday
-                </h3>
-              </div>
-            </div>
-
-            <div
-              className="relative overflow-hidden rounded-lg"
-              style={{
-                backgroundImage: 'url(/airtime.webp)',
-                backgroundSize: 'cover',
-                backgroundPosition: 'center',
-                height: '200px',
-              }}
-            >
-              <div className="absolute inset-0 flex items-center justify-center bg-black/50">
-                <h3 className="text-lg font-medium text-background md:text-xl">
-                  Holiday
-                </h3>
-              </div>
-            </div>
-
-            <div
-              className="relative overflow-hidden rounded-lg"
-              style={{
-                backgroundImage: 'url(/prepaid-cards.webp)',
-                backgroundSize: 'cover',
-                backgroundPosition: 'center',
-                height: '200px',
-              }}
-            >
-              <div className="absolute inset-0 flex items-center justify-center bg-black/50">
-                <h3 className="text-lg font-medium text-background md:text-xl">
-                  Thank You
-                </h3>
-              </div>
-            </div>
-
-            <div
-              className="relative overflow-hidden rounded-lg"
-              style={{
-                backgroundImage: 'url(/gift-cards-item.webp)',
-                backgroundSize: 'cover',
-                backgroundPosition: 'center',
-                height: '200px',
-              }}
-            >
-              <div className="absolute inset-0 flex items-center justify-center bg-black/50">
-                <h3 className="text-lg font-medium text-background md:text-xl">
-                  Congratulations
-                </h3>
-              </div>
-            </div>
-          </div> */}
           <h2 className="mb-8 text-2xl font-bold md:text-3xl">
             Popular Brands
           </h2>
           <div className="grid grid-cols-2 gap-6 md:grid-cols-4 lg:grid-cols-6">
-            <Link
-              href="/dashboard/catalog?ProductGroup=Amazon US"
-              prefetch={false}
-            >
-              <div className="flex items-center justify-center">
-                <Image
-                  src="/gift-card-10.webp"
-                  alt="Brand 1"
-                  width={120}
-                  height={60}
-                  className="h-auto w-full rounded-md object-contain"
-                />
-              </div>
-            </Link>
-            <Link href="/dashboard/catalog?ProductGroup=PSN" prefetch={false}>
-              <div className="flex items-center justify-center">
-                <Image
-                  src="https://crm-duegate-public-staging.s3.eu-central-1.amazonaws.com/product_group_logo/1400cd8f-bcca-47fc-9476-afd3ca52f9bd.png"
-                  alt="Brand 2"
-                  width={120}
-                  height={60}
-                  className="h-auto w-full rounded-md object-contain"
-                />
-              </div>
-            </Link>
-            <Link
-              href="/dashboard/catalog?ProductGroup=Google Play USA"
-              prefetch={false}
-            >
-              <div className="flex items-center justify-center">
-                <Image
-                  src="/gift-card-15.webp"
-                  alt="Brand 3"
-                  width={120}
-                  height={60}
-                  className="h-auto w-full rounded-md object-contain"
-                />
-              </div>
-            </Link>
-            <Link
-              href="/dashboard/catalog?ProductGroup=Apple Card US"
-              prefetch={false}
-            >
-              <div className="flex items-center justify-center">
-                <Image
-                  src="/gift-card-16.webp"
-                  alt="Brand 4"
-                  width={120}
-                  height={60}
-                  className="h-auto w-full rounded-md object-contain"
-                />
-              </div>
-            </Link>
-            <Link
-              href="/dashboard/catalog?ProductGroup=Steam USA"
-              prefetch={false}
-            >
-              <div className="flex items-center justify-center">
-                <Image
-                  src="/gift-card-4.webp"
-                  alt="Brand 5"
-                  width={120}
-                  height={60}
-                  className="h-auto w-full rounded-md object-contain"
-                />
-              </div>
-            </Link>
-            <Link
-              href="/dashboard/catalog?ProductGroup=Nintendo"
-              prefetch={false}
-            >
-              <div className="flex items-center justify-center">
-                <Image
-                  src="/gift-card-2.webp"
-                  alt="Brand 6"
-                  width={120}
-                  height={60}
-                  className="h-auto w-full rounded-md object-contain"
-                />
-              </div>
-            </Link>
+            {[
+              // Array of brands
+              {
+                href: '/dashboard/catalog?ProductGroup=Amazon US',
+                src: '/gift-card-10.webp',
+              },
+              {
+                href: '/dashboard/catalog?ProductGroup=PSN',
+                src: 'https://crm-duegate-public-staging.s3.eu-central-1.amazonaws.com/product_group_logo/1400cd8f-bcca-47fc-9476-afd3ca52f9bd.png',
+              },
+              {
+                href: '/dashboard/catalog?ProductGroup=Google Play USA',
+                src: '/gift-card-15.webp',
+              },
+              {
+                href: '/dashboard/catalog?ProductGroup=Apple Card US',
+                src: '/gift-card-16.webp',
+              },
+              {
+                href: '/dashboard/catalog?ProductGroup=Steam USA',
+                src: '/gift-card-4.webp',
+              },
+              {
+                href: '/dashboard/catalog?ProductGroup=Nintendo',
+                src: '/gift-card-2.webp',
+              },
+            ].map((item, index) => (
+              <Link key={index} href={item.href} prefetch={false}>
+                <div className="relative flex items-center justify-center">
+                  {loadingStates[index] && (
+                    <div className="absolute h-[175px] w-full animate-pulse rounded-md bg-gray-300"></div>
+                  )}
+                  <Image
+                    src={item.src}
+                    alt={`Brand ${index + 1}`}
+                    width={120}
+                    height={120}
+                    className={`h-auto w-full rounded-md object-contain ${
+                      loadingStates[index] ? 'opacity-0' : 'opacity-100'
+                    }`}
+                    onLoad={() => handleImageLoad(index)} // Track image load
+                  />
+                </div>
+              </Link>
+            ))}
           </div>
         </div>
       </section>
-      {/* <section className="rounded bg-muted py-16 md:py-24">
-        <div className="container mx-auto rounded-md px-4 md:px-6">
-          <h2 className="mb-8 text-2xl font-bold md:text-3xl">
-            Popular Brands
-          </h2>
-          <div className="grid grid-cols-2 gap-6 md:grid-cols-4 lg:grid-cols-6">
-            <Link
-              href="/dashboard/catalog?ProductGroup=Amazon US"
-              prefetch={false}
-            >
-              <div className="flex items-center justify-center">
-                <Image
-                  src="/gift-card-10.webp"
-                  alt="Brand 1"
-                  width={120}
-                  height={60}
-                  className="h-auto w-full rounded-md object-contain"
-                />
-              </div>
-            </Link>
-            <Link href="/dashboard/catalog?ProductGroup=PSN" prefetch={false}>
-              <div className="flex items-center justify-center">
-                <Image
-                  src="https://crm-duegate-public-staging.s3.eu-central-1.amazonaws.com/product_group_logo/1400cd8f-bcca-47fc-9476-afd3ca52f9bd.png"
-                  alt="Brand 2"
-                  width={120}
-                  height={60}
-                  className="h-auto w-full rounded-md object-contain"
-                />
-              </div>
-            </Link>
-            <Link
-              href="/dashboard/catalog?ProductGroup=Google Play USA"
-              prefetch={false}
-            >
-              <div className="flex items-center justify-center">
-                <Image
-                  src="/gift-card-15.webp"
-                  alt="Brand 3"
-                  width={120}
-                  height={60}
-                  className="h-auto w-full rounded-md object-contain"
-                />
-              </div>
-            </Link>
-            <Link
-              href="/dashboard/catalog?ProductGroup=Apple Card US"
-              prefetch={false}
-            >
-              <div className="flex items-center justify-center">
-                <Image
-                  src="/gift-card-16.webp"
-                  alt="Brand 4"
-                  width={120}
-                  height={60}
-                  className="h-auto w-full rounded-md object-contain"
-                />
-              </div>
-            </Link>
-            <Link
-              href="/dashboard/catalog?ProductGroup=Steam USA"
-              prefetch={false}
-            >
-              <div className="flex items-center justify-center">
-                <Image
-                  src="/gift-card-4.webp"
-                  alt="Brand 5"
-                  width={120}
-                  height={60}
-                  className="h-auto w-full rounded-md object-contain"
-                />
-              </div>
-            </Link>
-            <Link
-              href="/dashboard/catalog?ProductGroup=Nintendo"
-              prefetch={false}
-            >
-              <div className="flex items-center justify-center">
-                <Image
-                  src="/gift-card-2.webp"
-                  alt="Brand 6"
-                  width={120}
-                  height={60}
-                  className="h-auto w-full rounded-md object-contain"
-                />
-              </div>
-            </Link>
-          </div>
-        </div>
-      </section> */}
     </div>
   );
 }

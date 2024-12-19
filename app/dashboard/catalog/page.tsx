@@ -1,16 +1,15 @@
 'use client';
-import { useEffect } from 'react';
+import { useState, useEffect, Fragment, Suspense } from 'react';
 import { authStore, Auth } from '@/state/auth';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Image from 'next/image';
 
-import { Fragment, useState } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import { ChevronDownIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import { FunnelIcon, MinusIcon, PlusIcon } from '@heroicons/react/20/solid';
 
 import { filters } from '@/app/lib/constants';
-import { getProductGroupsList } from '@/app/lib/api/productGroup';
+//import { getProductGroupsList } from '@/app/lib/api/productGroup';
 
 import FilterPopover from '@/app/ui/dashboard/catalog/FilterPopover';
 import ProductsTable from '@/app/ui/dashboard/catalog/ProductsTable';
@@ -19,15 +18,13 @@ function classNames(...classes: any) {
   return classes.filter(Boolean).join(' ');
 }
 
-export default function CatalogPage() {
+const Catalog = () => {
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const [loading, setLoading] = useState(false);
-  //const searchParams = useSearchParams();
 
   // do we need this ???
-  const [productGroups, setProductGroups] = useState([]);
-
-  const [products, setProducts] = useState([]);
+  const [products, setProducts] = useState<any[]>([]); // Explicitly define 'products' as an array of 'any'
+  const [productGroups, setProductGroups] = useState<any[]>([]); // Explicitly define 'productGroups' as an array of 'any'
 
   // filter states
   const [allFilters, setAllFilters] = useState(filters);
@@ -35,10 +32,26 @@ export default function CatalogPage() {
   const [filtersActive, setFiltersActive] = useState(false);
 
   const router = useRouter();
+
+  const searchParams = useSearchParams();
+
   const { auth, initializeAuth } = authStore() as {
     auth: Auth;
     initializeAuth: () => void;
   };
+
+  useEffect(() => {
+    const searchQuery = searchParams.get('search');
+    const productGroup = findQueryParam('ProductGroup');
+
+    console.log('Search Query:', searchQuery, 'ProductGroup:', productGroup);
+
+    if (searchQuery || productGroup) {
+      if (productGroup !== '') {
+        fetchProductsFromQuery(productGroup);
+      }
+    }
+  }, [searchParams]); // This triggers whenever query params change
 
   useEffect(() => {
     initializeAuth();
@@ -50,25 +63,71 @@ export default function CatalogPage() {
     }
 
     const productGroup = findQueryParam('ProductGroup');
-
     if (productGroup !== '') {
-      handleSelectProductGroupIcon(productGroup);
+      fetchProductsFromQuery(productGroup);
     }
+
+    // if (productGroup !== '') {
+    //   handleSelectProductGroupIcon(productGroup);
+    // }
 
     //fetchProducts();
   }, [auth.access_token]);
 
   const findQueryParam = (param: string) => {
-    if (typeof window === 'undefined') return ''; // Ensure code doesn't break on server-side
+    if (typeof window === 'undefined') return ''; // Prevent server-side errors
+    const searchParams = new URLSearchParams(window.location.search);
+    return searchParams.get(param) || '';
+  };
 
-    const searchParams = new URLSearchParams(window.location.search); // Use the browser's URL
-    const productGroup = searchParams.get(param) || '';
+  const fetchProductsFromQuery = async (productGroup: string) => {
+    setLoading(true);
 
-    if (productGroup) {
-      handleSelectProductGroupIcon(productGroup);
+    try {
+      // Step 1: Use the same logic as handleSelectProductGroupIcon
+      let newAllFilters = allFilters.map((filter) => {
+        if (filter.id === allFilters[0].id) {
+          let newOptions = filter.options.map((option: any) => {
+            if (option.label === productGroup) {
+              return {
+                ...option,
+                checked: true,
+              };
+            }
+            return option;
+          });
+          return { ...filter, options: newOptions };
+        }
+        return filter;
+      });
+
+      setAllFilters(newAllFilters);
+      setFiltersActive(true);
+
+      console.log('newAllFilters: ', newAllFilters);
+
+      // Step 2: Filter by the search query if it exists
+      const searchQuery = findQueryParam('search');
+      let filteredProducts = newAllFilters[0].options.filter((option: any) => {
+        return option.label === productGroup; // Ensure the product group matches
+      });
+
+      if (searchQuery) {
+        filteredProducts = filteredProducts.filter(
+          (product: any) =>
+            product.groupName === searchQuery && product.group === productGroup,
+        );
+      }
+
+      console.log('filteredProducts: ', filteredProducts);
+
+      setProducts(filteredProducts);
+    } catch (error) {
+      console.error('Error fetching products:', error);
+      setProducts([]);
+    } finally {
+      setLoading(false);
     }
-
-    return productGroup;
   };
 
   const handleSelectProductGroupIcon = (productLabel: any) => {
@@ -279,4 +338,12 @@ export default function CatalogPage() {
       )}
     </div>
   );
-}
+};
+
+const CatalogPage = () => (
+  <Suspense fallback={<div>Loading...</div>}>
+    <Catalog />
+  </Suspense>
+);
+
+export default CatalogPage;

@@ -21,7 +21,7 @@ jobs:
 
       - name: Build and Push Docker Image
         run: |
-          docker build -t radioactivehub0/b2b-arpay-v2:latest .
+          docker build --build-arg NEXT_PUBLIC_API_URL=https://proxy.duegate.com/staging -t radioactivehub0/b2b-arpay-v2:latest .
           docker push radioactivehub0/b2b-arpay-v2:latest
 
       - name: Restart Swarm Deployment-b2b-arpay-dev-v2

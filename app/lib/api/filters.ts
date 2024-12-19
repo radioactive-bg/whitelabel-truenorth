@@ -43,7 +43,7 @@ export async function getProductGroups(access_token: string) {
 }
 
 //works
-export async function getProducts(access_token: string) {
+export async function getProducts() {
   try {
     const response = await axios.get(
       `${process.env.NEXT_PUBLIC_API_URL}/distributor-crm/v1/filters/products`,
@@ -54,7 +54,7 @@ export async function getProducts(access_token: string) {
         },
       },
     );
-    console.log('getProducts response.data.data: ', response.data);
+    //console.log('getProducts response.data: ', response.data);
     return response.data;
   } catch (error) {
     console.error('Fetch Error:', error);
@@ -63,7 +63,7 @@ export async function getProducts(access_token: string) {
 }
 
 //works
-export async function getStatuses(access_token: string) {
+export async function getStatuses() {
   try {
     const response = await axios.get(
       `${process.env.NEXT_PUBLIC_API_URL}/distributor-crm/v1/filters/status`,
@@ -74,7 +74,7 @@ export async function getStatuses(access_token: string) {
         },
       },
     );
-    console.log('getStatuses response.data.data: ', response.data);
+    //console.log('getStatuses response.data.data: ', response.data);
     return response.data;
   } catch (error) {
     console.error('Fetch Error:', error);

@@ -4,29 +4,38 @@ import axios from 'axios';
 const ITEMS_PER_PAGE = 10;
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
-interface FetchInvoicesParams {
+export interface FetchInvoicesParams {
   orderId?: string | null;
   dateFrom?: string;
   dateTo?: string;
   dateType?: string;
   client?: string | null;
   product?: string | null;
-  status?: string | null;
-  perPage?: number;
-  page?: number | null;
+  status?: number[] | null;
+  perPage: number;
+  page: number;
 }
 
-export async function getOrdersList(
-  currentPage: number | null,
-  statuses: number[],
-) {
-  const params = new URLSearchParams({
-    perPage: ITEMS_PER_PAGE.toString(),
-    page: currentPage ? currentPage.toString() : '1',
-  });
+export async function getOrdersList(filters: FetchInvoicesParams) {
+  const params = new URLSearchParams();
 
-  statuses.forEach((status) => {
-    params.append('status[]', status.toString());
+  // Add status filter to params separately
+  if (filters.status && filters.status.length > 0) {
+    filters.status.forEach((oneStatus: number) => {
+      params.append('status[]', oneStatus.toString());
+    });
+  }
+
+  // Dynamically add the rest of the filters only if they are not null/undefined
+  Object.entries(filters).forEach(([key, value]) => {
+    if (
+      key !== 'status' && // Skip status as it is handled separately
+      value !== null &&
+      value !== undefined &&
+      value !== '' // Skip empty strings
+    ) {
+      params.append(key, value.toString());
+    }
   });
 
   try {
@@ -35,10 +44,10 @@ export async function getOrdersList(
         'Content-Type': 'application/json',
         Authorization: `Bearer ${localStorage.getItem('access_token')}`,
       },
-      params, // axios automatically converts this to a query string
+      params, // axios automatically appends this to the URL as a query string
     });
 
-    //console.log('getOrdersList response: ', response);
+    console.log('getOrdersList response: ', response);
     return response;
   } catch (error) {
     console.error('Fetch Error:', error);
@@ -47,38 +56,41 @@ export async function getOrdersList(
 }
 
 //works
-export async function fetchOrderPage(currentPage: number | null) {
-  const params: FetchInvoicesParams = {
-    orderId: null,
-    dateFrom: '',
-    dateTo: '',
-    dateType: '',
-    client: null,
-    product: null,
-    status: null,
-    perPage: ITEMS_PER_PAGE,
-    page: currentPage ? currentPage : 1,
-  };
+// export async function fetchOrderPage(
+//   currentPage: number | null,
+//   filter: FetchInvoicesParams,
+// ) {
+//   const params: FetchInvoicesParams = {
+//     orderId: null,
+//     dateFrom: '',
+//     dateTo: '',
+//     dateType: '',
+//     client: null,
+//     product: null,
+//     status: null,
+//     perPage: ITEMS_PER_PAGE,
+//     page: currentPage ? currentPage : 1,
+//   };
 
-  try {
-    const response = await axios.get(`${API_URL}/distributor-crm/v1/orders`, {
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${localStorage.getItem('access_token')}`,
-      },
-      params, // axios automatically converts this to a query string
-    });
+//   try {
+//     const response = await axios.get(`${API_URL}/distributor-crm/v1/orders`, {
+//       headers: {
+//         'Content-Type': 'application/json',
+//         Authorization: `Bearer ${localStorage.getItem('access_token')}`,
+//       },
+//       params, // axios automatically converts this to a query string
+//     });
 
-    const totalPages = Math.ceil(
-      Number(response.data.data.length) / ITEMS_PER_PAGE,
-    );
-    //console.log('response: ', response.data);
-    return totalPages;
-  } catch (error) {
-    console.error('Fetch Error:', error);
-    throw new Error('Failed to fetch total number of invoices.');
-  }
-}
+//     const totalPages = Math.ceil(
+//       Number(response.data.data.length) / ITEMS_PER_PAGE,
+//     );
+//     //console.log('response: ', response.data);
+//     return totalPages;
+//   } catch (error) {
+//     console.error('Fetch Error:', error);
+//     throw new Error('Failed to fetch total number of invoices.');
+//   }
+// }
 
 //works
 export async function fetchOrderById(ID: string) {
@@ -127,7 +139,7 @@ export async function downloadInvoice(ID: number) {
 }
 
 //works
-export async function getInvoice(ID: number, access_token: string) {
+export async function getInvoice(ID: number) {
   try {
     const response = await axios.get(
       `${API_URL}/distributor-crm/v1/orders/${ID}/cards`,

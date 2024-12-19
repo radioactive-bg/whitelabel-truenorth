@@ -59,7 +59,15 @@ export default function LoginPage() {
         );
 
         setAuth(authInfo);
-        setShowOtpForm(true);
+        // Check if the current URL matches the target URL
+        if (window.location.origin === 'https://dev.b2b.hksglobal.group') {
+          console.log('URL matched. Redirecting to dashboard...');
+          // setTimeout(() => {
+          router.push('/dashboard'); // Redirect to the dashboard
+          // }, 1000);
+        } else {
+          setShowOtpForm(true); // Show OTP form if the condition is not met
+        }
         await getUserProfile(data.access_token);
         //console.log('getUserProfile: '+JSON.stringify(user))
       } else {

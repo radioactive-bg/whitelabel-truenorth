@@ -80,8 +80,19 @@ const ProductsTable = ({
   const cancelTokenSource = useRef<CancelTokenSource | null>(null);
   const latestRequestId = useRef<number>(0);
 
+  const findQueryParam = (param: string) => {
+    if (typeof window === 'undefined') return ''; // Prevent server-side errors
+    const searchParams = new URLSearchParams(window.location.search);
+    return searchParams.get(param) || '';
+  };
+
   const fetchData = async () => {
     setLoading(true); // Set loading to true before fetching data
+    const searchQuery = findQueryParam('search');
+
+    let productName = searchQuery ? searchQuery : null;
+
+    console.log('productName: ', productName);
 
     // Cancel the previous request if there was one
     if (cancelTokenSource.current) {
@@ -98,7 +109,7 @@ const ProductsTable = ({
         currentPage,
         regionIDs,
         currencies,
-        null,
+        productName,
         productGroupIDs,
         null,
         null,

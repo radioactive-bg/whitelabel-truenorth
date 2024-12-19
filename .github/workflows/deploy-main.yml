@@ -19,10 +19,15 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_TOKEN }}
 
-      - name: Build and Push Docker Image
+      - name: Build and Push Main Docker Image
         run: |
-          docker build -t radioactivehub0/b2b-hksglobal-group:latest .
-          docker push radioactivehub0/b2b-hksglobal-group:latest
+          docker build --build-arg NEXT_PUBLIC_API_URL=https://proxy.duegate.com/production -t radioactivehub0/b2b-hksglobal-group:prod .
+          docker push radioactivehub0/b2b-hksglobal-group:prod
+
+      - name: Build and Push Staging Docker Image
+        run: |
+          docker build --build-arg NEXT_PUBLIC_API_URL=https://proxy.duegate.com/staging -t radioactivehub0/b2b-hksglobal-group:staging .
+          docker push radioactivehub0/b2b-hksglobal-group:staging
 
       - name: Restart Swarm Deployment-b2b-hksglobal-prod
         run: |
@@ -31,4 +36,3 @@ jobs:
       - name: Restart Swarm Deployment-b2b-hksglobal-prod-staging
         run: |
           curl -X POST --header 'Content-Type: application/json' --header 'Accept: application/json' --header 'authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzd2FybXBpdC1hcGkiLCJleHAiOm51bGwsImlhdCI6MTcxNTMzNzM0MSwidXNyIjp7InVzZXJuYW1lIjoiYWRtaW4iLCJyb2xlIjoiYWRtaW4ifSwianRpIjoiYjQyYzQxNDktYzdkZi00NDU2LWIzZTQtY2RmZjQ3ZDQ1NzNlIn0.8easGDbup9aOXOuTPLluxea37QQ8YFSlnJAZpiPoSXw' 'http://5.181.83.11:888/api/stacks/b2b-hksglobal-prod-staging/redeploy'
-
