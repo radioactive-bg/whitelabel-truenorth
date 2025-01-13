@@ -71,14 +71,14 @@ export default function TailwindSideNav({
     0,
   );
 
-  const [searchTerm, setSearchTerm] = useState(''); // Input state
+  // const [searchTerm, setSearchTerm] = useState(''); // Input state
+
   const [searchProductGroup, setSearchProductGroup] = useState(''); // Input state
   const [loading, setLoading] = useState(false); // Loading state
   const [results, setResults] = useState([]); // Search results
 
   const [isFocused, setIsFocused] = useState(false); // Track input focus state
 
-  //const [wallet, setWallet] = useState([{ availableAmount: '$ 0' }]);
   const { wallets, loadingWallets, error, fetchWallets, removeWallet } =
     useWalletStore();
 
@@ -152,6 +152,8 @@ export default function TailwindSideNav({
 
   const fetchSearchResults = async (query: string) => {
     console.log('fetchSearchResults');
+    console.log('query: ', query);
+
     if (!query) {
       console.log('No query');
       setResults([]);
@@ -162,14 +164,14 @@ export default function TailwindSideNav({
     try {
       // Use axios.get with query parameters
       const response = await axios.get(
-        'https://proxy.duegate.com/staging/distributor-crm/v1/price-lists/company/preview',
+        'https://proxy.duegate.com/staging/distributor-crm/v1/product-groups',
         {
           headers: {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${localStorage.getItem('access_token')}`,
           },
           params: {
-            productName: query,
+            productGroupName: query,
           },
         },
       );
@@ -186,7 +188,10 @@ export default function TailwindSideNav({
       //   return;
       // }
 
-      setSearchProductGroup(response.data.data[0].group);
+      //console.log('response.data.data:' + JSON.stringify(response.data.data));
+
+      //setSearchProductGroup(response.data);
+
       setResults(response.data.data || []); // Adjust according to the API response
     } catch (error) {
       console.error('Error fetching search results:', error);
@@ -197,12 +202,13 @@ export default function TailwindSideNav({
   };
 
   // Function to handle search action
+  //FIX THIS FUNCTION WHEN YOU CAN
   const handleSearchAction = () => {
-    if (searchTerm) {
+    if (searchProductGroup) {
       router.replace(
-        `/dashboard/catalog?ProductGroup=${encodeURIComponent(
+        `/dashboard/catalog?ProductGroups=${encodeURIComponent(
           searchProductGroup,
-        )}&search=${encodeURIComponent(searchTerm)}`,
+        )}`,
       );
     }
   };
@@ -211,7 +217,7 @@ export default function TailwindSideNav({
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const query = e.target.value;
-    setSearchTerm(query);
+    setSearchProductGroup(query);
     debouncedFetch(query);
   };
 
@@ -291,7 +297,7 @@ export default function TailwindSideNav({
                             />
                           </ul>
                         </li>
-                        <li className="mt-auto">
+                        {/* <li className="mt-auto">
                           <a
                             href=""
                             className="group -mx-2 flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 text-gray-700 hover:bg-gray-50 hover:text-[#50C8ED]"
@@ -302,7 +308,7 @@ export default function TailwindSideNav({
                             />
                             Settings
                           </a>
-                        </li>
+                        </li> */}
                       </ul>
                     </nav>
                   </div>
@@ -330,7 +336,10 @@ export default function TailwindSideNav({
                 {`${wallet[0].availableAmount}`}
               </dd>
             </div> */}
-            <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-2 rounded-lg border border-gray-300 bg-white px-4 py-5 shadow-md  xl:px-8">
+            <div
+              onClick={() => router.push('/dashboard/wallet')}
+              className=" flex flex-wrap items-baseline justify-between gap-x-4 gap-y-2 rounded-lg border border-gray-300 bg-white px-4 py-5 shadow-md hover:cursor-pointer  xl:px-8"
+            >
               <div className="flex w-full items-center">
                 <WalletIcon
                   className="h-6 w-6 shrink-0 text-gray-400 group-hover:text-[#50C8ED]"
@@ -364,7 +373,7 @@ export default function TailwindSideNav({
                   </ul>
                 </li>
 
-                <li className="mt-auto">
+                {/* <li className="mt-auto">
                   <a
                     href="#"
                     className="group -mx-2 flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 text-gray-700 hover:bg-gray-50 hover:text-[#50C8ED]"
@@ -375,7 +384,7 @@ export default function TailwindSideNav({
                     />
                     Settings
                   </a>
-                </li>
+                </li> */}
               </ul>
             </nav>
           </div>
@@ -413,13 +422,14 @@ export default function TailwindSideNav({
                         type="text"
                         placeholder="Search"
                         className="w-full rounded-md border border-gray-300 bg-white py-2 pl-10 text-sm text-black placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-blue-600"
-                        value={searchTerm}
+                        value={searchProductGroup}
                         onChange={handleSearchChange}
                         onFocus={() => setIsFocused(true)} // Input gained focus
                         onBlur={() => setIsFocused(false)} // Input lost focus
                       />
 
                       <button
+                        disabled={true}
                         onClick={handleSearchAction}
                         className="absolute left-3 top-1/2 h-8 w-8 -translate-y-1/2 transform"
                       >
@@ -439,19 +449,26 @@ export default function TailwindSideNav({
                               {results.map((result: any, index) => (
                                 <li
                                   key={index}
-                                  className="cursor-pointer px-4 py-2 hover:bg-gray-100"
+                                  className="flex cursor-pointer items-center px-4 py-2 hover:bg-gray-100"
                                   onMouseDown={(e) => e.preventDefault()} // Prevent input blur
-                                  onClick={() =>
+                                  onClick={() => {
                                     router.push(
-                                      `/dashboard/catalog?ProductGroup=${encodeURIComponent(
-                                        result.group,
-                                      )}&search=${encodeURIComponent(
-                                        result.groupName,
+                                      `/dashboard/catalog?ProductGroups=${encodeURIComponent(
+                                        result.name,
                                       )}`,
-                                    )
-                                  }
+                                    );
+                                  }}
                                 >
-                                  {result.groupName || 'Unnamed Result'}
+                                  {/* Product Group Logo */}
+                                  {result.logo && (
+                                    <img
+                                      src={result.logo}
+                                      alt={result.name}
+                                      className="mr-3 h-6 w-6 rounded-md"
+                                    />
+                                  )}
+                                  {/* Product Group Name */}
+                                  <span>{result.name || 'Unnamed Result'}</span>
                                 </li>
                               ))}
                             </ul>
@@ -460,11 +477,13 @@ export default function TailwindSideNav({
                       )}
 
                       {/* No Results */}
-                      {!loading && searchTerm && results.length === 0 && (
-                        <div className="absolute top-[100%] w-[400px] rounded-md bg-gray-100 text-center text-sm text-gray-400 shadow-md">
-                          No results found
-                        </div>
-                      )}
+                      {!loading &&
+                        searchProductGroup &&
+                        results.length === 0 && (
+                          <div className="absolute top-[100%] w-[400px] rounded-md bg-gray-100 text-center text-sm text-gray-400 shadow-md">
+                            No results found
+                          </div>
+                        )}
                     </div>
                   </div>
                 )}

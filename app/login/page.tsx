@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import Logo from '@/app/ui/logo';
 import LoginForm from '@/app/ui/login/login-form';
 import OTPForm from '@/app/ui/login/OTP-form';
+import FirstTimeLoginQRCode from '@/app/ui/login/FirstTimeLoginQRCode';
 
 import { userStore, getUserProfile } from '@/state/user';
 import { User } from '@/app/lib/types/user';
@@ -22,6 +23,7 @@ export default function LoginPage() {
   const router = useRouter();
 
   const [showOtpForm, setShowOtpForm] = useState(false);
+  const [showQRCode, setShowQRCode] = useState(false);
 
   const handleLogin = async (e: any, email: string, password: string) => {
     e.preventDefault();
@@ -65,10 +67,16 @@ export default function LoginPage() {
           // setTimeout(() => {
           router.push('/dashboard'); // Redirect to the dashboard
           // }, 1000);
-        } else {
-          setShowOtpForm(true); // Show OTP form if the condition is not met
         }
-        await getUserProfile(data.access_token);
+        //  else {
+        //   setShowOtpForm(true); // Show OTP form if the condition is not met
+        // }
+        const userProfile = await getUserProfile(data.access_token);
+        if (userProfile.is2FAEnable) {
+          setShowOtpForm(true);
+        } else {
+          setShowQRCode(true);
+        }
         //console.log('getUserProfile: '+JSON.stringify(user))
       } else {
         console.log('else Login Error:', data);
@@ -118,10 +126,17 @@ export default function LoginPage() {
     }
   };
 
+  const handleQRCodeScanned = () => {
+    setShowQRCode(false);
+    setShowOtpForm(true);
+  };
+
   return (
     <main className="flex items-center justify-center md:h-screen">
       <div className="relative mx-auto flex w-full max-w-[400px] flex-col space-y-2.5 p-4 md:-mt-32">
-        {showOtpForm ? (
+        {showQRCode ? (
+          <FirstTimeLoginQRCode onQRCodeScanned={handleQRCodeScanned} />
+        ) : showOtpForm ? (
           <OTPForm
             handleVerifyOtp={handleVerifyOtp}
             showOtpForm={showOtpForm}

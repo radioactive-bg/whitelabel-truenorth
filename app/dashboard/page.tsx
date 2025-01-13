@@ -77,27 +77,27 @@ export default function CatalogPage() {
             {[
               // Array of brands
               {
-                href: '/dashboard/catalog?ProductGroup=Amazon US',
+                href: '/dashboard/catalog?ProductGroups=Amazon US',
                 src: '/gift-card-10.webp',
               },
               {
-                href: '/dashboard/catalog?ProductGroup=PSN',
+                href: '/dashboard/catalog?ProductGroups=PSN',
                 src: 'https://crm-duegate-public-staging.s3.eu-central-1.amazonaws.com/product_group_logo/1400cd8f-bcca-47fc-9476-afd3ca52f9bd.png',
               },
               {
-                href: '/dashboard/catalog?ProductGroup=Google Play USA',
+                href: '/dashboard/catalog?ProductGroups=Google Play USA',
                 src: '/gift-card-15.webp',
               },
               {
-                href: '/dashboard/catalog?ProductGroup=Apple Card US',
+                href: '/dashboard/catalog?ProductGroups=Apple Card US',
                 src: '/gift-card-16.webp',
               },
               {
-                href: '/dashboard/catalog?ProductGroup=Steam USA',
+                href: '/dashboard/catalog?ProductGroups=Steam USA',
                 src: '/gift-card-4.webp',
               },
               {
-                href: '/dashboard/catalog?ProductGroup=Nintendo',
+                href: '/dashboard/catalog?ProductGroups=Nintendo',
                 src: '/gift-card-2.webp',
               },
             ].map((item, index) => (

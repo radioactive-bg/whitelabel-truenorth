@@ -1,13 +1,28 @@
 'use client';
+import { useEffect, useState } from 'react';
 import { ArrowRightIcon } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 import { roboto } from '@/app/ui/fonts';
 import Logo from '@/app/ui/logo';
 import Image from 'next/image';
+import TagManager from 'react-gtm-module';
 
 import userImage from '@/public/young-man-working.jpg';
 
 export default function Page() {
+  const [isStaging, setIsStaging] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      // Check if window.origin matches the staging URL
+      if (window.origin === 'https://staging.b2b.hksglobal.group') {
+        setIsStaging(true);
+      }
+    }
+
+    TagManager.initialize({ gtmId: 'GTM-5JLP32N8' });
+  }, []);
+
   return (
     <main className="flex h-screen w-screen flex-col p-6">
       <div className="relative h-full w-full bg-white">
@@ -15,6 +30,10 @@ export default function Page() {
           <div className="justify-top flex h-full flex-col px-6 pt-10 sm:pt-32 lg:col-span-7 lg:px-0 lg:pt-24 xl:col-span-6">
             <div className="mx-auto max-w-2xl lg:mx-0">
               <Logo />
+              {/* Show staging tag only if isStaging is true */}
+              {isStaging && (
+                <p className="text-sm font-semibold text-yellow-600">Staging</p>
+              )}
               <h1 className="mt-6 text-4xl font-bold tracking-tight text-gray-900 sm:mt-10 sm:text-6xl">
                 Distribution Hub
               </h1>

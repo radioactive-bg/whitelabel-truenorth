@@ -2,6 +2,8 @@
 import { useState, CSSProperties, useEffect, Suspense } from 'react';
 import ClipLoader from 'react-spinners/ClipLoader';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { useCartStore } from '@/state/shoppingCart';
+import { useWalletStore, Wallet } from '@/state/wallets';
 
 const override: CSSProperties = {
   display: 'block',
@@ -16,10 +18,16 @@ const Payment = () => {
 
   let [loading, setLoading] = useState(true);
 
+  const { clearCart } = useCartStore();
+
+  const { fetchWallets } = useWalletStore();
+
   useEffect(() => {
     setTimeout(() => {
       //setLoading(false);
       router.push(`/dashboard/checkout/downloadCodes?orderId=${orderId}`);
+      clearCart();
+      fetchWallets();
     }, 3000);
   }, [orderId]);
 

@@ -41,13 +41,13 @@ const Catalog = () => {
   };
 
   useEffect(() => {
-    const searchQuery = searchParams.get('search');
-    const productGroup = findQueryParam('ProductGroup');
+    const productGroup = findQueryParam('ProductGroups');
 
-    console.log('Search Query:', searchQuery, 'ProductGroup:', productGroup);
+    console.log('ProductGroup:', productGroup);
 
-    if (searchQuery || productGroup) {
+    if (productGroup) {
       if (productGroup !== '') {
+        //clear all filters and put only the product group that is in the filter as checked
         fetchProductsFromQuery(productGroup);
       }
     }
@@ -79,54 +79,51 @@ const Catalog = () => {
     const searchParams = new URLSearchParams(window.location.search);
     return searchParams.get(param) || '';
   };
+  
+  //test
 
   const fetchProductsFromQuery = async (productGroup: string) => {
     setLoading(true);
 
     try {
-      // Step 1: Use the same logic as handleSelectProductGroupIcon
-      let newAllFilters = allFilters.map((filter) => {
+      // Step 1: Reset filters and only mark the relevant ProductGroup filter as active
+      const newAllFilters = allFilters.map((filter) => {
         if (filter.id === allFilters[0].id) {
-          let newOptions = filter.options.map((option: any) => {
-            if (option.label === productGroup) {
-              return {
-                ...option,
-                checked: true,
-              };
-            }
-            return option;
-          });
+          const newOptions = filter.options.map((option: any) => ({
+            ...option,
+            checked: option.label === productGroup, // Check only the selected ProductGroup
+          }));
           return { ...filter, options: newOptions };
         }
         return filter;
       });
 
-      setAllFilters(newAllFilters);
+      setAllFilters(newAllFilters); // Update filters state
       setFiltersActive(true);
 
-      console.log('newAllFilters: ', newAllFilters);
+      console.log('Updated Filters:', newAllFilters);
 
-      // Step 2: Filter by the search query if it exists
+      // Step 2: Filter products based on ProductGroup and optional search query
       const searchQuery = findQueryParam('search');
-      let filteredProducts = newAllFilters[0].options.filter((option: any) => {
-        return option.label === productGroup; // Ensure the product group matches
-      });
+      const filteredProducts = newAllFilters[0].options.filter(
+        (option: any) => {
+          const matchesProductGroup = option.label === productGroup;
+          const matchesSearchQuery = searchQuery
+            ? option.groupName === searchQuery
+            : true;
+          return matchesProductGroup && matchesSearchQuery;
+        },
+      );
 
-      if (searchQuery) {
-        filteredProducts = filteredProducts.filter(
-          (product: any) =>
-            product.groupName === searchQuery && product.group === productGroup,
-        );
-      }
+      console.log('Filtered Products:', filteredProducts);
 
-      console.log('filteredProducts: ', filteredProducts);
-
-      setProducts(filteredProducts);
+      setProducts(filteredProducts); // Update products state
     } catch (error) {
       console.error('Error fetching products:', error);
-      setProducts([]);
+      setProducts([]); // Reset products on error
     } finally {
-      setLoading(false);
+      setLoading(false); // Stop loading
+
     }
   };
 
@@ -134,7 +131,7 @@ const Catalog = () => {
     console.log('handleSelectProductGroupIcon productLabel: ', productLabel);
     let newAllFilters = allFilters.map((filter) => {
       if (filter.id === allFilters[0].id) {
-        let newOptions = filter.options.map((option: any) => {
+        let newOptions = filter.options.map((option) => {
           if (option.label === productLabel) {
             return {
               ...option,
@@ -147,8 +144,21 @@ const Catalog = () => {
       }
       return filter;
     });
+
     setAllFilters(newAllFilters);
     setFiltersActive(true);
+
+    const currentParams = new URLSearchParams(window.location.search);
+    let productGroups = currentParams.get('ProductGroups') || '';
+
+    if (!productGroups.split(',').includes(productLabel)) {
+      productGroups = productGroups
+        ? `${productGroups},${productLabel}`
+        : productLabel;
+    }
+
+    currentParams.set('ProductGroups', productGroups);
+    window.history.pushState({}, '', `?${currentParams.toString()}`);
   };
 
   const checkIfAnyFiltersActive = () => {

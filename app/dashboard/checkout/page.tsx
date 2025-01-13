@@ -146,6 +146,7 @@ const Checkout = () => {
 
       const orderId = createdOrderData.data.id;
       router.push(`/dashboard/checkout/payment?orderId=${orderId}`);
+
       clearCart();
       fetchWallets();
     }

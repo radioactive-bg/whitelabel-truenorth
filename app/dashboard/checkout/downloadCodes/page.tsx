@@ -20,7 +20,7 @@ const OrderDetailsContent = () => {
   useEffect(() => {
     let intervalId: NodeJS.Timeout | null = null;
     if (
-      order?.orderDetails?.statusText === 'In Progress' ||
+      order?.orderDetails?.statusText === 'In process' ||
       order?.orderDetails?.statusText === 'Waiting for cancel'
     ) {
       intervalId = setInterval(() => {
@@ -64,9 +64,41 @@ const OrderDetailsContent = () => {
     }
   };
 
-  if (loading) {
-    return <div>Loading...</div>;
-  }
+  // if (loading) {
+  //   return (
+  //     <div className="mt-10 space-y-6">
+  //       <div className="px-4 sm:px-0">
+  //         <h3 className="text-2xl font-bold leading-7 text-gray-900">
+  //           Order Details
+  //         </h3>
+  //         <p className="mt-1 max-w-2xl text-sm text-gray-500">
+  //           Personal details and application.
+  //         </p>
+  //       </div>
+
+  //       {/* Skeleton Loader Grid */}
+  //       <div className="mt-6 grid grid-cols-1 gap-y-6 sm:grid-cols-2">
+  //         {Array(4)
+  //           .fill(0)
+  //           .map((_, index) => (
+  //             <div
+  //               key={index}
+  //               className="border-t border-gray-200 px-4 py-6 sm:col-span-1"
+  //             >
+  //               <div className="mb-2 h-4 w-1/3 animate-pulse rounded-md bg-gray-200"></div>
+  //               <div className="h-5 w-2/3 animate-pulse rounded-md bg-gray-300"></div>
+  //             </div>
+  //           ))}
+  //       </div>
+
+  //       {/* Attachments Section */}
+  //       <div className="border-t border-gray-200 px-4 py-6 sm:col-span-2">
+  //         <div className="mb-2 h-4 w-1/3 animate-pulse rounded-md bg-gray-200"></div>
+  //         <div className="h-10 w-full animate-pulse rounded-md bg-gray-300"></div>
+  //       </div>
+  //     </div>
+  //   );
+  // }
 
   if (!order) {
     return <div>No order details found.</div>;
@@ -113,16 +145,22 @@ const OrderDetailsContent = () => {
               <dt className="text-sm font-bold leading-6 text-gray-900">
                 Status
               </dt>
-              <dd
-                className={`${
-                  getStatusStyles(order.orderDetails.status).bgColor
-                } inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ${
-                  getStatusStyles(order.orderDetails.status).textColor
-                } ring-1 ring-inset ring-${
-                  getStatusStyles(order.orderDetails.status).ringColor
-                }/20`}
-              >
-                {order.orderDetails.statusText}
+              <dd>
+                {loading ? (
+                  <div className="h-6 w-1/3 animate-pulse rounded-md bg-gray-300"></div>
+                ) : (
+                  <span
+                    className={`${
+                      getStatusStyles(order.orderDetails.status).bgColor
+                    } inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ${
+                      getStatusStyles(order.orderDetails.status).textColor
+                    } ring-1 ring-inset ring-${
+                      getStatusStyles(order.orderDetails.status).ringColor
+                    }/20`}
+                  >
+                    {order.orderDetails.statusText}
+                  </span>
+                )}
               </dd>
             </div>
             <div className="border-t border-gray-100 px-4 py-6 sm:col-span-2 sm:px-0">
@@ -134,51 +172,76 @@ const OrderDetailsContent = () => {
                 {order.orderDetails.displayId}, was placed on{' '}
                 {order.orderDetails.createdAt}. The total amount for this order
                 is {order.orderDetails.amountTotal}, and its current status is
-                marked as `&apos;`{order.orderDetails.statusText}`&apos;`. This
-                order includes a variety of items/services that were carefully
-                selected by the customer. For more details, please refer to the
-                attached invoice.
+                marked as{' '}
+                {loading ? (
+                  <span className="inline-block h-5 w-20 animate-pulse rounded-md bg-gray-300"></span>
+                ) : (
+                  <span className="font-semibold">
+                    {order.orderDetails.statusText}
+                  </span>
+                )}
+                .
               </dd>
             </div>
+
             <div className="border-t border-gray-100 px-4 py-6 sm:col-span-2 sm:px-0">
               <dt className="text-sm font-medium leading-6 text-gray-900">
                 Attachments
               </dt>
               <dd className="mt-2 text-sm text-gray-900">
-                <ul
-                  role="list"
-                  className="divide-y divide-gray-100 rounded-md border border-gray-200"
-                >
-                  <li className="flex items-center justify-between py-4 pl-4 pr-5 text-sm leading-6">
-                    <div className="flex w-0 flex-1 items-center">
-                      <PaperClipIcon
-                        className="h-5 w-5 flex-shrink-0 text-gray-400"
-                        aria-hidden="true"
-                      />
-
-                      <div className="ml-4 flex min-w-0 flex-1 gap-2">
-                        <span className="truncate font-medium">
-                          {`Invoice-${order.orderDetails.id}.pdf`}
-                        </span>
-                        <span className="flex-shrink-0 text-gray-400">
-                          2.4mb
-                        </span>
-                      </div>
-                    </div>
+                {loading ? (
+                  <div className="flex animate-pulse items-center space-x-4">
+                    <div className="h-6 w-5/6 rounded bg-gray-300"></div>
                     <div className="ml-4 flex-shrink-0">
                       <button
                         onClick={() => handleDownload(order.orderDetails.id)}
-                        className={`$ ml-4 rounded-md px-3 py-1 text-indigo-600 transition duration-150 hover:bg-indigo-100 hover:text-indigo-500 active:bg-indigo-200 active:text-indigo-700 ${
-                          order.orderDetails.statusText !== 'Complete' &&
+                        className={`ml-4 rounded-md px-3 py-1 text-indigo-600 transition duration-150 hover:bg-indigo-100 hover:text-indigo-500 active:bg-indigo-200 active:text-indigo-700 ${
+                          order.orderDetails.statusText !== 'Completed' &&
                           'cursor-not-allowed opacity-50'
                         }`}
-                        disabled={order.orderDetails.statusText !== 'Complete'}
+                        disabled={order.orderDetails.statusText !== 'Completed'}
                       >
                         Download
                       </button>
                     </div>
-                  </li>
-                </ul>
+                  </div>
+                ) : (
+                  <ul
+                    role="list"
+                    className="divide-y divide-gray-100 rounded-md border border-gray-200"
+                  >
+                    <li className="flex items-center justify-between py-4 pl-4 pr-5 text-sm leading-6">
+                      <div className="flex w-0 flex-1 items-center">
+                        <PaperClipIcon
+                          className="h-5 w-5 flex-shrink-0 text-gray-400"
+                          aria-hidden="true"
+                        />
+                        <div className="ml-4 flex min-w-0 flex-1 gap-2">
+                          <span className="truncate font-medium">
+                            {`Invoice-${order.orderDetails.id}.pdf`}
+                          </span>
+                          <span className="flex-shrink-0 text-gray-400">
+                            2.4mb
+                          </span>
+                        </div>
+                      </div>
+                      <div className="ml-4 flex-shrink-0">
+                        <button
+                          onClick={() => handleDownload(order.orderDetails.id)}
+                          className={`ml-4 rounded-md px-3 py-1 text-indigo-600 transition duration-150 hover:bg-indigo-100 hover:text-indigo-500 active:bg-indigo-200 active:text-indigo-700 ${
+                            order.orderDetails.statusText !== 'Completed' &&
+                            'cursor-not-allowed opacity-50'
+                          }`}
+                          disabled={
+                            order.orderDetails.statusText !== 'Completed'
+                          }
+                        >
+                          Download
+                        </button>
+                      </div>
+                    </li>
+                  </ul>
+                )}
               </dd>
             </div>
           </dl>

@@ -35,11 +35,23 @@ const FilterPopover = ({
     setOptions(newOptions);
     setFullFilter({ ...fullFilter, options: newOptions });
 
+    const currentParams = new URLSearchParams(window.location.search);
+    let productGroups = currentParams.get('productGroups') || '';
+
     if (newValue) {
+      productGroups = productGroups
+        ? `${productGroups},${option.value}`
+        : option.value;
       setFiltersActive(true);
     } else {
+      productGroups = productGroups
+        .split(',')
+        .filter((group) => group !== option.value)
+        .join(',');
       checkIfAnyFiltersActive();
     }
+    currentParams.set('productGroups', productGroups);
+    window.history.pushState({}, '', `?${currentParams.toString()}`);
   };
 
   const filterOptions = (allOptions: any, query: string) => {

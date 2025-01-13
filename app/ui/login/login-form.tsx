@@ -1,5 +1,5 @@
 'use client';
-// import { lusitana } from '@/app/ui/fonts';
+import { lusitana } from '@/app/ui/fonts';
 // import {
 //   AtSymbolIcon,
 //   KeyIcon,
@@ -7,7 +7,7 @@
 // } from '@heroicons/react/24/outline';
 import { ArrowRightIcon } from '@heroicons/react/20/solid';
 import { Button } from '../button';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 export default function LoginForm({
   handleLogin,
@@ -16,10 +16,25 @@ export default function LoginForm({
 }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [isStaging, setIsStaging] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      // Check if window.origin matches the staging URL
+      if (window.origin === 'https://staging.b2b.hksglobal.group') {
+        setIsStaging(true);
+      }
+    }
+  }, []);
   return (
     <>
       <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
         <div className="sm:mx-auto sm:w-full sm:max-w-sm">
+          {isStaging && (
+            <p className="text-center text-sm font-semibold text-yellow-600">
+              Staging
+            </p>
+          )}
           <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
             Sign in to your account
           </h2>
