@@ -164,7 +164,7 @@ export default function TailwindSideNav({
     try {
       // Use axios.get with query parameters
       const response = await axios.get(
-        'https://proxy.duegate.com/staging/distributor-crm/v1/product-groups',
+        `${process.env.NEXT_PUBLIC_API_URL}/distributor-crm/v1/product-groups`,
         {
           headers: {
             'Content-Type': 'application/json',

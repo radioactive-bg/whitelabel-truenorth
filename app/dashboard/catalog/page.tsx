@@ -79,19 +79,24 @@ const Catalog = () => {
     const searchParams = new URLSearchParams(window.location.search);
     return searchParams.get(param) || '';
   };
-  
+
   //test
 
-  const fetchProductsFromQuery = async (productGroup: string) => {
+  const fetchProductsFromQuery = async (productGroups: string) => {
     setLoading(true);
 
     try {
-      // Step 1: Reset filters and only mark the relevant ProductGroup filter as active
+      // Convert the string to an array of product groups
+      const productGroupsArray = productGroups
+        .split(',')
+        .map((group) => group.trim());
+
+      // Step 1: Reset filters and mark relevant ProductGroups as active
       const newAllFilters = allFilters.map((filter) => {
         if (filter.id === allFilters[0].id) {
           const newOptions = filter.options.map((option: any) => ({
             ...option,
-            checked: option.label === productGroup, // Check only the selected ProductGroup
+            checked: productGroupsArray.includes(option.label), // Check ProductGroups in the array
           }));
           return { ...filter, options: newOptions };
         }
@@ -103,15 +108,17 @@ const Catalog = () => {
 
       console.log('Updated Filters:', newAllFilters);
 
-      // Step 2: Filter products based on ProductGroup and optional search query
+      // Step 2: Filter products based on ProductGroups and optional search query
       const searchQuery = findQueryParam('search');
       const filteredProducts = newAllFilters[0].options.filter(
         (option: any) => {
-          const matchesProductGroup = option.label === productGroup;
+          const matchesProductGroups = productGroupsArray.includes(
+            option.label,
+          );
           const matchesSearchQuery = searchQuery
             ? option.groupName === searchQuery
             : true;
-          return matchesProductGroup && matchesSearchQuery;
+          return matchesProductGroups && matchesSearchQuery;
         },
       );
 
@@ -123,7 +130,6 @@ const Catalog = () => {
       setProducts([]); // Reset products on error
     } finally {
       setLoading(false); // Stop loading
-
     }
   };
 

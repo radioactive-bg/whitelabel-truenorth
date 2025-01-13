@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { Fragment } from 'react';
 import { Popover, Transition } from '@headlessui/react';
 import { ChevronDownIcon } from '@heroicons/react/24/outline';
+import { useRouter } from 'next/navigation';
 
 const FilterPopover = ({
   fullFilter,
@@ -17,12 +18,15 @@ const FilterPopover = ({
 }) => {
   const [options, setOptions] = useState(fullFilter.options);
   const [query, setQuery] = useState('');
+  const router = useRouter();
+  //const pathname = usePathname(); // Get the current path
 
   useEffect(() => {
     setOptions(fullFilter.options);
   }, [fullFilter.options]);
 
   const handleCheckbox = (option: any) => {
+    console.log('option: ' + JSON.stringify(option));
     const newValue = !option.checked;
 
     const newOptions = fullFilter.options.map((opt: any) => {
@@ -36,22 +40,33 @@ const FilterPopover = ({
     setFullFilter({ ...fullFilter, options: newOptions });
 
     const currentParams = new URLSearchParams(window.location.search);
-    let productGroups = currentParams.get('productGroups') || '';
+    let productGroups = currentParams.get('ProductGroups') || '';
+    console.log('productGroups: ' + productGroups);
 
     if (newValue) {
       productGroups = productGroups
-        ? `${productGroups},${option.value}`
-        : option.value;
+        ? `${productGroups},${option.label}`
+        : option.label;
       setFiltersActive(true);
+      console.log('productGroups in newValue: ' + productGroups);
     } else {
       productGroups = productGroups
         .split(',')
-        .filter((group) => group !== option.value)
+        .filter((group) => group !== option.label)
         .join(',');
+      console.log('productGroups remove value: ' + productGroups);
       checkIfAnyFiltersActive();
     }
-    currentParams.set('productGroups', productGroups);
-    window.history.pushState({}, '', `?${currentParams.toString()}`);
+    const newQuery = {
+      ...Object.fromEntries(currentParams.entries()),
+      ProductGroups: productGroups,
+    };
+
+    router.push(
+      `/dashboard/catalog?ProductGroups=${encodeURIComponent(
+        newQuery.ProductGroups,
+      )}`,
+    );
   };
 
   const filterOptions = (allOptions: any, query: string) => {
