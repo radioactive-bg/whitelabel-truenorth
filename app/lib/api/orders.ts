@@ -11,6 +11,7 @@ export interface FetchInvoicesParams {
   dateType?: string;
   client?: string | null;
   product?: string | null;
+  productGroupId?: string | null;
   status?: number[] | null;
   perPage: number;
   page: number;
@@ -47,7 +48,7 @@ export async function getOrdersList(filters: FetchInvoicesParams) {
       params, // axios automatically appends this to the URL as a query string
     });
 
-    console.log('getOrdersList response: ', response);
+    //console.log('getOrdersList response: ', response);
     return response;
   } catch (error) {
     console.error('Fetch Error:', error);
@@ -192,6 +193,53 @@ export async function createOrder(products: any[], vat: number | null) {
     );
 
     console.log('Axios response.data.data from createOrder:', response.data);
+
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      console.error('Axios error response data:', error.response?.data);
+      console.error('Axios error response status:', error.response?.status);
+      console.error('Axios error response headers:', error.response?.headers);
+      throw new Error('Failed to create order:', error.response?.data.message);
+      // return error.response?.data;
+    } else {
+      console.error('Unexpected error:');
+      throw new Error('Failed to create order:');
+    }
+    //console.error('Failed to create order:', error.message);
+    //throw new Error('Failed to create order:');
+  }
+}
+
+// currently this works for large quantities of orders(liek a bulk preorder thing) - there needs to be a different endpoint for pre-orders
+export async function createPreOrder(products: any[], vat: number | null) {
+  let requestBody = {
+    products: products,
+    vat: vat,
+  };
+  console.log('requestBody in createPreOrder :', JSON.stringify(requestBody));
+
+  const token = localStorage.getItem('access_token');
+
+  if (!token) {
+    throw new Error('No access token found');
+  }
+
+  console.log('requestBody in createPreOrder :', requestBody);
+
+  try {
+    const response = await axios.post(
+      `${API_URL}/distributor-crm/v1/pre-orders`,
+      requestBody,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
+
+    console.log('Axios response.data from createPreOrder:', response.data);
 
     return response.data;
   } catch (error) {

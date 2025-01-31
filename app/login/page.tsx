@@ -1,6 +1,6 @@
 'use client';
 import React, { useState, useEffect } from 'react';
-import Logo from '@/app/ui/logo';
+import LogoWhite from '@/app/ui/logo-white';
 import LoginForm from '@/app/ui/login/login-form';
 import OTPForm from '@/app/ui/login/OTP-form';
 import FirstTimeLoginQRCode from '@/app/ui/login/FirstTimeLoginQRCode';
@@ -132,18 +132,39 @@ export default function LoginPage() {
   };
 
   return (
-    <main className="flex items-center justify-center md:h-screen">
-      <div className="relative mx-auto flex w-full max-w-[400px] flex-col space-y-2.5 p-4 md:-mt-32">
-        {showQRCode ? (
-          <FirstTimeLoginQRCode onQRCodeScanned={handleQRCodeScanned} />
-        ) : showOtpForm ? (
-          <OTPForm
-            handleVerifyOtp={handleVerifyOtp}
-            showOtpForm={showOtpForm}
-          />
-        ) : (
-          <LoginForm handleLogin={handleLogin} />
-        )}
+    <main className="flex h-screen w-screen flex-col flex-wrap md:flex-row">
+      {/* Right Section with Dynamic Login Content */}
+      <div className="flex w-full  flex-col justify-between bg-gradient-to-t from-white to-blue-700 px-8 py-8 md:order-last md:h-full md:w-1/2 lg:px-16 lg:py-16">
+        {/* Logo at the top */}
+        <div className="flex justify-start">
+          <LogoWhite />
+        </div>
+
+        {/* Content at the bottom */}
+        <div className="flex flex-col items-start text-left lg:pb-12">
+          <h1 className="mt-4 text-4xl font-bold tracking-tight text-black sm:mt-6 md:text-5xl">
+            Distribution Hub
+          </h1>
+          <p className="mt-4 text-lg leading-8 text-black md:text-2xl">
+            Empower your business with streamlined distribution of digital
+            products
+          </p>
+        </div>
+      </div>
+      {/* Left Section with Dynamic Login Content */}
+      <div className="flex w-full justify-center bg-white md:h-full md:w-1/2 md:items-center">
+        <div className="w-full max-w-[400px]">
+          {showQRCode ? (
+            <FirstTimeLoginQRCode onQRCodeScanned={handleQRCodeScanned} />
+          ) : showOtpForm ? (
+            <OTPForm
+              handleVerifyOtp={handleVerifyOtp}
+              showOtpForm={showOtpForm}
+            />
+          ) : (
+            <LoginForm handleLogin={handleLogin} />
+          )}
+        </div>
       </div>
     </main>
   );

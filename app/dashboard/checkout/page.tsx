@@ -6,6 +6,7 @@ import { getWalletsList } from '@/app/lib/api/wallet';
 import { createOrder } from '@/app/lib/api/orders';
 import { useCartStore } from '@/state/shoppingCart';
 import { useRouter } from 'next/navigation';
+import { useThemeStore } from '@/state/theme';
 
 import { Dialog, DialogPanel, DialogTitle } from '@headlessui/react';
 import { ExclamationTriangleIcon } from '@heroicons/react/24/outline';
@@ -55,6 +56,8 @@ const SkeletonCheckout = () => {
 
 const Checkout = () => {
   const router = useRouter();
+  const { theme } = useThemeStore();
+  const isDark = theme === 'dark';
 
   const { cartItems, addToCart, removeFromCart, updateQuantity, clearCart } =
     useCartStore();
@@ -174,32 +177,48 @@ const Checkout = () => {
   }, [cartItems]);
 
   return (
-    <div className="mt-[20px] rounded-md bg-gray-50">
-      <div className="mx-auto max-w-2xl px-4 pb-24 pt-16 sm:px-6 lg:max-w-7xl lg:px-8">
+    <div className="mt-[20px] rounded-md">
+      <div
+        className={`mx-auto max-w-2xl rounded-md px-4 
+          pb-24 pt-16 transition duration-300 sm:px-6 lg:max-w-7xl lg:px-8 ${
+            theme === 'dark'
+              ? 'bg-gray-900 text-gray-200'
+              : 'bg-white text-gray-900'
+          }`}
+      >
         <h2 className="sr-only">Checkout</h2>
 
         <Dialog open={open} onClose={setOpen} className="relative z-10">
-          <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
+          <div className="fixed inset-0 bg-black bg-opacity-50 transition-opacity" />
 
           <div className="fixed inset-0 z-10 w-screen overflow-y-auto">
             <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
-              <DialogPanel className="relative transform overflow-hidden rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6">
+              <DialogPanel
+                className={`relative transform overflow-hidden rounded-lg px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6 ${
+                  theme === 'dark'
+                    ? 'bg-gray-800 text-white'
+                    : 'bg-white text-gray-900'
+                }`}
+              >
                 <div className="sm:flex sm:items-start">
                   <div className="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
-                    <ExclamationTriangleIcon
-                      aria-hidden="true"
-                      className="h-6 w-6 text-red-600"
-                    />
+                    <ExclamationTriangleIcon className="h-6 w-6 text-red-600" />
                   </div>
                   <div className="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
                     <DialogTitle
                       as="h3"
-                      className="text-base font-semibold leading-6 text-gray-900"
+                      className={`text-base font-semibold leading-6 ${
+                        theme === 'dark' ? 'text-gray-200' : 'text-gray-900'
+                      }`}
                     >
                       Delete Item
                     </DialogTitle>
                     <div className="mt-2">
-                      <p className="text-sm text-gray-500">
+                      <p
+                        className={`text-sm ${
+                          theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
+                        }`}
+                      >
                         Are you sure you want to delete this item from your
                         cart? This action cannot be undone.
                       </p>
@@ -218,7 +237,11 @@ const Checkout = () => {
                     type="button"
                     data-autofocus
                     onClick={() => setOpen(false)}
-                    className="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto"
+                    className={`mt-3 inline-flex w-full justify-center rounded-md px-3 py-2 text-sm font-semibold shadow-sm ring-1 ring-inset sm:mt-0 sm:w-auto ${
+                      theme === 'dark'
+                        ? 'bg-gray-700 text-gray-300 ring-gray-600 hover:bg-gray-600'
+                        : 'bg-white text-gray-900 ring-gray-300 hover:bg-gray-50'
+                    }`}
                   >
                     Cancel
                   </button>
@@ -233,7 +256,11 @@ const Checkout = () => {
         >
           <div>
             <fieldset>
-              <legend className="text-lg font-medium text-gray-900">
+              <legend
+                className={`text-lg font-medium ${
+                  theme === 'dark' ? 'text-gray-200' : 'text-gray-900'
+                }`}
+              >
                 Wallet
               </legend>
               {loadingWallets ? (
@@ -254,41 +281,54 @@ const Checkout = () => {
                       }
                       key={walletInfo.id}
                       value={walletInfo}
-                      // aria-label={walletInfo.currency}
-                      // aria-description={`${walletInfo.currency} for ${walletInfo.availableAmount}`}
-                      className={
-                        ({ checked, focus }) =>
-                          `${checked ? 'border-transparent' : 'border-gray-300'}
-                          ${focus ? 'ring-2 ring-indigo-500' : ''}
-                          'relative focus:outline-none', flex  rounded-lg border bg-white p-4 shadow-sm
-                          ${
-                            index !== 0
-                              ? 'cursor-not-allowed opacity-50'
-                              : 'cursor-pointer'
-                          }` // Add styles to show it is disabled
+                      className={({ checked, focus }) =>
+                        `${
+                          checked
+                            ? 'border-transparent'
+                            : 'border-gray-300 dark:border-gray-600'
+                        }
+                ${focus ? 'ring-2 ring-indigo-500' : ''}
+                'relative flex rounded-lg border p-4 shadow-sm transition duration-200 focus:outline-none ${
+                  theme === 'dark'
+                    ? 'bg-gray-800 text-gray-200'
+                    : 'bg-white text-gray-900'
+                } ${
+                  index !== 0
+                    ? 'cursor-not-allowed opacity-50'
+                    : 'cursor-pointer'
+                }`
                       }
                     >
-                      {({ checked, focus }) => (
+                      {({ checked }) => (
                         <>
                           <span className="flex flex-1">
                             <span className="flex flex-col">
-                              <span className="block text-sm font-medium text-gray-900">
+                              <span
+                                className={`block text-sm font-medium ${
+                                  theme === 'dark'
+                                    ? 'text-gray-300'
+                                    : 'text-gray-900'
+                                }`}
+                              >
                                 {walletInfo.currency}
                               </span>
-                              {/* <span className="mt-1 flex items-center text-sm text-gray-500">
-                                {walletInfo.turnaround}
-                              </span> */}
-                              <span className="mt-6 text-sm font-medium text-gray-900">
+                              <span
+                                className={`mt-6 text-sm font-medium ${
+                                  theme === 'dark'
+                                    ? 'text-gray-300'
+                                    : 'text-gray-900'
+                                }`}
+                              >
                                 {walletInfo.availableAmount}
                               </span>
                             </span>
                           </span>
-                          {checked ? (
+                          {checked && (
                             <CheckCircleIcon
-                              className="h-5 w-5 text-indigo-600"
+                              className="h-5 w-5 text-black dark:text-gray-200"
                               aria-hidden="true"
                             />
-                          ) : null}
+                          )}
                         </>
                       )}
                     </Radio>
@@ -300,19 +340,28 @@ const Checkout = () => {
 
           {/* Order summary */}
           <div className="mt-10 lg:mt-0">
-            <h2 className="text-lg font-medium text-gray-900">Order summary</h2>
+            <h2
+              className={`text-lg font-medium ${
+                theme === 'dark' ? 'text-gray-200' : 'text-gray-900'
+              }`}
+            >
+              Order summary
+            </h2>
 
-            <div className="mt-4 rounded-lg border border-gray-200 bg-white shadow-sm">
+            <div
+              className={`mt-4 rounded-lg border border-gray-200 shadow-sm dark:border-gray-700 ${
+                theme === 'dark' ? 'bg-gray-800' : 'bg-white'
+              }`}
+            >
               <h3 className="sr-only">Items in your cart</h3>
-              <ul role="list" className="divide-y divide-gray-200">
+              <ul
+                role="list"
+                className="divide-y divide-gray-200 dark:divide-gray-700"
+              >
                 {cartItems.length === 0
                   ? Array(2)
                       .fill(0)
-                      .map((_, index) => (
-                        <>
-                          <SkeletonCheckout />
-                        </>
-                      ))
+                      .map((_, index) => <SkeletonCheckout key={index} />)
                   : cartItems.map((product) => (
                       <li key={product.id} className="flex px-4 py-6 sm:px-6">
                         <Image
@@ -327,24 +376,30 @@ const Checkout = () => {
                           <div className="flex">
                             <div className="min-w-0 flex-1">
                               <h4 className="text-sm">
-                                <p className="font-medium text-gray-700 hover:text-gray-800">
+                                <p
+                                  className={`font-medium ${
+                                    theme === 'dark'
+                                      ? 'text-gray-300 hover:text-gray-400'
+                                      : 'text-gray-700 hover:text-gray-800'
+                                  }`}
+                                >
                                   {product.groupName}
                                 </p>
                               </h4>
-                              {/* <p className="mt-1 text-sm text-gray-500">
-                                {product.name}
-                              </p> */}
                             </div>
 
                             <div className="ml-4 flow-root flex-shrink-0">
                               <button
-                                // onClick={() => removeFromCart(product.id)}
                                 onClick={() => {
                                   setOpen(true);
                                   setCartItemToDelete(product.id);
                                 }}
                                 type="button"
-                                className="-m-2.5 flex items-center justify-center bg-white p-2.5 text-gray-400 hover:text-gray-500"
+                                className={`-m-2.5 flex items-center justify-center rounded-md p-2.5 ${
+                                  theme === 'dark'
+                                    ? 'bg-gray-700 text-gray-300 hover:text-gray-100'
+                                    : 'bg-white text-gray-400 hover:text-gray-500'
+                                }`}
                               >
                                 <span className="sr-only">Remove</span>
                                 <TrashIcon
@@ -376,12 +431,22 @@ const Checkout = () => {
                                   );
                                   handleQuantityChange(product.id, value);
                                 }}
-                                className="w-20 rounded-md border border-gray-300 py-1.5 text-center text-base font-medium text-gray-700 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:text-sm"
+                                className={`w-20 rounded-md border py-1.5 text-center text-base font-medium shadow-sm focus:ring-1 focus:ring-indigo-500 sm:text-sm ${
+                                  theme === 'dark'
+                                    ? 'border-gray-600 bg-gray-700 text-gray-300 focus:border-indigo-400'
+                                    : 'border-gray-300 text-gray-700 focus:border-indigo-500'
+                                }`}
                               />
                             </div>
 
                             <div className="ml-4">
-                              <p className="mt-1 text-sm font-medium text-gray-900">
+                              <p
+                                className={`mt-1 text-sm font-medium ${
+                                  theme === 'dark'
+                                    ? 'text-gray-300'
+                                    : 'text-gray-900'
+                                }`}
+                              >
                                 {product.currency === 'USD' ? '$' : '€'}
                                 {Number(product.price) * product.quantity}
                               </p>
@@ -391,30 +456,26 @@ const Checkout = () => {
                       </li>
                     ))}
               </ul>
-              <dl className="space-y-6 border-t border-gray-200 px-4 py-6 sm:px-6">
+              <dl className="space-y-6 border-t border-gray-200 px-4 py-6 dark:border-gray-700 sm:px-6">
                 <div className="flex items-center justify-between">
                   <dt className="text-sm">Subtotal</dt>
-                  <dd className="text-sm font-medium text-gray-900">
-                    {subtotal}
-                  </dd>
+                  <dd className="text-sm font-medium">{subtotal}</dd>
                 </div>
 
                 <div className="flex items-center justify-between">
                   <dt className="text-sm">Taxes</dt>
-                  <dd className="text-sm font-medium text-gray-900">{tax}</dd>
+                  <dd className="text-sm font-medium">{tax}</dd>
                 </div>
-                <div className="flex items-center justify-between border-t border-gray-200 pt-6">
+                <div className="flex items-center justify-between border-t border-gray-200 pt-6 dark:border-gray-700">
                   <dt className="text-base font-medium">Total</dt>
-                  <dd className="text-base font-medium text-gray-900">
-                    {total}
-                  </dd>
+                  <dd className="text-base font-medium">{total}</dd>
                 </div>
               </dl>
 
-              <div className="border-t border-gray-200 px-4 py-6 sm:px-6">
+              <div className="border-t border-gray-200 px-4 py-6 dark:border-gray-700 sm:px-6">
                 <button
                   type="submit"
-                  className="w-full rounded-md border border-transparent bg-indigo-600 px-4 py-3 text-base font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-50"
+                  className="w-full rounded-md border border-transparent bg-black px-4 py-3 text-base font-medium text-white shadow-sm hover:bg-black/70 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                 >
                   Confirm order
                 </button>

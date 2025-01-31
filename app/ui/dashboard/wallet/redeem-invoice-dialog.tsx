@@ -84,23 +84,23 @@ export function RedeemInvoiceDialog({
 
   return (
     <CustomDialog
-      className="flex items-center justify-center"
+      className="flex items-center justify-center dark:bg-gray-900"
       open={open}
       onClose={handleClose}
     >
       {/* Dialog content */}
-      <div className="relative w-full max-w-md ">
-        <CustomDialogTitle className="flex items-center justify-between">
+      <div className="relative w-full max-w-md rounded-lg bg-white p-6 dark:bg-gray-900 ">
+        <CustomDialogTitle className="flex items-center justify-between text-black dark:text-white">
           <span className="text-xl font-semibold">Redeem an Invoice Code</span>
           <button
             onClick={handleClose}
-            className="p-2 text-gray-400 hover:text-gray-500"
+            className="p-2 text-gray-400 hover:text-gray-500 dark:text-gray-300 dark:hover:text-gray-200"
           >
             <XMarkIcon className="h-5 w-5" />
           </button>
         </CustomDialogTitle>
 
-        <CustomDialogBody className="mb-[0px] mt-4">
+        <CustomDialogBody className="mt-4 dark:bg-gray-900">
           {!isSuccess ? (
             <div className="mt-4">
               <form onSubmit={handleSubmit} className="space-y-4">
@@ -112,14 +112,14 @@ export function RedeemInvoiceDialog({
                 <div>
                   <label
                     htmlFor="invoiceNumber"
-                    className="block text-sm font-medium text-gray-700"
+                    className="block text-sm font-medium text-gray-700 dark:text-gray-300"
                   >
                     Invoice Code
                   </label>
                   <input
                     id="invoiceNumber"
                     type="text"
-                    placeholder="Enter Gift Card Number"
+                    placeholder="Enter Invoice Code"
                     value={formData.invoiceCode}
                     onChange={(e) =>
                       setFormData((prev) => ({
@@ -127,62 +127,56 @@ export function RedeemInvoiceDialog({
                         invoiceCode: e.target.value,
                       }))
                     }
-                    className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-black focus:outline-none focus:ring-1 focus:ring-black"
+                    className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-black focus:outline-none focus:ring-1 focus:ring-black dark:border-gray-600 dark:bg-gray-800 dark:text-white dark:focus:ring-white"
                     required
                   />
                 </div>
 
                 <button
                   type="submit"
-                  className="w-full rounded-md bg-black px-4 py-2 text-sm font-semibold text-white hover:bg-black/90"
+                  className="w-full rounded-md bg-black px-4 py-2 text-sm font-semibold text-white hover:bg-black/90 dark:bg-white dark:text-black dark:hover:bg-gray-300"
                 >
                   Redeem
                 </button>
 
-                <div className="mt-6 rounded-lg bg-gray-50 p-4">
-                  <h3 className="text-sm font-medium text-gray-900">Tips</h3>
-                  <ul className="mt-2 space-y-2 text-sm text-gray-500">
-                    <li>• Input Invoice number.</li>
-                    <li>• If there is any issue contact support.</li>
-                    {/* <li>
-                      • Ut posuere ipsum quis dui ultricies, vel congue tortor
-                      ullamcorper.
-                    </li>
-                    <li>• Vivamus sed lacus finibus risus rutrum viverra.</li>
-                    <li>• Suspendisse eu justo a leo semper hendrerit.</li>
-                    <li>
-                      • Praesent finibus nunc at nisl pretium, vel lacinia odio
-                      tincidunt.
-                    </li> */}
+                <div className="mt-6 rounded-lg bg-gray-50 p-4 dark:bg-gray-800">
+                  <h3 className="text-sm font-medium text-gray-900 dark:text-gray-300">
+                    Tips
+                  </h3>
+                  <ul className="mt-2 space-y-2 text-sm text-gray-500 dark:text-gray-400">
+                    <li>• Input Invoice Code.</li>
+                    <li>• If there is any issue, contact support.</li>
                   </ul>
                 </div>
               </form>
             </div>
           ) : (
             <div className="mt-6 flex flex-col items-center text-center">
-              <div className="rounded-full bg-green-100 p-2">
-                <CheckIcon className="h-6 w-6 text-green-600" />
+              <div className="rounded-full bg-green-100 p-2 dark:bg-green-700">
+                <CheckIcon className="h-6 w-6 text-green-600 dark:text-white" />
               </div>
               <div className="mt-4 flex items-center gap-1">
-                <span className="text-xl font-semibold">Success!</span>
+                <span className="text-xl font-semibold dark:text-white">
+                  Success!
+                </span>
                 <span role="img" aria-label="party popper">
                   🎉
                 </span>
               </div>
-              <p className="mt-2 text-gray-600">
+              <p className="mt-2 text-gray-600 dark:text-gray-300">
                 Your Invoice Code has been redeemed successfully. Enjoy your
                 balance or reward!
               </p>
               <div className="mt-6 flex w-full flex-col gap-3">
                 <button
                   onClick={() => handleClose()}
-                  className="w-full rounded-md bg-black px-4 py-2 text-sm font-semibold text-white hover:bg-black/90"
+                  className="w-full rounded-md bg-black px-4 py-2 text-sm font-semibold text-white hover:bg-black/90 dark:bg-white dark:text-black dark:hover:bg-gray-300"
                 >
                   View Balance
                 </button>
                 <button
                   onClick={() => router.push('/dashboard/catalog')}
-                  className="w-full rounded-md border border-gray-300 px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-50"
+                  className="w-full rounded-md border border-gray-300 px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:text-white dark:hover:bg-gray-700"
                 >
                   Shop Now
                 </button>

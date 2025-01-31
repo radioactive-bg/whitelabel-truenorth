@@ -8,6 +8,7 @@ import { getOrdersList, FetchInvoicesParams } from '@/app/lib/api/orders';
 import { authStore, Auth } from '@/state/auth';
 import { useRouter } from 'next/navigation';
 import { getStatusStyles } from '@/app/lib/utils';
+import { useThemeStore } from '@/state/theme';
 
 import Pagination from '../../ui/dashboard/pagination';
 
@@ -17,6 +18,7 @@ import Skeleton from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css';
 
 import FiltersSection from '@/app/ui/dashboard/orders/FiltersSection';
+//import StandaloneCalendar from '@/app/ui/dashboard/orders/Calendar';
 
 export default function Page({}: {}) {
   const router = useRouter();
@@ -25,6 +27,12 @@ export default function Page({}: {}) {
     auth: Auth;
     initializeAuth: () => void;
   };
+  const { theme } = useThemeStore();
+  // 🔹 Force re-render when theme changes
+  const [themeKey, setThemeKey] = useState(0);
+  useEffect(() => {
+    setThemeKey((prev) => prev + 1); // Update state to trigger re-render
+  }, [theme]);
 
   const viewOrder = (orderId: number) => {
     console.log(`Navigating to order ${orderId}`);
@@ -74,6 +82,11 @@ export default function Page({}: {}) {
 
   return (
     <div className="w-full">
+      {/* <StandaloneCalendar
+        fetchOrders={fetchOrders}
+        setFilters={setFilters}
+        setCurrentPage={setCurrentPage}
+      /> */}
       <FiltersSection
         fetchOrders={fetchOrders}
         setFilters={setFilters}
@@ -83,151 +96,154 @@ export default function Page({}: {}) {
         page={currentPage}
       />
 
-      <div className="px-4 sm:px-6 lg:px-8">
-        <div className="sm:flex sm:items-center">
-          <div className="sm:flex-auto">
-            <h1 className="text-base font-semibold leading-6 text-gray-900">
-              Orders
-            </h1>
-            <p className="mt-2 text-sm text-gray-700">
-              A list of all the Orders in your account including their ID,
-              status, price and more.
-            </p>
-          </div>
-          <div className="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
-            <button
-              type="button"
-              className="block rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-            >
-              Add Order
-            </button>
+      <div className=" rounded-lg bg-white px-4 py-6 shadow-md dark:border dark:border-gray-700 dark:bg-gray-800">
+        <div className="px-4 sm:px-6 lg:px-8">
+          <div className="sm:flex sm:items-center">
+            <div className="sm:flex-auto">
+              <h1 className="text-base font-semibold leading-6 text-gray-900 dark:text-white">
+                Orders
+              </h1>
+              <p className="mt-2 text-sm text-gray-700 dark:text-gray-50">
+                A list of all the Orders in your account including their ID,
+                status, price and more.
+              </p>
+            </div>
+            <div className="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
+              <button
+                type="button"
+                className="block rounded-md bg-black px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-black/70 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black dark:bg-white dark:text-black"
+              >
+                Add Order
+              </button>
+            </div>
           </div>
         </div>
-      </div>
 
-      {loading ? (
-        <InvoicesTableSkeleton />
-      ) : (
-        <>
-          <div className="px-4 sm:px-6 lg:px-8">
-            <div className="mt-8 flow-root">
-              <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-                <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
-                  <table className="min-w-full divide-y divide-gray-300">
-                    <thead>
-                      <tr>
-                        <th
-                          scope="col"
-                          className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
-                        >
-                          ID
-                        </th>
-                        <th
-                          scope="col"
-                          className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0"
-                        >
-                          Client
-                        </th>
-                        <th
-                          scope="col"
-                          className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
-                        >
-                          Price
-                        </th>
-                        <th
-                          scope="col"
-                          className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
-                        >
-                          Create Date
-                        </th>
-                        <th
-                          scope="col"
-                          className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
-                        >
-                          Status
-                        </th>
-                        <th
-                          scope="col"
-                          className="px-3 py-3.5 text-center text-sm font-semibold text-gray-900"
-                        >
-                          Actions
-                        </th>
-                        <th
-                          scope="col"
-                          className="relative py-3.5 pl-3 pr-4 sm:pr-0"
-                        >
-                          <span className="sr-only">Edit</span>
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-gray-200 bg-white">
-                      {orders.map((order: any) => (
-                        <tr key={order.id}>
-                          <td className="whitespace-nowrap py-5 pr-3 text-sm sm:pl-0">
-                            <div className="flex items-center">
-                              <div className="ml-4">
-                                <div className="font-medium text-gray-900">
-                                  {order.displayId}
+        {loading ? (
+          <InvoicesTableSkeleton />
+        ) : (
+          <>
+            <div className="px-4 sm:px-6 lg:px-8">
+              <div className="mt-8 flow-root">
+                <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+                  <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
+                    <table
+                      key={themeKey}
+                      id="orderList"
+                      className="min-w-full divide-y divide-gray-300 dark:divide-gray-700"
+                    >
+                      <thead className="bg-gray-50 dark:bg-gray-800">
+                        <tr>
+                          <th
+                            scope="col"
+                            className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 dark:text-gray-200"
+                          >
+                            ID
+                          </th>
+                          <th
+                            scope="col"
+                            className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-200 sm:pl-0"
+                          >
+                            Client
+                          </th>
+                          <th
+                            scope="col"
+                            className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 dark:text-gray-200"
+                          >
+                            Price
+                          </th>
+                          <th
+                            scope="col"
+                            className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 dark:text-gray-200"
+                          >
+                            Create Date
+                          </th>
+                          <th
+                            scope="col"
+                            className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 dark:text-gray-200"
+                          >
+                            Status
+                          </th>
+                          <th
+                            scope="col"
+                            className="px-3 py-3.5 text-center text-sm font-semibold text-gray-900 dark:text-gray-200"
+                          >
+                            Actions
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-gray-200 bg-white dark:divide-gray-700 dark:bg-gray-900">
+                        {orders.map((order: any) => (
+                          <tr
+                            key={order.id}
+                            className="hover:bg-gray-100 dark:hover:bg-gray-700"
+                          >
+                            <td className="whitespace-nowrap py-5 pr-3 text-sm text-gray-900 dark:text-gray-200 sm:pl-0">
+                              <div className="flex items-center">
+                                <div className="ml-4">
+                                  <div className="font-medium">
+                                    {order.displayId}
+                                  </div>
                                 </div>
                               </div>
-                            </div>
-                          </td>
-                          <td className="whitespace-nowrap px-3 py-5 text-sm text-gray-500">
-                            <div className="mt-1 text-gray-500">
-                              {order.client}
-                            </div>
-                          </td>
-                          <td className="whitespace-nowrap px-3 py-5 text-sm text-gray-500">
-                            <div className="mt-1 text-gray-500">
-                              {order.priceListAmount}
-                            </div>
-                          </td>
-                          <td className="whitespace-nowrap px-3 py-5 text-sm text-gray-500">
-                            <div className="text-gray-900">{order.title}</div>
-                            <div className="mt-1 text-gray-500">
-                              {order.createdAt}
-                            </div>
-                          </td>
-                          <td className="whitespace-nowrap px-3 py-5 text-sm text-gray-500">
-                            <span
-                              className={`${
-                                getStatusStyles(order.status).bgColor
-                              } inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ${
-                                getStatusStyles(order.status).textColor
-                              } ring-1 ring-inset ringring-${
-                                getStatusStyles(order.status).ringColor
-                              }/20`}
+                            </td>
+                            <td className="whitespace-nowrap px-3 py-5 text-sm text-gray-500 dark:text-gray-400">
+                              <div className="mt-1">{order.client}</div>
+                            </td>
+                            <td className="whitespace-nowrap px-3 py-5 text-sm text-gray-500 dark:text-gray-400">
+                              <div className="mt-1">
+                                {order.priceListAmount}
+                              </div>
+                            </td>
+                            <td className="whitespace-nowrap px-3 py-5 text-sm text-gray-500 dark:text-gray-400">
+                              <div className="text-gray-900 dark:text-gray-200">
+                                {order.title}
+                              </div>
+                              <div className="mt-1">{order.createdAt}</div>
+                            </td>
+                            <td
+                              id="statusText"
+                              className="whitespace-nowrap px-3 py-5 text-sm text-gray-500 dark:text-gray-400"
                             >
-                              {order.statusText}
-                            </span>
-                          </td>
+                              <span
+                                className={`${
+                                  getStatusStyles(order.status).bgColor
+                                } inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ${
+                                  getStatusStyles(order.status).textColor
+                                } ring-1 ring-inset ringring-${
+                                  getStatusStyles(order.status).ringColor
+                                }/20`}
+                              >
+                                {order.statusText}
+                              </span>
+                            </td>
 
-                          <td className="relative whitespace-nowrap py-5 pr-4 text-center text-sm font-medium sm:pr-0">
-                            <button
-                              onClick={() => viewOrder(order.id)}
-                              className={`$ ml-4 rounded-md px-3 py-1 text-indigo-600 transition duration-150 hover:bg-indigo-100 hover:text-indigo-500 active:bg-indigo-200 active:text-indigo-700`}
-                            >
-                              View
-                              <span className="sr-only">, {order.name}</span>
-                            </button>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                            <td className="relative whitespace-nowrap py-5 pr-4 text-center text-sm font-bold sm:pr-0">
+                              <button
+                                onClick={() => viewOrder(order.id)}
+                                className="ml-4 rounded-md px-3 py-1 text-black transition duration-150 hover:bg-black hover:text-white active:bg-black active:text-black dark:text-white dark:hover:bg-gray-700 dark:hover:text-white"
+                              >
+                                View
+                                <span className="sr-only">, {order.name}</span>
+                              </button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                    {/* Pagination */}
+                    <Pagination
+                      currentPage={currentPage}
+                      setCurrentPage={setCurrentPage}
+                      totalPages={totalPages}
+                    />{' '}
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-
-          {/* Pagination */}
-          <Pagination
-            currentPage={currentPage}
-            setCurrentPage={setCurrentPage}
-            totalPages={totalPages}
-          />
-        </>
-      )}
+          </>
+        )}
+      </div>
     </div>
   );
 }

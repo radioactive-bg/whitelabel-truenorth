@@ -69,35 +69,69 @@ export const generatePagination = (currentPage: number, totalPages: number) => {
 };
 
 export const getStatusStyles = (status: number) => {
-  switch (status) {
-    case 3:
-      return {
-        text: 'Complete',
-        bgColor: 'bg-green-50',
-        textColor: 'text-green-700',
-        ringColor: 'ring-green-600',
-      };
-    case 6:
-      return {
-        text: 'Cancelled',
-        bgColor: 'bg-red-50',
-        textColor: 'text-red-700',
-        ringColor: 'ring-red-600',
-      };
-    case 7:
-      return {
-        text: 'In process',
-        bgColor: 'bg-[#FAAD14]',
-        textColor: 'text-[#FFF]',
-        ringColor: 'ring-[#FFF]',
-      };
+  const isDarkMode =
+    typeof document !== 'undefined' &&
+    document.documentElement.classList.contains('dark');
 
-    default:
-      return {
-        text: 'Unknown',
-        bgColor: 'bg-gray-50',
-        textColor: 'text-gray-700',
-        ringColor: 'ring-gray-600',
-      };
+  switch (status) {
+    case 3: // Complete
+      return isDarkMode
+        ? {
+            text: 'Complete',
+            bgColor: 'bg-green-700',
+            textColor: 'text-green-50',
+            ringColor: 'ring-green-400',
+          }
+        : {
+            text: 'Complete',
+            bgColor: 'bg-green-50',
+            textColor: 'text-green-700',
+            ringColor: 'ring-green-600',
+          };
+
+    case 6: // Cancelled
+      return isDarkMode
+        ? {
+            text: 'Cancelled',
+            bgColor: 'bg-red-700',
+            textColor: 'text-red-50',
+            ringColor: 'ring-red-400',
+          }
+        : {
+            text: 'Cancelled',
+            bgColor: 'bg-red-50',
+            textColor: 'text-red-700',
+            ringColor: 'ring-red-600',
+          };
+
+    case 7: // In Process
+      return isDarkMode
+        ? {
+            text: 'In process',
+            bgColor: 'bg-[#FFF]',
+            textColor: 'text-[#FAAD14]',
+            ringColor: 'ring-[#FAAD14]',
+          }
+        : {
+            text: 'In process',
+            bgColor: 'bg-[#FAAD14]',
+            textColor: 'text-[#FFF]',
+            ringColor: 'ring-[#FFF]',
+          };
+
+    default: // Unknown Status
+      return isDarkMode
+        ? {
+            text: 'Unknown',
+            bgColor: 'bg-gray-700',
+            textColor: 'text-gray-50',
+            ringColor: 'ring-gray-400',
+          }
+        : {
+            text: 'Unknown',
+            bgColor: 'bg-gray-50',
+            textColor: 'text-gray-700',
+            ringColor: 'ring-gray-600',
+          };
   }
 };

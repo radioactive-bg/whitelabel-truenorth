@@ -9,7 +9,8 @@ import { ChevronDownIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import { FunnelIcon, MinusIcon, PlusIcon } from '@heroicons/react/20/solid';
 
 import { filters } from '@/app/lib/constants';
-//import { getProductGroupsList } from '@/app/lib/api/productGroup';
+import { getRegions, getCurrencies } from '@/app/lib/api/filters';
+import { getProductGroupsList } from '@/app/lib/api/productGroup';
 
 import FilterPopover from '@/app/ui/dashboard/catalog/FilterPopover';
 import ProductsTable from '@/app/ui/dashboard/catalog/ProductsTable';
@@ -22,13 +23,25 @@ const Catalog = () => {
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  // do we need this ???
-  const [products, setProducts] = useState<any[]>([]); // Explicitly define 'products' as an array of 'any'
-  const [productGroups, setProductGroups] = useState<any[]>([]); // Explicitly define 'productGroups' as an array of 'any'
-
   // filter states
-  const [allFilters, setAllFilters] = useState(filters);
-  const [updatedAllFilters, setUpdatedAllFilters] = useState(filters);
+  //const [allFilters, setAllFilters] = useState<any[]>(filters);
+
+  const [allFilters, setAllFilters] = useState<any[]>(() => {
+    if (
+      typeof window !== 'undefined' &&
+      localStorage?.getItem('catalogFilters')
+    ) {
+      try {
+        return JSON.parse(localStorage.getItem('catalogFilters') || '[]');
+      } catch (error) {
+        console.error('Error parsing catalogFilters from localStorage:', error);
+        return filters; // Fallback to default filters if parsing fails
+      }
+    }
+    return filters; // Default filters for SSR
+  });
+
+  //const [updatedAllFilters, setUpdatedAllFilters] = useState(filters);
   const [filtersActive, setFiltersActive] = useState(false);
 
   const router = useRouter();
@@ -40,14 +53,47 @@ const Catalog = () => {
     initializeAuth: () => void;
   };
 
+  const [hasFetchedFilters, setHasFetchedFilters] = useState(false);
+
+  const [forceUpdate, setForceUpdate] = useState(false);
+  const triggerUpdate = () => {
+    setForceUpdate((prev) => !prev);
+  };
+
   useEffect(() => {
-    const productGroup = findQueryParam('ProductGroups');
+    const initializeFilters = async () => {
+      if (hasFetchedFilters) return; // Prevent re-fetch
+      setLoading(true);
+      try {
+        await fetchAndBuildFilters();
 
-    console.log('ProductGroup:', productGroup);
+        console.log('filters initialized');
+        const productGroup = findQueryParam('ProductGroups');
+        if (productGroup && productGroup.trim() !== '') {
+          console.log(
+            'fetchProductsFromQuery in useEffect initializeFilters :',
+          );
+          await fetchProductsFromQuery(productGroup);
+        }
+        setHasFetchedFilters(true); // Mark as fetched
+      } catch (error) {
+        console.error('Failed to initialize filters:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-    if (productGroup) {
-      if (productGroup !== '') {
-        //clear all filters and put only the product group that is in the filter as checked
+    initializeFilters();
+  }, []);
+
+  useEffect(() => {
+    if (allFilters.length > 0) {
+      const productGroup = findQueryParam('ProductGroups');
+
+      if (productGroup && productGroup.trim() !== '') {
+        console.log(
+          'fetchProductsFromQuery in useEffect [searchParams, allFilters]',
+        );
         fetchProductsFromQuery(productGroup);
       }
     }
@@ -61,28 +107,87 @@ const Catalog = () => {
       router.push('/login');
       return;
     }
-
-    const productGroup = findQueryParam('ProductGroup');
-    if (productGroup !== '') {
-      fetchProductsFromQuery(productGroup);
-    }
-
-    // if (productGroup !== '') {
-    //   handleSelectProductGroupIcon(productGroup);
-    // }
-
-    //fetchProducts();
   }, [auth.access_token]);
 
   const findQueryParam = (param: string) => {
     if (typeof window === 'undefined') return ''; // Prevent server-side errors
     const searchParams = new URLSearchParams(window.location.search);
-    return searchParams.get(param) || '';
+    const value = searchParams.get(param) || '';
+    return value.trim() || ''; // Normalize whitespace or empty values to an empty string
+  };
+
+  const fetchAndBuildFilters = async () => {
+    try {
+      const storedFilters = localStorage.getItem('catalogFilters');
+      if (storedFilters) {
+        const parsedFilters = JSON.parse(storedFilters);
+        console.log('parsedFilters: ', parsedFilters);
+        setAllFilters(parsedFilters);
+        console.log('Using stored filters from localStorage');
+        return;
+      }
+
+      const [productGroupsResponse, regionsResponse, currenciesResponse] =
+        await Promise.all([
+          getProductGroupsList(400),
+          getRegions(),
+          getCurrencies(),
+        ]);
+
+      console.log('regionsResponse: ' + JSON.stringify(regionsResponse));
+      console.log('currenciesResponse: ' + JSON.stringify(currenciesResponse));
+
+      const filters = [
+        {
+          id: 'Product Group',
+          name: 'Product Group',
+          options: productGroupsResponse.data.data.map((group: any) => ({
+            value: group.id.toString(),
+            label: group.name,
+            checked: false,
+            logo: group.logo || null,
+          })),
+        },
+        {
+          id: 'Activation Region',
+          name: 'Activation Region',
+          options: Object.entries(regionsResponse)
+            .filter(([key, value]) => typeof value === 'string')
+            .map(([key, value]) => ({
+              value: key,
+              label: value,
+              checked: false,
+            })),
+        },
+        {
+          id: 'Denomination Currency',
+          name: 'Denomination Currency',
+          options: Object.entries(currenciesResponse)
+            .filter(([key, value]) => typeof value === 'string')
+            .map(([key, value]) => ({
+              value: key,
+              label: value,
+              checked: false,
+            })),
+        },
+      ];
+
+      console.log('Built filters:', filters);
+      setAllFilters(filters);
+      localStorage.setItem('catalogFilters', JSON.stringify(filters));
+    } catch (error) {
+      console.error('Error fetching filters:', error);
+      throw error;
+    }
   };
 
   //test
-
   const fetchProductsFromQuery = async (productGroups: string) => {
+    if (allFilters.length === 0) {
+      console.log('fetchProductsFromQuery skipped: allFilters is empty');
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -91,6 +196,12 @@ const Catalog = () => {
         .split(',')
         .map((group) => group.trim());
 
+      //console.log('productGroupsArray: ', productGroupsArray);
+      if (allFilters.length === 0) {
+        setTimeout(() => {
+          console.log('fetchProductsFromQuery: allFilters is empty');
+        }, 600);
+      }
       // Step 1: Reset filters and mark relevant ProductGroups as active
       const newAllFilters = allFilters.map((filter) => {
         if (filter.id === allFilters[0].id) {
@@ -102,32 +213,15 @@ const Catalog = () => {
         }
         return filter;
       });
+      console.log(
+        'Updated Filters in fetchProductsFromQuery function:',
+        newAllFilters,
+      );
 
       setAllFilters(newAllFilters); // Update filters state
       setFiltersActive(true);
-
-      console.log('Updated Filters:', newAllFilters);
-
-      // Step 2: Filter products based on ProductGroups and optional search query
-      const searchQuery = findQueryParam('search');
-      const filteredProducts = newAllFilters[0].options.filter(
-        (option: any) => {
-          const matchesProductGroups = productGroupsArray.includes(
-            option.label,
-          );
-          const matchesSearchQuery = searchQuery
-            ? option.groupName === searchQuery
-            : true;
-          return matchesProductGroups && matchesSearchQuery;
-        },
-      );
-
-      console.log('Filtered Products:', filteredProducts);
-
-      setProducts(filteredProducts); // Update products state
     } catch (error) {
       console.error('Error fetching products:', error);
-      setProducts([]); // Reset products on error
     } finally {
       setLoading(false); // Stop loading
     }
@@ -137,7 +231,7 @@ const Catalog = () => {
     console.log('handleSelectProductGroupIcon productLabel: ', productLabel);
     let newAllFilters = allFilters.map((filter) => {
       if (filter.id === allFilters[0].id) {
-        let newOptions = filter.options.map((option) => {
+        let newOptions = filter.options.map((option: any) => {
           if (option.label === productLabel) {
             return {
               ...option,
@@ -169,16 +263,16 @@ const Catalog = () => {
 
   const checkIfAnyFiltersActive = () => {
     console.log('checkIfAnyFiltersActive');
-    console.log('allFilters: ', allFilters);
+    //console.log('allFilters: ', allFilters);
     const isActive = allFilters.some((filter) =>
-      filter.options.some((option) => option.checked),
+      filter.options.some((option: any) => option.checked),
     );
     console.log('isActive : ' + isActive);
     setFiltersActive(isActive);
   };
 
   return (
-    <div className="bg-white">
+    <div className="rounded-md bg-white dark:bg-gray-800 ">
       {loading === true ? (
         // add a skeleton for this when the time comes
         <>Loading...</>
@@ -212,14 +306,14 @@ const Catalog = () => {
                   leaveFrom="translate-x-0"
                   leaveTo="translate-x-full"
                 >
-                  <Dialog.Panel className="relative ml-auto flex h-full w-full max-w-xs flex-col overflow-y-auto bg-white py-4 pb-12 shadow-xl">
+                  <Dialog.Panel className="relative ml-auto flex h-full w-full max-w-xs flex-col overflow-y-auto bg-white py-4 pb-12 shadow-xl dark:bg-gray-900">
                     <div className="flex items-center justify-between px-4">
-                      <h2 className="text-lg font-medium text-gray-900">
+                      <h2 className="text-lg font-medium text-gray-900 dark:text-gray-300">
                         Filters
                       </h2>
                       <button
                         type="button"
-                        className="relative -mr-2 flex h-10 w-10 items-center justify-center rounded-md bg-white p-2 text-gray-400"
+                        className="relative -mr-2 flex h-10 w-10 items-center justify-center rounded-md bg-white p-2 text-gray-400 dark:bg-gray-800 dark:text-gray-300"
                         onClick={() => setMobileFiltersOpen(false)}
                       >
                         <span className="absolute -inset-0.5" />
@@ -256,7 +350,7 @@ const Catalog = () => {
           </Transition.Root>
 
           <main className="mx-auto max-w-2xl px-4 lg:max-w-7xl lg:px-8">
-            <div className=" flex items-center justify-end border-b border-gray-200 pb-10 pt-24">
+            <div className=" flex items-center justify-end border-b border-gray-200 pb-10 pt-10">
               <div className="flex hidden items-center lg:block">
                 <div className="flex items-center">
                   {allFilters.map((filter) => (
@@ -277,8 +371,8 @@ const Catalog = () => {
               </div>
             </div>
 
-            <div className="pb-24 pt-12 lg:grid lg:grid-cols-3 lg:gap-x-8">
-              <aside className="lg:hidden">
+            <div className="pb-10 pt-10 dark:bg-gray-900 lg:grid lg:grid-cols-3 lg:gap-x-8">
+              <aside className="mb-4 lg:hidden">
                 <h2 className="sr-only">Filters</h2>
 
                 <button
@@ -286,11 +380,11 @@ const Catalog = () => {
                   className="inline-flex items-center lg:hidden"
                   onClick={() => setMobileFiltersOpen(true)}
                 >
-                  <span className="text-sm font-medium text-gray-700">
+                  <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
                     Filters
                   </span>
                   <PlusIcon
-                    className="ml-1 h-5 w-5 flex-shrink-0 text-gray-400"
+                    className="ml-1 h-5 w-5 flex-shrink-0 text-gray-400  dark:text-gray-300"
                     aria-hidden="true"
                   />
                 </button>
@@ -311,33 +405,36 @@ const Catalog = () => {
                   />
                 ) : (
                   <div className="grid grid-cols-1 gap-y-4 sm:grid-cols-2 sm:gap-x-6 sm:gap-y-10 md:grid-cols-3 lg:gap-x-8 xl:grid-cols-6">
-                    {allFilters[0].options.map((product: any, index: number) =>
-                      product.label === 'All' ? null : (
-                        <button
-                          key={product.value}
-                          onClick={(e) =>
-                            handleSelectProductGroupIcon(product.label)
-                          }
-                          className="group flex flex-col items-center"
-                        >
-                          <div className="aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-lg bg-gray-200 xl:aspect-h-7 xl:aspect-w-7">
-                            <Image
-                              src={product.logo ? product.logo : '/NoPhoto.jpg'}
-                              width={200}
-                              height={200}
-                              alt={
-                                product.imageAlt
-                                  ? product.imageAlt
-                                  : 'Default description'
-                              }
-                              className="h-full w-full object-cover object-center group-hover:opacity-75"
-                            />
-                          </div>
-                          <h3 className="mt-4 text-sm text-gray-700">
-                            {product.label}
-                          </h3>
-                        </button>
-                      ),
+                    {allFilters[0]?.options?.map(
+                      (product: any, index: number) =>
+                        product.label === 'All' ? null : (
+                          <button
+                            key={product.value}
+                            onClick={(e) =>
+                              handleSelectProductGroupIcon(product.label)
+                            }
+                            className="group flex flex-col items-center"
+                          >
+                            <div className="relative overflow-hidden rounded-lg bg-gray-200 dark:bg-gray-700 sm:h-[100px] sm:w-[100px] md:h-full md:w-full">
+                              <Image
+                                src={
+                                  product.logo ? product.logo : '/NoPhoto.jpg'
+                                }
+                                width={200}
+                                height={200}
+                                alt={
+                                  product.imageAlt
+                                    ? product.imageAlt
+                                    : 'Default description'
+                                }
+                                className=" object-cover object-center group-hover:opacity-75 sm:h-[100px] sm:w-[100px] md:h-full md:w-full"
+                              />
+                            </div>
+                            <h3 className="dark: mt-4 text-sm text-gray-700 text-white dark:text-gray-300">
+                              {product.label}
+                            </h3>
+                          </button>
+                        ),
                     )}
                   </div>
                 )}

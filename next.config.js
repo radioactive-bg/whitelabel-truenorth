@@ -11,8 +11,11 @@ const nextConfig = {
         hostname: 'crm-duegate-public-staging.s3.eu-central-1.amazonaws.com',
         pathname: '/product_group_logo/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'picsum.photos',
+      },
     ],
-
   },
 };
 

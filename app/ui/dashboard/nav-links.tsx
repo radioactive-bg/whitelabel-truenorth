@@ -12,9 +12,15 @@ import clsx from 'clsx';
 // Map of links to display in the side navigation.
 // Depending on the size of the application, this would be stored in a database.
 const links = [
-  { name: 'Home', href: '/dashboard', icon: HomeIcon },
-  { name: 'Catalog', href: '/dashboard/catalog', icon: BuildingStorefrontIcon },
+  { id: 'HomeButton', name: 'Home', href: '/dashboard', icon: HomeIcon },
   {
+    id: 'CatalogButton',
+    name: 'Catalog',
+    href: '/dashboard/catalog',
+    icon: BuildingStorefrontIcon,
+  },
+  {
+    id: 'OrderListButton',
     name: 'Order List',
     href: '/dashboard/orders',
     icon: DocumentDuplicateIcon,
@@ -38,6 +44,7 @@ export default function NavLinks({
 
         return (
           <Link
+            id={link.id}
             key={link.name}
             href={link.href}
             onClick={() => {
@@ -45,15 +52,21 @@ export default function NavLinks({
               setOpenShoppingCart(false);
             }}
             className={clsx(
-              'group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6',
-
+              'group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 transition duration-300',
               isActive
-                ? 'bg-gray-50 text-[#50C8ED]'
-                : 'text-gray-700 hover:bg-gray-50 hover:text-[#50C8ED]',
+                ? 'bg-black text-white dark:bg-white dark:text-black'
+                : 'text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700',
             )}
           >
-            <LinkIcon className="w-6" />
-            <p className=" md:block">{link.name}</p>
+            <LinkIcon
+              className={clsx(
+                'w-6 transition duration-300',
+                isActive
+                  ? 'text-white dark:text-black'
+                  : 'text-gray-600 group-hover:text-black dark:text-gray-300 dark:group-hover:text-white',
+              )}
+            />
+            <p className="md:block">{link.name}</p>
           </Link>
         );
       })}

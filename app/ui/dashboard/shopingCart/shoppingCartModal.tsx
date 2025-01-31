@@ -9,6 +9,7 @@ import { XMarkIcon } from '@heroicons/react/24/outline';
 import { useCartStore } from '@/state/shoppingCart';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
+import { useThemeStore } from '@/state/theme';
 
 export default function ShoppingCartModal({
   open,
@@ -24,6 +25,9 @@ export default function ShoppingCartModal({
   const [subtotal, setSubtotal] = useState('0.00');
   const [tax, setTax] = useState('0.00');
   const [total, setTotal] = useState('0.00');
+
+  const { theme } = useThemeStore(); // Get theme from Zustand
+  const isDark = theme === 'dark';
 
   const calculateSubtotal = () => {
     return cartItems
@@ -58,7 +62,7 @@ export default function ShoppingCartModal({
 
   return (
     <Transition show={open}>
-      <Dialog className="z-100 relative" onClose={setOpen}>
+      <Dialog className="z-100 relative rounded-md" onClose={setOpen}>
         <Transition.Child
           enter="ease-out duration-300"
           enterFrom="opacity-0"
@@ -70,10 +74,9 @@ export default function ShoppingCartModal({
           <div className="hidden sm:fixed sm:inset-0 sm:block sm:bg-gray-500 sm:bg-opacity-75 sm:transition-opacity" />
         </Transition.Child>
 
-        {/*remove the margin top mt-[40px] if we do not need it */}
         <div className="fixed inset-0 z-10 mt-[60px] w-screen overflow-y-auto">
           <div className="flex min-h-full items-stretch justify-center text-center sm:items-center sm:px-6 lg:px-8">
-            <TransitionChild
+            <Transition.Child
               enter="ease-out duration-300"
               enterFrom="opacity-0 scale-105"
               enterTo="opacity-100 scale-100"
@@ -81,18 +84,21 @@ export default function ShoppingCartModal({
               leaveFrom="opacity-100 scale-100"
               leaveTo="opacity-0 scale-105"
             >
-              <DialogPanel className="flex w-full max-w-3xl transform text-left text-base transition sm:my-8">
-                <form className="relative flex w-full flex-col overflow-hidden bg-white pb-8 pt-6 sm:rounded-lg sm:pb-6 lg:py-8">
-                  <div className="flex items-center justify-between px-4 sm:px-6 lg:px-8">
-                    <h2 className="text-lg font-medium text-gray-900">
-                      Shopping Cart
-                    </h2>
+              <Dialog.Panel
+                className={` flex w-full max-w-3xl transform rounded-md text-left text-base transition sm:my-8 ${
+                  isDark
+                    ? 'bg-gray-900 text-gray-200'
+                    : 'bg-white text-gray-900'
+                }`}
+              >
+                <form className="relative flex w-full flex-col overflow-hidden  pb-8 pt-6 sm:rounded-lg sm:pb-6 lg:py-8">
+                  <div className="lg:px48 flex items-center justify-between px-4 pb-4 sm:px-6">
+                    <h2 className="text-lg font-medium">Shopping Cart</h2>
                     <button
                       type="button"
                       className="text-gray-400 hover:text-gray-500"
                       onClick={() => setOpen(false)}
                     >
-                      <span className="sr-only">Close</span>
                       <XMarkIcon className="h-6 w-6" aria-hidden="true" />
                     </button>
                   </div>
@@ -103,30 +109,34 @@ export default function ShoppingCartModal({
                     </h2>
                     <ul
                       role="list"
-                      className="divide-y divide-gray-200 px-4 sm:px-6 lg:px-8"
+                      className={`divide-y px-4 sm:px-6 lg:px-8 ${
+                        isDark ? 'divide-gray-700' : 'divide-gray-200'
+                      }`}
                     >
                       {cartItems.map((cartItem, cartItemIdx) => (
                         <li
                           key={cartItem.id}
-                          className="flex py-8 text-sm sm:items-center"
+                          className={`flex py-8 text-sm sm:items-center ${
+                            isDark ? 'text-gray-300' : 'text-gray-900'
+                          }`}
                         >
                           <Image
                             width={200}
                             height={200}
                             src={cartItem.logo ? cartItem.logo : '/NoPhoto.jpg'}
                             alt={cartItem.groupName}
-                            className="h-24 w-24 flex-none rounded-lg border border-gray-200 sm:h-32 sm:w-32"
+                            className={`h-24 w-24 flex-none rounded-lg border sm:h-32 sm:w-32 ${
+                              isDark ? 'border-gray-700' : 'border-gray-200'
+                            }`}
                           />
                           <div className="ml-4 grid flex-auto grid-cols-1 grid-rows-1 items-start gap-x-5 gap-y-3 sm:ml-6 sm:flex sm:items-center sm:gap-0">
                             <div className="row-end-1 flex-auto sm:pr-6">
-                              <h3 className="font-medium text-gray-900">
-                                <p>{cartItem.group}</p>
-                              </h3>
-                              <p className="mt-1 text-gray-500">
+                              <h3 className="font-medium">{cartItem.group}</h3>
+                              <p className="mt-1 text-gray-500 dark:text-gray-400">
                                 {cartItem.name}
                               </p>
                             </div>
-                            <p className=" row-span-2 row-end-2 ml-[20px] font-medium text-gray-900 sm:order-1 sm:ml-6 sm:w-1/3 sm:flex-none sm:text-center">
+                            <p className="row-span-2 row-end-2 ml-[20px] font-medium sm:order-1 sm:ml-6 sm:w-1/3 sm:flex-none sm:text-center">
                               {cartItem.currency === 'USD' ? '$' : '€'}
                               {Number(cartItem.price) * cartItem.quantity}
                             </p>
@@ -152,15 +162,19 @@ export default function ShoppingCartModal({
                                   );
                                   handleQuantityChange(cartItem.id, value);
                                 }}
-                                className="ml-[10px] w-20 rounded-md border border-gray-300 py-1.5 text-center text-base font-medium text-gray-700 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:text-sm"
+                                className={`ml-[10px] w-20 rounded-md border py-1.5 text-center text-base font-medium shadow-sm focus:ring-1 sm:text-sm ${
+                                  isDark
+                                    ? 'border-gray-600 bg-gray-800 text-gray-300 focus:border-indigo-400 focus:ring-indigo-400'
+                                    : 'border-gray-300 bg-white text-gray-900 focus:border-indigo-500 focus:ring-indigo-500'
+                                }`}
                               />
 
                               <button
                                 onClick={() => removeFromCart(cartItem.id)}
                                 type="button"
-                                className=" ml-4 font-medium text-indigo-600 hover:text-indigo-500 sm:ml-0 sm:mt-2 lg:ml-6"
+                                className="ml-4 font-medium hover:text-indigo-500 sm:ml-0 sm:mt-2 lg:ml-6"
                               >
-                                <span>Remove</span>
+                                Remove
                               </button>
                             </div>
                           </div>
@@ -173,33 +187,35 @@ export default function ShoppingCartModal({
                     aria-labelledby="summary-heading"
                     className="mt-auto sm:px-6 lg:px-8"
                   >
-                    <div className="bg-gray-50 p-6 sm:rounded-lg sm:p-8">
+                    <div
+                      className={`p-6 sm:rounded-lg sm:p-8 ${
+                        isDark ? 'bg-gray-800' : 'bg-gray-50'
+                      }`}
+                    >
                       <h2 id="summary-heading" className="sr-only">
                         Order summary
                       </h2>
 
                       <div className="flow-root">
-                        <dl className="-my-4 divide-y divide-gray-200 text-sm">
+                        <dl className="-my-4 divide-y text-sm">
                           <div className="flex items-center justify-between py-4">
-                            <dt className="text-gray-600">Subtotal</dt>
-                            <dd className="font-medium text-gray-900">
-                              {subtotal}
-                            </dd>
+                            <dt className="text-gray-600 dark:text-gray-400">
+                              Subtotal
+                            </dt>
+                            <dd className="font-medium">{subtotal}</dd>
                           </div>
 
                           <div className="flex items-center justify-between py-4">
-                            <dt className="text-gray-600">Tax</dt>
-                            <dd className="font-medium text-gray-900">
-                              <p className="font-medium text-gray-900">{tax}</p>
-                            </dd>
+                            <dt className="text-gray-600 dark:text-gray-400">
+                              Tax
+                            </dt>
+                            <dd className="font-medium">{tax}</dd>
                           </div>
                           <div className="flex items-center justify-between py-4">
-                            <dt className="text-base font-medium text-gray-900">
+                            <dt className="text-base font-medium">
                               Order total
                             </dt>
-                            <dd className="text-base font-medium text-gray-900">
-                              {total}
-                            </dd>
+                            <dd className="text-base font-medium">{total}</dd>
                           </div>
                         </dl>
                       </div>
@@ -209,15 +225,16 @@ export default function ShoppingCartModal({
                   <div className="mt-8 flex justify-end px-4 sm:px-6 lg:px-8">
                     <button
                       onClick={continueToPayment}
+                      id="ContinueToPaymentButton"
                       type="button"
-                      className="rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-50"
+                      className="inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-medium shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 dark:bg-gray-700 dark:text-white dark:ring-gray-500 dark:hover:bg-gray-600"
                     >
                       Continue to Payment
                     </button>
                   </div>
                 </form>
-              </DialogPanel>
-            </TransitionChild>
+              </Dialog.Panel>
+            </Transition.Child>
           </div>
         </div>
       </Dialog>

@@ -1,8 +1,8 @@
 import axios from 'axios';
 
-export async function getProductGroupsList(access_token: string) {
+export async function getProductGroupsList(itmesPerPage: number = 50) {
   const params = {
-    perPage: 50,
+    perPage: itmesPerPage,
   };
   try {
     const response = await axios.get(

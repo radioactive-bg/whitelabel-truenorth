@@ -35,7 +35,7 @@ export default function LoginForm({
               Staging
             </p>
           )}
-          <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
+          <h2 className=" text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
             Sign in to your account
           </h2>
         </div>
@@ -58,7 +58,7 @@ export default function LoginForm({
                   onChange={(e) => setEmail(e.target.value)}
                   autoComplete="email"
                   required
-                  className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-[#50C8ED]  sm:text-sm sm:leading-6"
+                  className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-black/70  sm:text-sm sm:leading-6"
                 />
               </div>
             </div>
@@ -71,14 +71,14 @@ export default function LoginForm({
                 >
                   Password
                 </label>
-                <div className="text-sm">
+                {/* <div className="text-sm">
                   <a
                     href="#"
                     className="font-semibold text-[#50C8ED] hover:text-indigo-500"
                   >
                     Forgot password?
                   </a>
-                </div>
+                </div> */}
               </div>
               <div className="mt-2">
                 <input
@@ -89,7 +89,7 @@ export default function LoginForm({
                   onChange={(e) => setPassword(e.target.value)}
                   autoComplete="current-password"
                   required
-                  className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-[#50C8ED] sm:text-sm sm:leading-6"
+                  className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-black/70 sm:text-sm sm:leading-6"
                 />
               </div>
             </div>
@@ -97,7 +97,7 @@ export default function LoginForm({
             <div>
               <button
                 type="submit"
-                className="flex w-full justify-center rounded-md bg-[#50C8ED] px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                className="flex w-full justify-center rounded-md bg-black px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-black/70 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                 onClick={(e) => handleLogin(e, email, password)}
               >
                 Sign in

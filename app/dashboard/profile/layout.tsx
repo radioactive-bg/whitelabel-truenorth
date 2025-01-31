@@ -44,8 +44,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       <main>
         <h1 className="sr-only">Account Settings</h1>
 
-        <header className="border-b border-white/5">
-          {/* Secondary navigation */}
+        {/* Secondary navigation */}
+        {/* <header className="border-b border-white/5">
+          
           <nav className="flex overflow-x-auto py-4">
             <ul
               role="list"
@@ -68,7 +69,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               ))}
             </ul>
           </nav>
-        </header>
+        </header> */}
         {children}
       </main>
     </>

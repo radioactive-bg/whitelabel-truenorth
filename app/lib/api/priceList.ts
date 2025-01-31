@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 //works
-export async function getPriceList(access_token: string) {
+export async function getPriceList() {
   try {
     const response = await axios.get(
       `${process.env.NEXT_PUBLIC_API_URL}/distributor-crm/v1/price-lists/company`,
@@ -83,7 +83,7 @@ export async function getPreview(
 }
 
 //works
-export async function getPriceListExport(access_token: string) {
+export async function getPriceListExport() {
   const params = {
     productGroup: null,
     productName: null,
@@ -111,7 +111,7 @@ export async function getPriceListExport(access_token: string) {
 }
 
 //works
-export async function getItmesPriceList(access_token: string) {
+export async function getItmesPriceList() {
   try {
     const response = await axios.get(
       `${process.env.NEXT_PUBLIC_API_URL}/distributor-crm/v1/price-lists/company/1/items`,
@@ -131,7 +131,7 @@ export async function getItmesPriceList(access_token: string) {
 }
 
 //works
-export async function getItemsPriceListExport(access_token: string) {
+export async function getItemsPriceListExport() {
   const params = {
     productGroup: null,
     productName: null,

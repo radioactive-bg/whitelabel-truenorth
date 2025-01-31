@@ -2,7 +2,7 @@ import axios from 'axios';
 //import { access_token } from '../constants';
 
 //works
-export async function getYesNoFilter(access_token: string) {
+export async function getYesNoFilter() {
   try {
     const response = await axios.get(
       `${process.env.NEXT_PUBLIC_API_URL}/distributor-crm/v1/filters/yes-no-filter`,
@@ -22,9 +22,8 @@ export async function getYesNoFilter(access_token: string) {
 }
 
 //works
-export async function getProductGroups(access_token: string) {
+export async function getProductGroups() {
   try {
-    console.log('access_token: ', access_token);
     const response = await axios.get(
       `${process.env.NEXT_PUBLIC_API_URL}/distributor-crm/v1/filters/product-groups`,
       {
@@ -34,7 +33,43 @@ export async function getProductGroups(access_token: string) {
         },
       },
     );
-    console.log('getProductGroups response.data.data: ', response.data);
+    //console.log('getProductGroups response.data.data: ', response.data);
+    return response.data;
+  } catch (error) {
+    console.error('Fetch Error:', error);
+    throw new Error('Failed to fetch Product Groups.');
+  }
+}
+//works
+export async function getRegions() {
+  try {
+    const response = await axios.get(
+      `${process.env.NEXT_PUBLIC_API_URL}/distributor-crm/v1/filters/regions`,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('access_token')}`,
+        },
+      },
+    );
+    return response.data;
+  } catch (error) {
+    console.error('Fetch Error:', error);
+    throw new Error('Failed to fetch Product Groups.');
+  }
+}
+
+export async function getCurrencies() {
+  try {
+    const response = await axios.get(
+      `${process.env.NEXT_PUBLIC_API_URL}/distributor-crm/v1/filters/currencies`,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('access_token')}`,
+        },
+      },
+    );
     return response.data;
   } catch (error) {
     console.error('Fetch Error:', error);
@@ -83,7 +118,7 @@ export async function getStatuses() {
 }
 
 //works
-export async function getTransactionMethods(access_token: string) {
+export async function getTransactionMethods() {
   try {
     const response = await axios.get(
       `${process.env.NEXT_PUBLIC_API_URL}/distributor-crm/v1/filters/transaction-methods`,
@@ -103,7 +138,7 @@ export async function getTransactionMethods(access_token: string) {
 }
 
 //works
-export async function getTransactionTypes(access_token: string) {
+export async function getTransactionTypes() {
   try {
     const response = await axios.get(
       `${process.env.NEXT_PUBLIC_API_URL}/distributor-crm/v1/filters/transaction-types`,
@@ -123,7 +158,7 @@ export async function getTransactionTypes(access_token: string) {
 }
 
 //works
-export async function getOrderProducts(access_token: string) {
+export async function getOrderProducts() {
   try {
     const response = await axios.get(
       `${process.env.NEXT_PUBLIC_API_URL}/distributor-crm/v1/filters/order-products`,
@@ -143,7 +178,7 @@ export async function getOrderProducts(access_token: string) {
 }
 
 //works
-export async function getClients(access_token: string, page: number | null) {
+export async function getClients(page: number | null) {
   const params = {
     page: page ? page : 1,
     q: 'NewClient',
@@ -168,7 +203,7 @@ export async function getClients(access_token: string, page: number | null) {
 }
 
 //works
-export async function getDateType(access_token: string) {
+export async function getDateType() {
   try {
     const response = await axios.get(
       `${process.env.NEXT_PUBLIC_API_URL}/distributor-crm/v1/filters/date-type`,

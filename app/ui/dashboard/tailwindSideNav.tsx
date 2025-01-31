@@ -9,8 +9,7 @@ import {
 } from '@headlessui/react';
 import {
   Bars3Icon,
-  BellIcon,
-  Cog6ToothIcon,
+  PhoneIcon,
   XMarkIcon,
   ShoppingBagIcon,
   WalletIcon,
@@ -21,8 +20,11 @@ import {
   MagnifyingGlassIcon,
 } from '@heroicons/react/20/solid';
 
+import { useThemeStore } from '@/state/theme';
+
 import NavLinks from '@/app/ui/dashboard/nav-links';
 import Logo from '@/app/ui/logo';
+import LogoWhite from '@/app/ui/logo-white';
 import { authStore, Auth } from '@/state/auth';
 import { userStore } from '@/state/user';
 import { useCartStore } from '@/state/shoppingCart';
@@ -32,9 +34,12 @@ import { useRouter } from 'next/navigation';
 import ShoppingCartModal from '../../ui/dashboard/shopingCart/shoppingCartModal';
 import axios from 'axios';
 import { usePathname } from 'next/navigation';
+import Link from 'next/link';
+import ThemeToggle from '@/app/ui/ThemeToggle';
 
 //import { getWalletsList } from '@/app/lib/api/wallet';
 import { useWalletStore, Wallet } from '@/state/wallets';
+import clsx from 'clsx';
 
 function classNames(...classes: any[]) {
   return classes.filter(Boolean).join(' ');
@@ -77,6 +82,8 @@ export default function TailwindSideNav({
   const [loading, setLoading] = useState(false); // Loading state
   const [results, setResults] = useState([]); // Search results
 
+  const { theme } = useThemeStore();
+
   const [isFocused, setIsFocused] = useState(false); // Track input focus state
 
   const { wallets, loadingWallets, error, fetchWallets, removeWallet } =
@@ -93,6 +100,7 @@ export default function TailwindSideNav({
   };
   const router = useRouter();
   const pathname = usePathname(); // Get the current path
+  let iContactUsActive = pathname === '/dashboard/contact-us';
 
   useEffect(() => {
     const localValue = localStorage.getItem('username') || '';
@@ -111,7 +119,7 @@ export default function TailwindSideNav({
 
   const fetchWallet = async () => {
     let walletInfo = await fetchWallets();
-    console.log('walletInfo:', JSON.stringify(walletInfo));
+    //console.log('walletInfo:', JSON.stringify(walletInfo));
   };
   const handleUserProfile = () => {
     router.push('/dashboard/profile');
@@ -175,22 +183,6 @@ export default function TailwindSideNav({
           },
         },
       );
-      // Check if the current page is the Catalog Page
-      //const pathname = window.location.pathname; // Get current page path
-      // if (pathname === '/dashboard/catalog') {
-      //   router.replace(
-      //     `/dashboard/catalog?ProductGroup=${encodeURIComponent(
-      //       response.data.data[0].group,
-      //     )}&search=${encodeURIComponent(query)}`,
-      //     undefined,
-      //     // Force a full reload
-      //   );
-      //   return;
-      // }
-
-      //console.log('response.data.data:' + JSON.stringify(response.data.data));
-
-      //setSearchProductGroup(response.data);
 
       setResults(response.data.data || []); // Adjust according to the API response
     } catch (error) {
@@ -201,19 +193,7 @@ export default function TailwindSideNav({
     }
   };
 
-  // Function to handle search action
-  //FIX THIS FUNCTION WHEN YOU CAN
-  const handleSearchAction = () => {
-    if (searchProductGroup) {
-      router.replace(
-        `/dashboard/catalog?ProductGroups=${encodeURIComponent(
-          searchProductGroup,
-        )}`,
-      );
-    }
-  };
-
-  const debouncedFetch = useRef(debounce(fetchSearchResults, 1000)).current;
+  const debouncedFetch = useRef(debounce(fetchSearchResults, 500)).current;
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const query = e.target.value;
@@ -225,6 +205,14 @@ export default function TailwindSideNav({
     { name: 'Your profile', action: handleUserProfile },
     { name: 'Sign out', action: handleLogout },
   ];
+
+  const handleSearchItemClick = (e: any, result: any) => {
+    console.log('handleSearchItemClick: ', result);
+    console.log('result.name: ', result.name);
+    router.push(
+      `/dashboard/catalog?ProductGroups=${encodeURIComponent(result.name)}`,
+    );
+  };
 
   return (
     <>
@@ -249,7 +237,7 @@ export default function TailwindSideNav({
               <div className="fixed inset-0 bg-gray-900/80" />
             </TransitionChild>
 
-            <div className="fixed inset-0 flex">
+            <div className=" fixed inset-0 flex">
               <TransitionChild
                 as={Fragment}
                 enter="transition ease-in-out duration-300 transform"
@@ -259,7 +247,7 @@ export default function TailwindSideNav({
                 leaveFrom="translate-x-0"
                 leaveTo="-translate-x-full"
               >
-                <DialogPanel className="relative mr-16 flex w-full max-w-xs flex-1">
+                <DialogPanel className="relative mr-16 flex w-full max-w-xs flex-1 ">
                   <TransitionChild
                     as={Fragment}
                     enter="ease-in-out duration-300"
@@ -283,9 +271,9 @@ export default function TailwindSideNav({
                       </button>
                     </div>
                   </TransitionChild>
-                  <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-white px-6 pb-4">
-                    <div className="flex h-16 shrink-0 items-center">
-                      <Logo />
+                  <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-white px-6 pb-4 dark:bg-gray-800">
+                    <div className="flex h-16 shrink-0 items-center  ">
+                      {theme === 'dark' ? <LogoWhite /> : <Logo />}
                     </div>
                     <nav className="flex flex-1 flex-col">
                       <ul role="list" className="flex flex-1 flex-col gap-y-7">
@@ -297,18 +285,31 @@ export default function TailwindSideNav({
                             />
                           </ul>
                         </li>
-                        {/* <li className="mt-auto">
-                          <a
-                            href=""
-                            className="group -mx-2 flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 text-gray-700 hover:bg-gray-50 hover:text-[#50C8ED]"
+                        <li className="mt-auto">
+                          <Link
+                            href="/dashboard/contact-us"
+                            onClick={() => {
+                              setSidebarOpen(false);
+                              setOpenShoppingCart(false);
+                            }}
+                            className={clsx(
+                              'group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 transition duration-300',
+                              iContactUsActive
+                                ? 'bg-black text-white dark:bg-white dark:text-black'
+                                : 'text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700',
+                            )}
                           >
-                            <Cog6ToothIcon
-                              className="h-6 w-6 shrink-0 text-gray-400 group-hover:text-[#50C8ED]"
-                              aria-hidden="true"
+                            <PhoneIcon
+                              className={clsx(
+                                'w-6 transition duration-300',
+                                iContactUsActive
+                                  ? 'text-white dark:text-black'
+                                  : 'text-gray-600 group-hover:text-black dark:text-gray-300 dark:group-hover:text-white',
+                              )}
                             />
-                            Settings
-                          </a>
-                        </li> */}
+                            Contact Us
+                          </Link>
+                        </li>
                       </ul>
                     </nav>
                   </div>
@@ -321,9 +322,9 @@ export default function TailwindSideNav({
         {/* Static sidebar for desktop */}
         <div className="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-72 lg:flex-col">
           {/* Sidebar component, swap this element with another sidebar if you like */}
-          <div className="flex grow flex-col gap-y-5 overflow-y-auto border-r border-gray-200 bg-white px-6 pb-4">
-            <div className="flex h-16 shrink-0 items-center">
-              <Logo />
+          <div className="flex grow flex-col gap-y-5 overflow-y-auto  bg-white px-6 pb-4 dark:bg-gray-800 dark:text-white">
+            <div className="flex h-16 shrink-0 items-center ">
+              {theme === 'dark' ? <LogoWhite /> : <Logo />}
             </div>
             {/* add the wallet  */}
 
@@ -338,26 +339,24 @@ export default function TailwindSideNav({
             </div> */}
             <div
               onClick={() => router.push('/dashboard/wallet')}
-              className=" flex flex-wrap items-baseline justify-between gap-x-4 gap-y-2 rounded-lg border border-gray-300 bg-white px-4 py-5 shadow-md hover:cursor-pointer  xl:px-8"
+              className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-2 rounded-lg border border-gray-300 bg-white px-4 py-5 shadow-md hover:cursor-pointer dark:border-gray-900 dark:bg-gray-900 dark:hover:bg-gray-700 xl:px-8"
             >
               <div className="flex w-full items-center">
                 <WalletIcon
-                  className="h-6 w-6 shrink-0 text-gray-400 group-hover:text-[#50C8ED]"
+                  className="h-6 w-6 shrink-0 text-gray-400 group-hover:text-[#50C8ED] dark:text-gray-300 dark:group-hover:text-[#50C8ED]"
                   aria-hidden="true"
                 />
-                <dt className="ml-[10px] text-sm font-bold leading-6 text-gray-500">
+                <dt className="ml-[10px] text-sm font-bold leading-6 text-gray-500 dark:text-gray-300">
                   {'Wallet'}
                 </dt>
               </div>
               {loadingWallets ? (
-                <div className=" h-10 w-40 animate-pulse rounded-md bg-gray-200"></div>
+                <div className="h-10 w-40 animate-pulse rounded-md bg-gray-200 dark:bg-gray-600"></div>
               ) : (
-                <dd className="w-full flex-none text-2xl font-medium leading-10 tracking-tight text-gray-900">
-                  {`${
-                    wallets[0].availableAmount
-                      ? wallets[0].availableAmount
-                      : '$ 0'
-                  }`}
+                <dd className="w-full flex-none text-2xl font-medium leading-10 tracking-tight text-gray-900 dark:text-white">
+                  {wallets[0].availableAmount
+                    ? wallets[0].availableAmount
+                    : '$ 0'}
                 </dd>
               )}
             </div>
@@ -373,35 +372,48 @@ export default function TailwindSideNav({
                   </ul>
                 </li>
 
-                {/* <li className="mt-auto">
-                  <a
-                    href="#"
-                    className="group -mx-2 flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 text-gray-700 hover:bg-gray-50 hover:text-[#50C8ED]"
+                <li className="mt-auto">
+                  <Link
+                    href="/dashboard/contact-us"
+                    onClick={() => {
+                      setSidebarOpen(false);
+                      setOpenShoppingCart(false);
+                    }}
+                    className={clsx(
+                      'group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 transition duration-300',
+                      iContactUsActive
+                        ? 'bg-black text-white dark:bg-white dark:text-black'
+                        : 'text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700',
+                    )}
                   >
-                    <Cog6ToothIcon
-                      className="h-6 w-6 shrink-0 text-gray-400 group-hover:text-[#50C8ED]"
-                      aria-hidden="true"
+                    <PhoneIcon
+                      className={clsx(
+                        'w-6 transition duration-300',
+                        iContactUsActive
+                          ? 'text-white dark:text-black'
+                          : 'text-gray-600 group-hover:text-black dark:text-gray-300 dark:group-hover:text-white',
+                      )}
                     />
-                    Settings
-                  </a>
-                </li> */}
+                    Contact Us
+                  </Link>
+                </li>
               </ul>
             </nav>
           </div>
         </div>
 
-        <div className="lg:pl-72">
+        <div className=" lg:pl-72">
           {/* Static topbar for desktop */}
           <div
             //see if removing the z-index braks anything else
-            className="sticky top-0 z-40 lg:mx-auto lg:max-w-7xl lg:px-8"
+            className="sticky top-0 z-40 md:mt-4 lg:mx-auto lg:px-8"
             //className="sticky top-0 lg:mx-auto lg:max-w-7xl lg:px-8"
           >
-            <div className="flex h-16 items-center gap-x-4 border-b border-gray-200 bg-white px-4 shadow-sm sm:gap-x-6 sm:px-6 lg:px-0 lg:shadow-none">
+            <div className="flex h-16 items-center gap-x-4 bg-white px-4 shadow-sm dark:bg-gray-800 sm:gap-x-6 sm:px-6 md:rounded-md lg:shadow-none">
               <button
                 type="button"
                 className="-m-2.5 p-2.5 text-gray-700 lg:hidden"
-                onClick={() => setSidebarOpen(true)}
+                onClick={() => setSidebarOpen(!sidebarOpen)}
               >
                 <span className="sr-only">Open sidebar</span>
                 <Bars3Icon className="h-6 w-6" aria-hidden="true" />
@@ -415,13 +427,13 @@ export default function TailwindSideNav({
 
               <div className="flex flex-1 gap-x-4 self-stretch lg:gap-x-6">
                 {pathname !== '/dashboard/orders' && (
-                  <div className=" flex items-center">
+                  <div className=" flex w-full max-w-[400px] items-center">
                     {/* Search Input */}
-                    <div className="relative flex w-[400px] items-center">
+                    <div className="relative flex w-full max-w-[400px] items-center">
                       <input
                         type="text"
                         placeholder="Search"
-                        className="w-full rounded-md border border-gray-300 bg-white py-2 pl-10 text-sm text-black placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-blue-600"
+                        className="w-full rounded-md border border-gray-300 bg-white py-2 pl-10 text-sm text-black placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-black/70 dark:bg-gray-800 dark:text-white"
                         value={searchProductGroup}
                         onChange={handleSearchChange}
                         onFocus={() => setIsFocused(true)} // Input gained focus
@@ -430,7 +442,7 @@ export default function TailwindSideNav({
 
                       <button
                         disabled={true}
-                        onClick={handleSearchAction}
+                        //onClick={handleSearchAction}
                         className="absolute left-3 top-1/2 h-8 w-8 -translate-y-1/2 transform"
                       >
                         <MagnifyingGlassIcon className="h-5 w-5" />
@@ -445,19 +457,15 @@ export default function TailwindSideNav({
                           )}
 
                           {!loading && results.length > 0 && (
-                            <ul className="absolute top-[100%] w-full rounded-md bg-white text-black shadow-md">
+                            <ul className="absolute top-[100%] w-full rounded-md bg-white text-black shadow-md dark:bg-gray-800 dark:text-white">
                               {results.map((result: any, index) => (
                                 <li
                                   key={index}
-                                  className="flex cursor-pointer items-center px-4 py-2 hover:bg-gray-100"
+                                  className="flex cursor-pointer items-center px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700"
                                   onMouseDown={(e) => e.preventDefault()} // Prevent input blur
-                                  onClick={() => {
-                                    router.push(
-                                      `/dashboard/catalog?ProductGroups=${encodeURIComponent(
-                                        result.name,
-                                      )}`,
-                                    );
-                                  }}
+                                  onClick={(event) =>
+                                    handleSearchItemClick(event, result)
+                                  }
                                 >
                                   {/* Product Group Logo */}
                                   {result.logo && (
@@ -480,7 +488,7 @@ export default function TailwindSideNav({
                       {!loading &&
                         searchProductGroup &&
                         results.length === 0 && (
-                          <div className="absolute top-[100%] w-[400px] rounded-md bg-gray-100 text-center text-sm text-gray-400 shadow-md">
+                          <div className="absolute top-[100%] w-full max-w-[400px] rounded-md bg-gray-100 text-center text-sm text-gray-400 shadow-md">
                             No results found
                           </div>
                         )}
@@ -489,24 +497,20 @@ export default function TailwindSideNav({
                 )}
 
                 <div className="ml-auto flex items-center gap-x-4 lg:gap-x-6">
-                  <button
-                    type="button"
-                    className="-m-2.5 p-2.5 text-gray-400 hover:text-gray-500"
-                  >
-                    <span className="sr-only">View notifications</span>
-                    <BellIcon className="h-6 w-6" aria-hidden="true" />
-                  </button>
+                  <span className="sr-only">View notifications</span>
+                  <ThemeToggle />
 
                   {/* Shopping Cart Button with Badge */}
                   <button
+                    id="ShoppingBagIconButton"
                     onClick={() => setOpenShoppingCart(!openShoppingCart)}
                     type="button"
-                    className="-m-2.5 p-2.5 text-gray-400 hover:text-gray-500"
+                    className="relative -m-2.5 p-2.5 text-gray-400 hover:text-gray-500"
                   >
                     <span className="sr-only">View picked items</span>
-                    <ShoppingBagIcon className="h-6 w-6" aria-hidden="true" />
+                    <ShoppingBagIcon className=" h-6 w-6" aria-hidden="true" />
                     {totalItemsInCart > 0 && (
-                      <span className="absolute flex h-4 min-w-[18px] items-center justify-center rounded-full bg-red-600 px-1 text-[10px] text-white">
+                      <span className="absolute right-1 top-1 flex h-4 min-w-[18px] items-center justify-center rounded-full bg-red-600 px-1 text-[10px] text-white">
                         {totalItemsInCart > 99 ? '99+' : totalItemsInCart}
                       </span>
                     )}
@@ -523,14 +527,14 @@ export default function TailwindSideNav({
                       <span className="sr-only">Open user menu</span>
                       {/* replace this image with the one of the user */}
 
-                      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-50">
+                      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-50 dark:text-white">
                         <p className="text-blue-600">
                           {user?.name?.[0]?.toLocaleUpperCase() || ''}
                         </p>
                       </div>
                       <span className="hidden lg:flex lg:items-center">
                         <span
-                          className="ml-4 text-sm font-semibold leading-6 text-gray-900"
+                          className="ml-4 text-sm font-semibold leading-6 text-gray-900 dark:text-white"
                           aria-hidden="true"
                         >
                           {user?.name || ''}
@@ -574,8 +578,8 @@ export default function TailwindSideNav({
             </div>
           </div>
 
-          <main className="py-10">
-            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <main className=" py-10 ">
+            <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:max-w-7xl lg:px-8">
               {children}
             </div>
           </main>

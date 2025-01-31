@@ -465,8 +465,8 @@ export const filters = [
     ],
   },
   {
-    id: 'Denomination currency',
-    name: 'Denomination currency',
+    id: 'Denomination Currency',
+    name: 'Denomination Currency',
     options: [
       { value: '', label: 'All', checked: false },
       { value: 'AED', label: 'AED', checked: false },

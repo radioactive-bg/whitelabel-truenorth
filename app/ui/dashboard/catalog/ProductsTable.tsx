@@ -5,6 +5,9 @@ import Pagination from '../../../ui/dashboard/pagination';
 import { useCartStore } from '../../../../state/shoppingCart';
 import { ProductsTableSkeleton } from '@/app/ui/skeletons';
 import Image from 'next/image';
+import { useSearchParams } from 'next/navigation';
+
+import PreorderDialog from '@/app/ui/dashboard/catalog/PreorderDialog'; // Import the PreorderDialog
 
 //import ErrorNotification from '@/components/shared/ErrorNotification';
 
@@ -25,6 +28,8 @@ const ProductsTable = ({
   //   secondairyText: '',
   // });
 
+  const searchParams = useSearchParams();
+
   const [selectedQuantities, setSelectedQuantities] = useState<{
     [key: number]: number;
   }>({});
@@ -37,25 +42,6 @@ const ProductsTable = ({
 
   const handleAddToCart = (product: any) => {
     const quantity = selectedQuantities[product.id] || 1;
-    //const existingItem = cartItems.find((item: any) => item.id === product.id);
-
-    // const totalQuantity = existingItem
-    //   ? existingItem.quantity + quantity
-    //   : quantity;
-
-    // const orderLimit = 4; // Example limit; adjust based on product or user settings
-
-    // if (totalQuantity > orderLimit) {
-    //   setErrorText({
-    //     mainText: 'Order Limit Exceeded',
-
-    //     secondairyText: `You can only order a maximum of ${orderLimit} units for this product.`,
-    //   });
-
-    //   setShowError(true);
-
-    //   return;
-    // }
 
     addToCart({ ...product, quantity });
   };
@@ -80,6 +66,23 @@ const ProductsTable = ({
   const cancelTokenSource = useRef<CancelTokenSource | null>(null);
   const latestRequestId = useRef<number>(0);
 
+  const [isDialogOpen, setIsDialogOpen] = useState(false); // Dialog state
+  const [selectedProduct, setSelectedProduct] = useState(null); // Selected product for the dialog
+
+  const handleOpenPreorderDialog = (product: any) => {
+    console.log(
+      'handleOpenPreorderDialog in ProductsTable: ',
+      JSON.stringify(product),
+    );
+    setSelectedProduct(product); // Set the selected product
+    setIsDialogOpen(true); // Open the dialog
+  };
+
+  const handleCloseDialog = () => {
+    setIsDialogOpen(false); // Close the dialog
+    setSelectedProduct(null); // Clear the selected product
+  };
+
   const findQueryParam = (param: string) => {
     if (typeof window === 'undefined') return ''; // Prevent server-side errors
     const searchParams = new URLSearchParams(window.location.search);
@@ -88,11 +91,11 @@ const ProductsTable = ({
 
   const fetchData = async () => {
     setLoading(true); // Set loading to true before fetching data
-    const searchQuery = findQueryParam('search');
+    const searchQuery = findQueryParam('ProductGroups');
 
-    let productName = searchQuery ? searchQuery : null;
+    let ProductGroups = searchQuery ? searchQuery : null;
 
-    console.log('productName: ', productName);
+    console.log('ProductGroups in fetchData in ProductsTable: ', ProductGroups);
 
     // Cancel the previous request if there was one
     if (cancelTokenSource.current) {
@@ -118,7 +121,10 @@ const ProductsTable = ({
 
       if (requestId === latestRequestId.current) {
         let data = response.data ? response.data : [];
-
+        // console.log(
+        //   'Request made an accepted, setProducts(data):',
+        //   JSON.stringify(data),
+        // );
         setCurrentPage(response.meta.current_page);
         setTotalPages(response.meta.last_page);
         setProducts(data);
@@ -130,7 +136,9 @@ const ProductsTable = ({
         console.error('Fetch Error:', error);
       }
     } finally {
-      setLoading(false); // Set loading to false after fetching data
+      setTimeout(() => {
+        setLoading(false);
+      }, 750);
     }
   };
 
@@ -140,7 +148,9 @@ const ProductsTable = ({
 
   useEffect(() => {
     // Extracting the checked options' ids from allFilters
-
+    console.log(
+      'useEffect in ProductsTable for allFilters, currentPage, searchParams',
+    );
     const newRegionIDs = allFilters
       .find((filter: any) => filter.id === 'Activation Region')
       ?.options.filter((option: any) => option.checked)
@@ -166,7 +176,7 @@ const ProductsTable = ({
   }, [allFilters, currentPage]);
 
   return (
-    <div className="w-full">
+    <div className="w-full  ">
       {/* Error Notification */}
 
       {/* <ErrorNotification
@@ -177,8 +187,8 @@ const ProductsTable = ({
       /> */}
 
       {/* ProductsTable */}
-      <div className="bg-white">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 lg:pb-24">
+      <div className="rounded-lg bg-white dark:bg-gray-900">
+        <div className="mx-auto max-w-7xl px-4  pt-2 sm:px-6 lg:px-8 lg:pb-12 ">
           <div className="">
             <h2 className="sr-only">Recent orders</h2>
 
@@ -191,9 +201,9 @@ const ProductsTable = ({
                     Order placed on <time dateTime={'test'}>{'test'}</time>
                   </h3>
 
-                  <table className="mt-4 w-full text-gray-500 sm:mt-6">
+                  <table className="mt-4 w-full text-gray-500 dark:bg-gray-900 sm:mt-6">
                     <caption className="sr-only">Products</caption>
-                    <thead className="sr-only text-left text-sm text-gray-500 sm:not-sr-only">
+                    <thead className="sr-only text-left text-sm text-gray-500 dark:bg-gray-900 sm:not-sr-only">
                       <tr>
                         <th
                           scope="col"
@@ -233,10 +243,10 @@ const ProductsTable = ({
                         </th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-gray-200 border-b border-gray-200 text-sm sm:border-t">
+                    <tbody className="divide-y divide-gray-200 border-b border-gray-200 text-sm dark:divide-gray-700 dark:border-gray-700 sm:border-t">
                       {products.map((product: any) => (
                         <tr key={product.id}>
-                          <td className="py-6 pr-8">
+                          <td className="py-4 pr-2 md:py-6 md:pr-8">
                             <div className="flex items-center">
                               <Image
                                 width={200}
@@ -249,10 +259,10 @@ const ProductsTable = ({
                                     ? product.imageAlt
                                     : 'product image'
                                 }
-                                className="mr-6 h-16 w-16 rounded object-cover object-center"
+                                className="mr-6 max-h-14 w-auto rounded  object-cover object-center md:max-h-16"
                               />
                               <div>
-                                <div className="mr-2 font-medium text-gray-900">
+                                <div className="mr-2 font-medium text-gray-900 text-gray-900 dark:text-gray-100">
                                   {product.groupName}
                                 </div>
                                 <div className="mt-1 sm:hidden">
@@ -262,15 +272,15 @@ const ProductsTable = ({
                               </div>
                             </div>
                           </td>
-                          <td className="hidden py-6 pr-8 sm:table-cell">
+                          <td className="hidden py-4  pr-8 dark:text-gray-300 sm:table-cell  md:py-6">
                             {product.group}
                           </td>
-                          <td className="hidden py-6 pr-8 sm:table-cell">
+                          <td className="hidden py-4  pr-8 dark:text-gray-300 sm:table-cell  md:py-6">
                             {product.price}
                             {product.currency === 'USD' ? '$' : '€'}
                           </td>
 
-                          <td className=" py-6 sm:table-cell sm:pr-8">
+                          <td className=" py-4   sm:table-cell sm:pr-8  md:py-6">
                             <input
                               type="number"
                               id={`quantity-${product.id}`}
@@ -285,29 +295,29 @@ const ProductsTable = ({
                                 );
                                 handleQuantityChange(product.id, value);
                               }}
-                              className="w-20 rounded-md border border-gray-300 py-1.5 text-center text-base font-medium text-gray-700 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:text-sm"
+                              className="w-16 rounded-md border border-gray-300 py-1.5 text-center text-base font-medium text-gray-700 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 sm:text-sm md:w-20"
                             />
                           </td>
 
                           {product.isEnabled ? (
                             <td className=" hidden min-w-[100px] py-6 pr-8 sm:table-cell">
-                              <span className=" inline-flex items-center rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">
+                              <span className=" inline-flex items-center rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20 dark:bg-green-900 dark:text-green-300">
                                 In Stock
                               </span>
                             </td>
                           ) : (
                             <td className="hidden min-w-[100px] py-6 pr-8 sm:table-cell">
-                              <span className=" inline-flex items-center rounded-md bg-red-50 px-2 py-1 text-xs font-medium text-red-700 ring-1 ring-inset ring-red-600/20">
+                              <span className=" inline-flex items-center rounded-md bg-red-50 px-2 py-1 text-xs font-medium text-red-700 ring-1 ring-inset ring-red-600/20 dark:bg-red-900 dark:text-red-300">
                                 Sold Out
                               </span>
                             </td>
                           )}
 
-                          <td className="whitespace-nowrap py-6 text-right font-medium">
+                          <td className="whitespace-nowrap py-4  text-right font-medium md:py-6">
                             <button
                               disabled={!product.isEnabled}
                               onClick={() => handleAddToCart(product)}
-                              className={`ml-4 rounded-md px-3 py-1 text-indigo-600 transition duration-150 hover:bg-indigo-100 hover:text-indigo-500 active:bg-indigo-200 active:text-indigo-700 ${
+                              className={`ml-4 rounded-md bg-black px-3 py-1 text-white transition duration-150 hover:bg-black/70 dark:bg-gray-700 dark:hover:bg-gray-800 ${
                                 !product.isEnabled
                                   ? 'cursor-not-allowed opacity-50'
                                   : ''
@@ -318,13 +328,49 @@ const ProductsTable = ({
                               <span className="sr-only">, {product.name}</span>
                             </button>
                           </td>
+
+                          {/* {product.isEnabled ? (
+                            <td className="whitespace-nowrap py-6 text-right font-medium">
+                              <button
+                                disabled={!product.isEnabled}
+                                onClick={() => handleAddToCart(product)}
+                                className={`ml-4 rounded-md bg-black px-3 py-1 text-white transition duration-150 hover:bg-black/70   ${
+                                  !product.isEnabled
+                                    ? 'cursor-not-allowed opacity-50'
+                                    : ''
+                                }`}
+                              >
+                                Add
+                                <span className="hidden lg:inline">
+                                  {' '}
+                                  Product
+                                </span>
+                                <span className="sr-only">
+                                  , {product.name}
+                                </span>
+                              </button>
+                            </td>
+                          ) : (
+                            <td className="whitespace-nowrap py-6 text-right font-medium">
+                              <button
+                                onClick={() =>
+                                  handleOpenPreorderDialog(product)
+                                }
+                                className={`ml-4 rounded-md border border-gray-300 px-3 py-1 text-black transition duration-150 hover:border-white hover:bg-black hover:text-white active:bg-indigo-200 active:text-indigo-700`}
+                              >
+                                Preorder
+                              </button>
+                            </td>
+                          )} */}
                         </tr>
                       ))}
                     </tbody>
                   </table>
                 </div>
               ) : (
-                <div className="text-center text-gray-500">No items found</div>
+                <div className="text-center text-gray-500 text-gray-500 dark:text-gray-300">
+                  No items found
+                </div>
               )}
             </div>
           </div>
@@ -336,6 +382,15 @@ const ProductsTable = ({
         setCurrentPage={setCurrentPage}
         totalPages={totalPages}
       />
+
+      {/* Preorder Dialog */}
+      {isDialogOpen && selectedProduct && (
+        <PreorderDialog
+          product={selectedProduct}
+          isDialogOpen={isDialogOpen}
+          setIsOpenDialog={handleCloseDialog}
+        />
+      )}
     </div>
   );
 };

@@ -34,7 +34,7 @@ const Payment = () => {
   return (
     <div className="sweet-loading mt-32">
       <ClipLoader
-        color={'purple'}
+        color={'black'}
         loading={loading}
         cssOverride={override}
         size={150}

@@ -41,7 +41,10 @@ export default function WalletPage() {
           },
         },
       );
-
+      console.log(
+        'transactions response.data.data: ' +
+          JSON.stringify(response.data.data),
+      );
       // Filter data for "redeem card" or "redeem invoice code"
       const filteredTransactions = response.data.data
         .filter(
@@ -85,111 +88,120 @@ export default function WalletPage() {
 
   return (
     <>
-      <div className="mx-auto max-w-5xl space-y-8 rounded-md bg-customGray p-6">
-        <div>
-          <h1 className="mb-6 text-xl font-semibold">Wallet</h1>
-
-          <div className="rounded-lg bg-white p-6 shadow">
-            <div className="flex items-center justify-between">
-              <div>
-                <div className="mb-1 text-sm text-gray-500">My Balance</div>
-                <div className="flex items-baseline gap-1">
-                  <span className="text-sm text-gray-500">
-                    {selectedWallet?.currency}
-                  </span>
-                  <span className="text-3xl font-semibold">
-                    {selectedWallet?.availableAmount}
-                  </span>
-                </div>
-                <div className="mt-2 text-sm text-gray-500">
-                  Show account balance in USD
-                </div>
+      <div>
+        <div className="mb-4 rounded-lg bg-white p-6 shadow dark:bg-gray-800">
+          <h1 className="mb-6 text-xl font-semibold dark:text-white">Wallet</h1>
+          <div className="flex items-center justify-between">
+            <div>
+              <div className="mb-1 text-sm text-gray-500 dark:text-gray-300">
+                My Balance
               </div>
-
-              <Dropdown>
-                <DropdownButton className="inline-flex h-[42px] w-[150px] items-center rounded-md bg-white px-3 py-2 text-sm font-semibold shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
-                  TopUp
-                  <ChevronDownIcon className="mr-2 h-4 w-4" />
-                </DropdownButton>
-                <DropdownMenu>
-                  <DropdownItem
-                    className="directon-row space-between flex"
-                    onClick={() => {
-                      setIsRedeemCardDialogOpen(true);
-                    }}
-                  >
-                    Redeem a card <ChevronRightIcon width={16} height={16} />
-                  </DropdownItem>
-                  <DropdownItem
-                    onClick={() => {
-                      setIsRedeemInvoiceDialogOpen(true);
-                    }}
-                  >
-                    Redeem by invoice code
-                    <ChevronRightIcon width={16} height={16} />
-                  </DropdownItem>
-                </DropdownMenu>
-              </Dropdown>
+              <div className="flex items-baseline gap-1">
+                <span className="text-sm text-gray-500 dark:text-gray-300">
+                  {selectedWallet?.currency}
+                </span>
+                <span className="text-3xl font-semibold dark:text-white">
+                  {selectedWallet?.availableAmount}
+                </span>
+              </div>
+              <div className="mt-2 text-sm text-gray-500 dark:text-gray-400">
+                Show account balance in USD
+              </div>
             </div>
-          </div>
-        </div>
 
-        <div>
-          <h2 className="mb-4 text-lg font-semibold">TopUp History</h2>
-          <div className="overflow-hidden rounded-lg bg-white shadow">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                    Date
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                    Currency
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                    TopUp Type
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                    Amount
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-200 bg-white">
-                {loading ? (
-                  <tr>
-                    <td colSpan={4} className="py-4 text-center text-gray-500">
-                      Loading...
-                    </td>
-                  </tr>
-                ) : transactions.length > 0 ? (
-                  transactions.map((transaction, index) => (
-                    <tr key={index}>
-                      <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
-                        {transaction.date}
-                      </td>
-                      <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
-                        {transaction.currency}
-                      </td>
-                      <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
-                        {transaction.method}
-                      </td>
-                      <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
-                        {transaction.amount}
-                      </td>
-                    </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td colSpan={4} className="py-4 text-center text-gray-500">
-                      No transactions found.
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
+            <Dropdown>
+              <DropdownButton className="inline-flex h-[42px] w-[150px] items-center rounded-md bg-white px-3 py-2 text-sm font-semibold shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 dark:bg-gray-700 dark:text-white dark:ring-gray-500 dark:hover:bg-gray-600">
+                TopUp
+                <ChevronDownIcon className="mr-2 h-4 w-4" />
+              </DropdownButton>
+              <DropdownMenu className="dark:bg-gray-800 dark:text-white">
+                <DropdownItem
+                  className="flex justify-between dark:hover:bg-gray-700"
+                  onClick={() => {
+                    setIsRedeemCardDialogOpen(true);
+                  }}
+                >
+                  Redeem a card <ChevronRightIcon width={16} height={16} />
+                </DropdownItem>
+                <DropdownItem
+                  className="dark:hover:bg-gray-700"
+                  onClick={() => {
+                    setIsRedeemInvoiceDialogOpen(true);
+                  }}
+                >
+                  Redeem by invoice code
+                  <ChevronRightIcon width={16} height={16} />
+                </DropdownItem>
+              </DropdownMenu>
+            </Dropdown>
           </div>
         </div>
       </div>
+
+      <div className="rounded-lg bg-white p-6 shadow dark:bg-gray-800">
+        <h2 className="mb-4 text-lg font-semibold dark:text-white">
+          TopUp History
+        </h2>
+        <div className="overflow-hidden rounded-lg bg-white shadow dark:bg-gray-800">
+          <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+            <thead className="bg-gray-50 dark:bg-gray-700">
+              <tr>
+                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-300">
+                  Date
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-300">
+                  Currency
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-300">
+                  TopUp Type
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-300">
+                  Amount
+                </th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-200 bg-white dark:divide-gray-700 dark:bg-gray-800">
+              {loading ? (
+                <tr>
+                  <td
+                    colSpan={4}
+                    className="py-4 text-center text-gray-500 dark:text-gray-300"
+                  >
+                    Loading...
+                  </td>
+                </tr>
+              ) : transactions.length > 0 ? (
+                transactions.map((transaction, index) => (
+                  <tr key={index}>
+                    <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500 dark:text-gray-300">
+                      {transaction.date}
+                    </td>
+                    <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500 dark:text-gray-300">
+                      {transaction.currency}
+                    </td>
+                    <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500 dark:text-gray-300">
+                      {transaction.method}
+                    </td>
+                    <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500 dark:text-gray-300">
+                      {transaction.amount}
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td
+                    colSpan={4}
+                    className="py-4 text-center text-gray-500 dark:text-gray-300"
+                  >
+                    No transactions found.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
       <RedeemCardDialog
         open={isRedeemCardDialogOpen}
         onClose={() => setIsRedeemCardDialogOpen(false)}
