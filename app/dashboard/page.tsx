@@ -4,6 +4,7 @@ import { authStore, Auth } from '@/state/auth';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
+import { getProductGroups } from '@/app/lib/api/filters';
 
 export default function CatalogPage() {
   const router = useRouter();
@@ -16,6 +17,31 @@ export default function CatalogPage() {
     Array(6).fill(true),
   );
 
+  const [brands, setBrands] = useState([
+    { src: '/amazon-fb-cat.png', name: 'Amazon', href: '/dashboard/catalog' },
+    {
+      src: '/playstation-store-fb-cat.png',
+      name: 'PSN',
+      href: '/dashboard/catalog',
+    },
+    {
+      src: '/google-play-fb-cat.png',
+      name: 'Google Play',
+      href: '/dashboard/catalog',
+    },
+    {
+      src: '/appstore-fb-cat.png',
+      name: 'Apple Card',
+      href: '/dashboard/catalog',
+    },
+    { src: '/steam-fb-cat.png', name: 'Steam', href: '/dashboard/catalog' },
+    {
+      src: '/nintendo-fb-cat.png',
+      name: 'Nintendo',
+      href: '/dashboard/catalog',
+    },
+  ]);
+
   const handleImageLoad = (index: number) => {
     setLoadingStates((prev) => {
       const newState = [...prev];
@@ -27,11 +53,46 @@ export default function CatalogPage() {
   useEffect(() => {
     initializeAuth();
     const localValue = localStorage.getItem('access_token') || '';
-    if (localValue === '' || !localValue) {
+    if (!localValue) {
       router.push('/login');
       return;
     }
   }, [auth.access_token]);
+
+  // Fetch product groups on page load and log the result
+  useEffect(() => {
+    const fetchProductGroups = async () => {
+      try {
+        const productGroups = await getProductGroups();
+        console.log('Product Groups:', productGroups);
+
+        // Update brands array with correct hrefs
+        const updatedBrands = brands.map((brand) => {
+          // Find a product group that matches the brand name
+          const matchedGroup = Object.entries(productGroups).find(
+            ([_, name]) =>
+              typeof name === 'string' &&
+              (name as string).toLowerCase().includes(brand.name.toLowerCase()),
+          );
+
+          return {
+            ...brand,
+            href: matchedGroup
+              ? `/dashboard/catalog?ProductGroups=${encodeURIComponent(
+                  matchedGroup[1] as string,
+                )}`
+              : '/dashboard/catalog', // Default if not found
+          };
+        });
+
+        setBrands(updatedBrands);
+      } catch (error) {
+        console.error('Error fetching product groups:', error);
+      }
+    };
+
+    fetchProductGroups();
+  }, []);
 
   return (
     <div>
@@ -68,39 +129,13 @@ export default function CatalogPage() {
       </section>
 
       {/* Popular Brands Section */}
-      <section className=" py-16  md:py-24">
+      <section className="py-16 md:py-24">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="mb-8 text-2xl font-bold dark:text-white sm:text-3xl">
             Popular Brands
           </h2>
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
-            {[
-              // Array of brands
-              {
-                href: '/dashboard/catalog?ProductGroups=Amazon US',
-                src: '/amazon-fb-cat.png',
-              },
-              {
-                href: '/dashboard/catalog?ProductGroups=PSN',
-                src: '/playstation-store-fb-cat.png',
-              },
-              {
-                href: '/dashboard/catalog?ProductGroups=Google Play USA',
-                src: '/google-play-fb-cat.png',
-              },
-              {
-                href: '/dashboard/catalog?ProductGroups=Apple Card US',
-                src: '/appstore-fb-cat.png',
-              },
-              {
-                href: '/dashboard/catalog?ProductGroups=Steam USA',
-                src: '/steam-fb-cat.png',
-              },
-              {
-                href: '/dashboard/catalog?ProductGroups=Nintendo',
-                src: '/nintendo-fb-cat.png',
-              },
-            ].map((item, index) => (
+            {brands.map((item, index) => (
               <Link key={index} href={item.href} prefetch={false}>
                 <div className="relative flex items-center justify-center">
                   {loadingStates[index] && (
@@ -108,7 +143,7 @@ export default function CatalogPage() {
                   )}
                   <Image
                     src={item.src}
-                    alt={`Brand ${index + 1}`}
+                    alt={item.name}
                     width={240}
                     height={240}
                     className={`h-auto w-full rounded-md object-contain transition-opacity duration-300 dark:bg-gray-800 ${
