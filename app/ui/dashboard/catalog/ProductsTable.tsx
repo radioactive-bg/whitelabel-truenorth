@@ -238,9 +238,7 @@ const ProductsTable = ({
                         <th
                           scope="col"
                           className="w-0 py-3 text-right font-normal"
-                        >
-                          Actions
-                        </th>
+                        ></th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-200 border-b border-gray-200 text-sm dark:divide-gray-700 dark:border-gray-700 sm:border-t">

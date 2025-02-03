@@ -432,7 +432,7 @@ const Catalog = () => {
                                 className=" object-cover object-center group-hover:opacity-75 sm:h-[100px] sm:w-[100px] md:h-full md:w-full"
                               />
                             </div>
-                            <h3 className="dark: mt-4 text-sm text-gray-700 text-white dark:text-gray-300">
+                            <h3 className="dark: mt-4 text-sm text-black text-gray-700 dark:text-gray-300">
                               {product.label}
                             </h3>
                           </button>

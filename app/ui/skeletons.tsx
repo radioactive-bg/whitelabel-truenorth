@@ -51,9 +51,7 @@ export function InvoicesTableSkeleton() {
                     <th
                       scope="col"
                       className="px-3 py-3.5 text-center text-sm font-semibold text-gray-900 dark:text-gray-200"
-                    >
-                      Actions
-                    </th>
+                    ></th>
                     <th
                       scope="col"
                       className="relative py-3.5 pl-3 pr-4 sm:pr-0"
@@ -184,7 +182,7 @@ export function ProductsTableSkeleton() {
                     <th className="hidden py-3 pr-8 font-normal sm:table-cell">
                       Status
                     </th>
-                    <th className="w-0 py-3 text-right font-normal">Actions</th>
+                    <th className="w-0 py-3 text-right font-normal"></th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200 border-b border-gray-200 text-sm dark:divide-gray-700 dark:border-gray-700 sm:border-t">

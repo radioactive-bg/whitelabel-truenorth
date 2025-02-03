@@ -189,10 +189,18 @@ const OrderDetailsContent = () => {
               </dt>
               <dd className="mt-1 text-sm leading-6 text-gray-700 dark:text-gray-400 sm:mt-2">
                 This order, identified by order number{' '}
-                {order.orderDetails.displayId}, was placed on{' '}
-                {order.orderDetails.createdAt}. The total amount for this order
-                is {order.orderDetails.amountTotal}, and its current status is
-                marked as{' '}
+                <span className="font-semibold">
+                  {order.orderDetails.displayId}
+                </span>
+                , was placed on{' '}
+                <span className="font-semibold">
+                  {order.orderDetails.createdAt}
+                </span>
+                . The total amount for this order is{' '}
+                <span className="font-semibold">
+                  {order.orderDetails.amountTotal}
+                </span>
+                , and its current status is{' '}
                 {loading ? (
                   <span className="inline-block h-5 w-20 animate-pulse rounded-md bg-gray-300"></span>
                 ) : (
@@ -200,77 +208,86 @@ const OrderDetailsContent = () => {
                     {order.orderDetails.statusText}
                   </span>
                 )}
-                .
+                .{/* List Order Items */}
+                {order.orderProducts.length > 0 && (
+                  <div className="mt-4">
+                    <h3 className="text-sm font-bold text-gray-900 dark:text-white">
+                      Order Items:
+                    </h3>
+                    <ul className="mt-1 space-y-1 text-sm text-gray-700 dark:text-gray-400">
+                      {order.orderProducts.map(
+                        (product: any, index: number) => (
+                          <li key={index} className="flex justify-between">
+                            <span>
+                              {product.count} × {product.groupName} (
+                              {product.name})
+                            </span>
+                            <span className="font-semibold">
+                              {product.clientPrice}
+                            </span>
+                          </li>
+                        ),
+                      )}
+                    </ul>
+                  </div>
+                )}
               </dd>
             </div>
 
-            <div className="border-t border-gray-100 px-4 py-6 sm:col-span-2 sm:px-0">
-              <dt className="text-sm font-medium leading-6 text-gray-900 dark:text-white">
-                Attachments
-              </dt>
-              <dd className="mt-2 text-sm text-gray-900">
-                {loading ? (
-                  <div className="flex animate-pulse items-center space-x-4">
-                    <div className="h-6 w-5/6 rounded bg-gray-300"></div>
-                    <div className="ml-4 flex-shrink-0">
-                      <button
-                        onClick={() => handleDownload(order.orderDetails.id)}
-                        className={`ml-4 rounded-md px-3 py-1 text-indigo-600 transition duration-150 hover:bg-indigo-100 hover:text-indigo-500 active:bg-indigo-200 active:text-indigo-700 ${
-                          order.orderDetails.statusText !== 'Completed' &&
-                          'cursor-not-allowed opacity-50'
-                        }`}
-                        disabled={order.orderDetails.statusText !== 'Completed'}
-                      >
-                        Download
-                      </button>
-                    </div>
-                  </div>
-                ) : (
-                  <ul
-                    role="list"
-                    className="divide-y divide-gray-100 rounded-md border border-gray-200"
-                  >
-                    <li className="flex items-center justify-between py-4 pl-4 pr-5 text-sm leading-6">
-                      <div className="flex w-0 flex-1 items-center">
-                        <PaperClipIcon
-                          className="h-5 w-5 flex-shrink-0 text-gray-400"
-                          aria-hidden="true"
-                        />
-                        <div className="ml-4 flex min-w-0 flex-1 gap-2">
-                          <span className="truncate font-medium dark:text-gray-400">
-                            {`Invoice-${order.orderDetails.id}.pdf`}
-                          </span>
-                          <span className="flex-shrink-0 text-gray-400">
-                            2.4mb
-                          </span>
-                        </div>
-                      </div>
+            {order.orderDetails.statusText === 'Completed' && (
+              <div className="border-t border-gray-100 px-4 py-6 sm:col-span-2 sm:px-0">
+                <dt className="text-sm font-medium leading-6 text-gray-900 dark:text-white">
+                  Attachments
+                </dt>
+                <dd className="mt-2 text-sm text-gray-900">
+                  {loading ? (
+                    <div className="flex animate-pulse items-center space-x-4">
+                      <div className="h-6 w-5/6 rounded bg-gray-300"></div>
                       <div className="ml-4 flex-shrink-0">
                         <button
                           onClick={() => handleDownload(order.orderDetails.id)}
-                          className={`ml-4 rounded-md bg-transparent px-3 py-1 text-black 
-              transition duration-150 
-              hover:bg-black/70 hover:text-white 
-              active:bg-black active:text-white 
-              dark:bg-gray-800 dark:text-white 
-              dark:hover:bg-gray-700 dark:hover:text-gray-300 
-              dark:active:bg-gray-600 dark:active:text-gray-200 
-              ${
-                order.orderDetails.statusText !== 'Completed' &&
-                'cursor-not-allowed opacity-50'
-              }`}
-                          disabled={
-                            order.orderDetails.statusText !== 'Completed'
-                          }
+                          className="ml-4 rounded-md px-3 py-1 text-indigo-600 transition duration-150 hover:bg-indigo-100 hover:text-indigo-500 active:bg-indigo-200 active:text-indigo-700"
                         >
                           Download
                         </button>
                       </div>
-                    </li>
-                  </ul>
-                )}
-              </dd>
-            </div>
+                    </div>
+                  ) : (
+                    <ul
+                      role="list"
+                      className="divide-y divide-gray-100 rounded-md border border-gray-200"
+                    >
+                      <li className="flex items-center justify-between py-4 pl-4 pr-5 text-sm leading-6">
+                        <div className="flex w-0 flex-1 items-center">
+                          <PaperClipIcon
+                            className="h-5 w-5 flex-shrink-0 text-gray-400"
+                            aria-hidden="true"
+                          />
+                          <div className="ml-4 flex min-w-0 flex-1 gap-2">
+                            <span className="truncate font-medium dark:text-gray-400">
+                              {`Order-${order.orderDetails.id}.pdf`}
+                            </span>
+                            <span className="flex-shrink-0 text-gray-400">
+                              2.4mb
+                            </span>
+                          </div>
+                        </div>
+                        <div className="ml-4 flex-shrink-0">
+                          <button
+                            onClick={() =>
+                              handleDownload(order.orderDetails.id)
+                            }
+                            className="ml-4 rounded-md bg-black px-3 py-1 text-white transition duration-150 hover:bg-black/70 hover:text-white active:text-white dark:bg-gray-700 dark:text-white dark:hover:bg-gray-900 dark:hover:text-gray-300 dark:active:bg-gray-600 dark:active:text-gray-200"
+                          >
+                            Download
+                          </button>
+                        </div>
+                      </li>
+                    </ul>
+                  )}
+                </dd>
+              </div>
+            )}
           </dl>
         </div>
       </div>
