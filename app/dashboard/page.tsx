@@ -136,7 +136,12 @@ export default function CatalogPage() {
           </h2>
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
             {brands.map((item, index) => (
-              <Link key={index} href={item.href} prefetch={false}>
+              <Link
+                key={index}
+                href={item.href}
+                prefetch={false}
+                className="pointer-events-none"
+              >
                 <div className="relative flex items-center justify-center">
                   {loadingStates[index] && (
                     <div className="absolute h-[120px] w-full animate-pulse rounded-md bg-gray-300 dark:bg-gray-700 sm:h-[175px]"></div>
