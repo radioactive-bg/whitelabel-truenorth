@@ -138,25 +138,25 @@ export default function Page({}: {}) {
                             scope="col"
                             className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 dark:text-gray-200"
                           >
-                            ID
+                            Order ID
                           </th>
                           <th
                             scope="col"
                             className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-200 sm:pl-0"
                           >
-                            Client
+                            Operator
                           </th>
                           <th
                             scope="col"
                             className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 dark:text-gray-200"
                           >
-                            Price
+                            Order Value
                           </th>
                           <th
                             scope="col"
                             className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 dark:text-gray-200"
                           >
-                            Create Date
+                            Date of Order
                           </th>
                           <th
                             scope="col"
@@ -167,9 +167,7 @@ export default function Page({}: {}) {
                           <th
                             scope="col"
                             className="px-3 py-3.5 text-center text-sm font-semibold text-gray-900 dark:text-gray-200"
-                          >
-                            Actions
-                          </th>
+                          ></th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-gray-200 bg-white dark:divide-gray-700 dark:bg-gray-900">

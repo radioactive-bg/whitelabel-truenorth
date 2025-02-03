@@ -129,7 +129,12 @@ const FilterPopover = ({
                     defaultChecked={option.checked}
                     onClick={() => handleCheckbox(option)}
                     type="checkbox"
-                    className="ml-[5px] h-4 w-4 rounded border-gray-300 bg-white text-black checked:bg-black checked:text-white focus:ring-black dark:border-gray-600 dark:bg-white dark:checked:bg-black dark:checked:text-white dark:focus:ring-white"
+                    className="ml-[5px] flex h-4 w-4 cursor-pointer items-center justify-center 
+  rounded border border-gray-300 bg-white text-black 
+  hover:bg-gray-200 
+  focus:ring-black peer-checked:bg-black peer-checked:text-white 
+  dark:border-gray-600 dark:bg-gray-900 dark:hover:bg-gray-600 
+  dark:focus:ring-white dark:peer-checked:bg-black dark:peer-checked:hover:bg-black"
                   />
                   <label
                     htmlFor={`filter-${fullFilter.name}-${optidx}`}

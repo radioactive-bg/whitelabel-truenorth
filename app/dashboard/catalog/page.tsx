@@ -175,6 +175,8 @@ const Catalog = () => {
       console.log('Built filters:', filters);
       setAllFilters(filters);
       localStorage.setItem('catalogFilters', JSON.stringify(filters));
+      // ✅ Log allFilters[0].options after setting filters
+      console.log('Product Group Options:', filters[0].options);
     } catch (error) {
       console.error('Error fetching filters:', error);
       throw error;
