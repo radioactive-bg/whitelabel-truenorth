@@ -121,9 +121,6 @@ export default function TailwindSideNav({
     let walletInfo = await fetchWallets();
     //console.log('walletInfo:', JSON.stringify(walletInfo));
   };
-  const handleUserProfile = () => {
-    router.push('/dashboard/profile');
-  };
 
   const handleLogout = async (e: any) => {
     e.preventDefault();
@@ -201,10 +198,7 @@ export default function TailwindSideNav({
     debouncedFetch(query);
   };
 
-  const userNavigation = [
-    { name: 'Your profile', action: handleUserProfile },
-    { name: 'Sign out', action: handleLogout },
-  ];
+  const userNavigation = [{ name: 'Sign out', action: handleLogout }];
 
   const handleSearchItemClick = (e: any, result: any) => {
     console.log('handleSearchItemClick: ', result);

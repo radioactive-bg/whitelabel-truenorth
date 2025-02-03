@@ -207,10 +207,14 @@ const ProductsTable = ({
                       <tr>
                         <th
                           scope="col"
-                          className="py-3 pr-8 font-normal sm:w-2/5 lg:w-1/3"
+                          className="hidden w-1/6 font-normal sm:table-cell"
                         >
                           Product
                         </th>
+                        <th
+                          scope="col"
+                          className="hidden w-1/5 py-3 pr-8 font-normal sm:table-cell"
+                        ></th>
                         <th
                           scope="col"
                           className="hidden w-1/5 py-3 pr-8 font-normal sm:table-cell"
@@ -244,29 +248,28 @@ const ProductsTable = ({
                     <tbody className="divide-y divide-gray-200 border-b border-gray-200 text-sm dark:divide-gray-700 dark:border-gray-700 sm:border-t">
                       {products.map((product: any) => (
                         <tr key={product.id}>
-                          <td className="py-4 pr-2 md:py-6 md:pr-8">
-                            <div className="flex items-center">
-                              <Image
-                                width={200}
-                                height={200}
-                                src={
-                                  product.logo ? product.logo : '/NoPhoto.jpg'
-                                }
-                                alt={
-                                  product.imageAlt
-                                    ? product.imageAlt
-                                    : 'product image'
-                                }
-                                className="mr-6 max-h-14 w-auto rounded  object-cover object-center md:max-h-16"
-                              />
-                              <div>
-                                <div className="mr-2 font-medium text-gray-900 text-gray-900 dark:text-gray-100">
-                                  {product.groupName}
-                                </div>
-                                <div className="mt-1 sm:hidden">
-                                  {product.price}
-                                  {product.currency === 'USD' ? '$' : '€'}
-                                </div>
+                          <td className="py-4">
+                            <Image
+                              width={200}
+                              height={200}
+                              src={product.logo ? product.logo : '/NoPhoto.jpg'}
+                              alt={
+                                product.imageAlt
+                                  ? product.imageAlt
+                                  : 'product image'
+                              }
+                              className="mr-6 max-h-14 w-auto rounded-lg border border-gray-700 object-cover object-center md:max-h-16"
+                            />
+                          </td>
+                          <td>
+                            {' '}
+                            <div>
+                              <div className="mr-2 font-medium text-gray-900 text-gray-900 dark:text-gray-100">
+                                {product.groupName}
+                              </div>
+                              <div className="mt-1 sm:hidden">
+                                {product.price}
+                                {product.currency === 'USD' ? '$' : '€'}
                               </div>
                             </div>
                           </td>

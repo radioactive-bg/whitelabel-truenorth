@@ -274,7 +274,7 @@ const Catalog = () => {
   };
 
   return (
-    <div className="rounded-md bg-white dark:bg-gray-800 ">
+    <div className="rounded-md bg-white dark:bg-gray-900 ">
       {loading === true ? (
         // add a skeleton for this when the time comes
         <>Loading...</>
@@ -429,7 +429,7 @@ const Catalog = () => {
                                     ? product.imageAlt
                                     : 'Default description'
                                 }
-                                className=" object-cover object-center group-hover:opacity-75 sm:h-[100px] sm:w-[100px] md:h-full md:w-full"
+                                className=" rounded-lg border border-gray-700 object-cover object-center group-hover:opacity-75 dark:border-gray-700 sm:h-[100px] sm:w-[100px] md:h-full md:w-full"
                               />
                             </div>
                             <h3 className="dark: mt-4 text-sm text-black text-gray-700 dark:text-gray-300">
