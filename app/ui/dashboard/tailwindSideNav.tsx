@@ -572,10 +572,8 @@ export default function TailwindSideNav({
             </div>
           </div>
 
-          <main className=" py-10 ">
-            <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:max-w-7xl lg:px-8">
-              {children}
-            </div>
+          <main className=" mx-auto flex min-h-[calc(100vh-80px)] max-w-5xl flex-row flex-wrap items-start px-4 py-10 sm:px-6 lg:max-w-7xl lg:px-8">
+            {children}
           </main>
           <ShoppingCartModal
             open={openShoppingCart}

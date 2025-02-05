@@ -40,7 +40,7 @@ export default function OTPForm({
             {otpError}
           </div>
         )}
-        <div className="ml-4 w-full">
+        <div className="flex items-center justify-center">
           <InputOTP
             maxLength={6}
             value={otp}

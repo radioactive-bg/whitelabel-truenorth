@@ -11,6 +11,8 @@ import { useThemeStore } from '@/state/theme';
 import { Dialog, DialogPanel, DialogTitle } from '@headlessui/react';
 import { ExclamationTriangleIcon } from '@heroicons/react/24/outline';
 
+import Notification from '@/app/ui/dashboard/checkout/Notification'; // Adjust the import path accordingly
+
 import {
   //SkeletonCheckout,
   SkeletonWallet,
@@ -78,10 +80,12 @@ const Checkout = () => {
   const [tax, setTax] = useState('0.00');
   const [total, setTotal] = useState('0.00');
 
-  // Add state for error messages
+  // State for individual product errors
   const [errorMessages, setErrorMessages] = useState<{ [key: number]: string }>(
     {},
   );
+  // State for order submission errors
+  const [orderError, setOrderError] = useState('');
 
   const calculateSubtotal = () => {
     return cartItems
@@ -144,14 +148,21 @@ const Checkout = () => {
 
       const vat = null;
 
-      let createdOrderData = await createOrder(products, vat);
-      console.log('createdOrderData: ', JSON.stringify(createdOrderData));
+      try {
+        const createdOrderData = await createOrder(products, vat);
 
-      const orderId = createdOrderData.data.id;
-      router.push(`/dashboard/checkout/payment?orderId=${orderId}`);
+        // Clear any previous error message on successful creation
+        setOrderError('');
+        const orderId = createdOrderData.data.id;
+        router.push(`/dashboard/checkout/payment?orderId=${orderId}`);
 
-      clearCart();
-      fetchWallets();
+        clearCart();
+        fetchWallets();
+      } catch (error: any) {
+        console.log('Error during order submission:', error);
+        setOrderError(error.message || 'Order creation failed.');
+        return;
+      }
     }
   };
 
@@ -473,6 +484,9 @@ const Checkout = () => {
               </dl>
 
               <div className="border-t border-gray-200 px-4 py-6 dark:border-gray-700 sm:px-6">
+                {orderError && (
+                  <Notification message={orderError} type="error" />
+                )}
                 <button
                   type="submit"
                   className="w-full rounded-md border border-transparent bg-black px-4 py-3 text-base font-medium text-white shadow-sm hover:bg-black/70 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"

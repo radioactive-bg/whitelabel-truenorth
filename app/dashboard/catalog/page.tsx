@@ -274,7 +274,7 @@ const Catalog = () => {
   };
 
   return (
-    <div className="rounded-md bg-white dark:bg-gray-900 ">
+    <div className="w-full rounded-md bg-white  dark:bg-gray-900">
       {loading === true ? (
         // add a skeleton for this when the time comes
         <>Loading...</>
@@ -406,7 +406,7 @@ const Catalog = () => {
                     checkIfAnyFiltersActive={checkIfAnyFiltersActive}
                   />
                 ) : (
-                  <div className="grid grid-cols-1 gap-y-4 sm:grid-cols-2 sm:gap-x-6 sm:gap-y-10 md:grid-cols-3 lg:gap-x-8 xl:grid-cols-6">
+                  <div className="grid grid-cols-2 gap-x-4 gap-y-4 sm:grid-cols-2 sm:grid-cols-3 sm:gap-x-6 sm:gap-y-10 md:grid-cols-4 lg:grid-cols-5 lg:gap-x-8 xl:grid-cols-6">
                     {allFilters[0]?.options?.map(
                       (product: any, index: number) =>
                         product.label === 'All' ? null : (
@@ -417,7 +417,7 @@ const Catalog = () => {
                             }
                             className="group flex flex-col items-center"
                           >
-                            <div className="relative overflow-hidden rounded-lg bg-gray-200 dark:bg-gray-700 sm:h-[100px] sm:w-[100px] md:h-full md:w-full">
+                            <div className="relative aspect-[1/1] w-full overflow-hidden rounded-lg bg-gray-200  dark:bg-gray-700">
                               <Image
                                 src={
                                   product.logo ? product.logo : '/NoPhoto.jpg'
@@ -429,10 +429,10 @@ const Catalog = () => {
                                     ? product.imageAlt
                                     : 'Default description'
                                 }
-                                className=" rounded-lg border border-gray-700 object-cover object-center group-hover:opacity-75 dark:border-gray-700 sm:h-[100px] sm:w-[100px] md:h-full md:w-full"
+                                className=" h-full w-full rounded-lg border border-gray-700 object-cover object-center  group-hover:opacity-75  dark:border-gray-700"
                               />
                             </div>
-                            <h3 className="dark: mt-4 text-sm text-black text-gray-700 dark:text-gray-300">
+                            <h3 className="dark: mt-4 text-xs text-black text-gray-700 dark:text-gray-300">
                               {product.label}
                             </h3>
                           </button>

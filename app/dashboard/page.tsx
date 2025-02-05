@@ -95,10 +95,11 @@ export default function CatalogPage() {
   }, []);
 
   return (
-    <div>
+    <>
       {/* Hero Section */}
       <section
-        className="rounded bg-gradient-to-r from-primary to-primary-foreground py-20 dark:from-gray-900 dark:to-gray-700 md:py-32"
+        className="self-center rounded bg-gradient-to-r 
+        from-primary to-primary-foreground py-20 dark:from-gray-900 dark:to-gray-700 md:py-32"
         style={{
           backgroundImage: 'url(/products-hero.webp)',
           backgroundSize: 'cover',
@@ -129,7 +130,7 @@ export default function CatalogPage() {
       </section>
 
       {/* Popular Brands Section */}
-      <section className="py-16 md:py-24">
+      {/* <section className="py-16 md:py-24">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="mb-8 text-2xl font-bold dark:text-white sm:text-3xl">
             Popular Brands
@@ -161,7 +162,7 @@ export default function CatalogPage() {
             ))}
           </div>
         </div>
-      </section>
-    </div>
+      </section> */}
+    </>
   );
 }

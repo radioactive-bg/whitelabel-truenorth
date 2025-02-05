@@ -108,15 +108,15 @@ export const getStatusStyles = (status: number) => {
       return isDarkMode
         ? {
             text: 'In process',
-            bgColor: 'bg-[#FFF]',
-            textColor: 'text-[#FAAD14]',
-            ringColor: 'ring-[#FAAD14]',
-          }
-        : {
-            text: 'In process',
             bgColor: 'bg-[#FAAD14]',
             textColor: 'text-[#FFF]',
             ringColor: 'ring-[#FFF]',
+          }
+        : {
+            text: 'In process',
+            bgColor: 'bg-[#FFF]',
+            textColor: 'text-[#FAAD14]',
+            ringColor: 'ring-[#FAAD14]',
           };
 
     default: // Unknown Status
