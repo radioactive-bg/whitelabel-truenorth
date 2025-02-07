@@ -294,7 +294,7 @@ const OrderDetailsContent = () => {
 
           <div className="border-t border-gray-100 px-4 py-6 sm:col-span-2 sm:px-0">
             <dt className="text-sm font-bold leading-6 text-gray-900 dark:text-white">
-              Operator download summary
+              Operator Login
             </dt>
             <dd className="mt-1 max-h-40 overflow-y-auto rounded-md text-sm leading-6 text-gray-700 dark:bg-gray-900 dark:text-gray-400 sm:mt-2">
               {order.orderInfo.clientDownloadInvoices.map(

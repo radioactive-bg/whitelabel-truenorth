@@ -98,34 +98,33 @@ export default function CatalogPage() {
     <>
       {/* Hero Section */}
       <section
-        className="self-center rounded bg-gradient-to-r 
-        from-primary to-primary-foreground py-20 dark:from-gray-900 dark:to-gray-700 md:py-32"
+        className="flex w-full flex-col items-center justify-center overflow-hidden  rounded 
+        rounded-md from-primary to-primary-foreground dark:from-gray-900 dark:to-gray-700 md:!min-h-[400px] md:min-w-0 md:!bg-cover md:!bg-center"
         style={{
           backgroundImage: 'url(/products-hero.webp)',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
+          backgroundPosition: 'calc(100% + 75px) 0',
           backgroundRepeat: 'no-repeat',
-          height: '400px',
+          backgroundSize: 'auto 30vh',
+          minHeight: 'calc(100vh - 120px)',
+          backgroundColor: '#00060b',
         }}
       >
-        <div className="container mx-auto px-4 md:px-6">
-          <div className="grid grid-cols-1 items-center gap-8 md:grid-cols-2">
-            <div>
-              <h1 className="mb-4 text-4xl font-bold text-background dark:text-white sm:text-5xl md:text-6xl">
-                Find the Perfect Gift Card
-              </h1>
-              <p className="mb-8 text-lg text-background/80 dark:text-gray-300 sm:text-xl">
-                Browse our wide selection of gift cards for any occasion.
-              </p>
-              <Link
-                href="/dashboard/catalog"
-                className="inline-flex items-center justify-center rounded-md bg-background px-6 py-3 font-medium text-primary hover:bg-background/90 focus:outline-none focus-visible:ring-2 focus-visible:ring-background focus-visible:ring-offset-2 dark:bg-gray-800 dark:text-white dark:hover:bg-gray-700 dark:focus-visible:ring-gray-600"
-                prefetch={false}
-              >
-                Browse Gift Cards
-              </Link>
-            </div>
-          </div>
+        <div className="container mt-16 flex flex-col  items-center px-4 text-center md:mt-0 md:items-start md:px-6">
+          <h1 className="mb-4 text-3xl font-bold text-background dark:text-white sm:text-4xl md:text-5xl">
+            Find the Perfect Gift Card
+          </h1>
+          <p className="mb-8 text-lg text-background/80 dark:text-gray-300 sm:text-xl">
+            Browse our wide selection of gift cards for any occasion.
+          </p>
+          <Link
+            href="/dashboard/catalog"
+            className="inline-flex items-center justify-center rounded-md bg-background px-6 py-3 font-medium text-primary 
+      hover:bg-background/90 focus:outline-none focus-visible:ring-2 focus-visible:ring-background focus-visible:ring-offset-2 
+      dark:bg-gray-800 dark:text-white dark:hover:bg-gray-700 dark:focus-visible:ring-gray-600"
+            prefetch={false}
+          >
+            Browse Gift Cards
+          </Link>
         </div>
       </section>
 

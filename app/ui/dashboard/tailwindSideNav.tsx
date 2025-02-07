@@ -217,7 +217,7 @@ export default function TailwindSideNav({
             //see if removing the z-index breaks anything else
             //className="relative z-50 lg:hidden"
             className="relative lg:hidden"
-            onClose={setSidebarOpen}
+            onClose={() => setSidebarOpen(false)} // ✅ Correctly closes the modal
           >
             <TransitionChild
               as={Fragment}
@@ -266,13 +266,13 @@ export default function TailwindSideNav({
                     </div>
                   </TransitionChild>
                   <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-white px-6 pb-4 dark:bg-gray-800">
-                    <div className="flex h-16 shrink-0 items-center  ">
+                    <div className="-mx-2 flex h-16 shrink-0  items-center">
                       {theme === 'dark' ? <LogoWhite /> : <Logo />}
                     </div>
                     <nav className="flex flex-1 flex-col">
                       <ul role="list" className="flex flex-1 flex-col gap-y-7">
                         <li>
-                          <ul role="list" className="-mx-2 space-y-1">
+                          <ul role="list" className="space-y-1">
                             <NavLinks
                               setSidebarOpen={setSidebarOpen}
                               setOpenShoppingCart={setOpenShoppingCart}
@@ -316,9 +316,9 @@ export default function TailwindSideNav({
         {/* Static sidebar for desktop */}
         <div className="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-72 lg:flex-col">
           {/* Sidebar component, swap this element with another sidebar if you like */}
-          <div className="flex grow flex-col gap-y-5 overflow-y-auto  bg-white px-6 pb-4 dark:bg-gray-800 dark:text-white">
-            <div className="flex h-16 shrink-0 items-center ">
-              {theme === 'dark' ? <LogoWhite /> : <Logo />}
+          <div className="flex grow flex-col gap-y-5 overflow-y-auto  bg-white px-4 pb-4 dark:bg-gray-800 dark:text-white">
+            <div className="-mx-2 flex h-24 shrink-0  items-center">
+              {theme && theme === 'dark' ? <LogoWhite /> : <Logo />}
             </div>
             {/* add the wallet  */}
 
@@ -358,7 +358,7 @@ export default function TailwindSideNav({
             <nav className="flex flex-1 flex-col">
               <ul role="list" className="flex flex-1 flex-col gap-y-7">
                 <li>
-                  <ul role="list" className="-mx-2 space-y-1">
+                  <ul role="list" className=" space-y-1">
                     <NavLinks
                       setSidebarOpen={setSidebarOpen}
                       setOpenShoppingCart={setOpenShoppingCart}
@@ -407,10 +407,13 @@ export default function TailwindSideNav({
               <button
                 type="button"
                 className="-m-2.5 p-2.5 text-gray-700 lg:hidden"
-                onClick={() => setSidebarOpen(!sidebarOpen)}
+                onClick={() => setSidebarOpen((prev) => !prev)} // ✅ Correct toggle behavior
               >
                 <span className="sr-only">Open sidebar</span>
-                <Bars3Icon className="h-6 w-6" aria-hidden="true" />
+                <Bars3Icon
+                  className="pointer-none h-6 w-6"
+                  aria-hidden="true"
+                />
               </button>
 
               {/* Separator */}

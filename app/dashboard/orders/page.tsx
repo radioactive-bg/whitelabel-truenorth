@@ -219,7 +219,7 @@ export default function Page({}: {}) {
                             <td className="relative whitespace-nowrap py-5 pr-4 text-center text-sm font-bold sm:pr-0">
                               <button
                                 onClick={() => viewOrder(order.id)}
-                                className="ml-4 rounded-md px-3 py-1 text-black transition duration-150 hover:bg-black hover:text-white active:bg-black active:text-black dark:text-white dark:hover:bg-gray-700 dark:hover:text-white"
+                                className="ml-4 rounded-md px-3 py-1 text-black transition duration-150 hover:bg-black hover:text-white active:bg-black active:text-black dark:text-white dark:hover:bg-gray-800 dark:hover:text-white"
                               >
                                 View
                                 <span className="sr-only">, {order.name}</span>
