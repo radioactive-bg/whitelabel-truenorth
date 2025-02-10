@@ -69,11 +69,17 @@ const Catalog = () => {
 
         console.log('filters initialized');
         const productGroup = findQueryParam('ProductGroups');
+        const denominationCurrency = findQueryParam('DenominationCurrencys');
+        const activationRegion = findQueryParam('ActivationRegions');
         if (productGroup && productGroup.trim() !== '') {
           console.log(
             'fetchProductsFromQuery in useEffect initializeFilters :',
           );
-          await fetchProductsFromQuery(productGroup);
+          await fetchProductsFromQuery(
+            productGroup,
+            denominationCurrency,
+            activationRegion,
+          );
         }
         setHasFetchedFilters(true); // Mark as fetched
       } catch (error) {
@@ -86,18 +92,32 @@ const Catalog = () => {
     initializeFilters();
   }, []);
 
-  useEffect(() => {
-    if (allFilters.length > 0) {
-      const productGroup = findQueryParam('ProductGroups');
+  // useEffect(() => {
+  //   if (allFilters.length > 0) {
+  //     const productGroup = findQueryParam('ProductGroups');
+  //     const denominationCurrency = findQueryParam('DenominationCurrency');
+  //     const activationRegion = findQueryParam('ActivationRegion');
 
-      if (productGroup && productGroup.trim() !== '') {
-        console.log(
-          'fetchProductsFromQuery in useEffect [searchParams, allFilters]',
-        );
-        fetchProductsFromQuery(productGroup);
-      }
-    }
-  }, [searchParams]); // This triggers whenever query params change
+  //     if (denominationCurrency || activationRegion) {
+  //         triggerUpdate();
+  //     }
+
+  //     if (productGroup && productGroup.trim() !== '') {
+  //       console.log(
+  //         'fetchProductsFromQuery in useEffect [searchParams, allFilters]',
+  //       );
+  //       fetchProductsFromQuery(productGroup);
+  //     }
+  //   }
+  // }, [searchParams]); // This triggers whenever query params change
+
+  useEffect(() => {
+    fetchProductsFromQuery(
+      findQueryParam('ProductGroups'),
+      findQueryParam('DenominationCurrencys'),
+      findQueryParam('ActivationRegions'),
+    );
+  }, [searchParams]);
 
   useEffect(() => {
     initializeAuth();
@@ -184,48 +204,100 @@ const Catalog = () => {
   };
 
   //test
-  const fetchProductsFromQuery = async (productGroups: string) => {
-    if (allFilters.length === 0) {
-      console.log('fetchProductsFromQuery skipped: allFilters is empty');
-      return;
-    }
+  // const fetchProductsFromQuery = async (productGroups: string) => {
+  //   if (allFilters.length === 0) {
+  //     console.log('fetchProductsFromQuery skipped: allFilters is empty');
+  //     return;
+  //   }
 
+  //   setLoading(true);
+
+  //   try {
+  //     // Convert the string to an array of product groups
+  //     const productGroupsArray = productGroups
+  //       .split(',')
+  //       .map((group) => group.trim());
+
+  //     //console.log('productGroupsArray: ', productGroupsArray);
+  //     if (allFilters.length === 0) {
+  //       setTimeout(() => {
+  //         console.log('fetchProductsFromQuery: allFilters is empty');
+  //       }, 600);
+  //     }
+  //     // Step 1: Reset filters and mark relevant ProductGroups as active
+  //     const newAllFilters = allFilters.map((filter) => {
+  //       if (filter.id === allFilters[0].id) {
+  //         const newOptions = filter.options.map((option: any) => ({
+  //           ...option,
+  //           checked: productGroupsArray.includes(option.label), // Check ProductGroups in the array
+  //         }));
+  //         return { ...filter, options: newOptions };
+  //       }
+  //       return filter;
+  //     });
+  //     console.log(
+  //       'Updated Filters in fetchProductsFromQuery function:',
+  //       newAllFilters,
+  //     );
+
+  //     setAllFilters(newAllFilters); // Update filters state
+  //     setFiltersActive(true);
+  //   } catch (error) {
+  //     console.error('Error fetching products:', error);
+  //   } finally {
+  //     setLoading(false); // Stop loading
+  //   }
+  // };
+  const fetchProductsFromQuery = async (
+    productGroups: any,
+    denominationCurrency: any,
+    activationRegion: any,
+  ) => {
     setLoading(true);
-
     try {
-      // Convert the string to an array of product groups
-      const productGroupsArray = productGroups
-        .split(',')
-        .map((group) => group.trim());
+      const productGroupsArray = productGroups ? productGroups.split(',') : [];
+      const currenciesArray = denominationCurrency
+        ? denominationCurrency.split(',')
+        : [];
+      const regionsArray = activationRegion ? activationRegion.split(',') : [];
 
-      //console.log('productGroupsArray: ', productGroupsArray);
-      if (allFilters.length === 0) {
-        setTimeout(() => {
-          console.log('fetchProductsFromQuery: allFilters is empty');
-        }, 600);
-      }
-      // Step 1: Reset filters and mark relevant ProductGroups as active
       const newAllFilters = allFilters.map((filter) => {
-        if (filter.id === allFilters[0].id) {
-          const newOptions = filter.options.map((option: any) => ({
-            ...option,
-            checked: productGroupsArray.includes(option.label), // Check ProductGroups in the array
-          }));
-          return { ...filter, options: newOptions };
+        if (filter.id === 'Product Group') {
+          return {
+            ...filter,
+            options: filter.options.map((option: any) => ({
+              ...option,
+              checked: productGroupsArray.includes(option.label),
+            })),
+          };
+        }
+        if (filter.id === 'Denomination Currency') {
+          return {
+            ...filter,
+            options: filter.options.map((option: any) => ({
+              ...option,
+              checked: currenciesArray.includes(option.label),
+            })),
+          };
+        }
+        if (filter.id === 'Activation Region') {
+          return {
+            ...filter,
+            options: filter.options.map((option: any) => ({
+              ...option,
+              checked: regionsArray.includes(option.label),
+            })),
+          };
         }
         return filter;
       });
-      console.log(
-        'Updated Filters in fetchProductsFromQuery function:',
-        newAllFilters,
-      );
 
-      setAllFilters(newAllFilters); // Update filters state
+      setAllFilters(newAllFilters);
       setFiltersActive(true);
     } catch (error) {
       console.error('Error fetching products:', error);
     } finally {
-      setLoading(false); // Stop loading
+      setLoading(false);
     }
   };
 

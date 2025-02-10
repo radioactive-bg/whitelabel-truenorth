@@ -91,11 +91,22 @@ const ProductsTable = ({
 
   const fetchData = async () => {
     setLoading(true); // Set loading to true before fetching data
+
+    // Extract values from URL query parameters
     const searchQuery = findQueryParam('ProductGroups');
+    const denominationQuery = findQueryParam('DenominationCurrencys');
+    const regionQuery = findQueryParam('ActivationRegions');
 
     let ProductGroups = searchQuery ? searchQuery : null;
+    let selectedRegionIDs = regionQuery ? regionQuery.split(',') : regionIDs;
+    let selectedCurrencies = denominationQuery
+      ? denominationQuery.split(',')
+      : currencies;
 
-    console.log('ProductGroups in fetchData in ProductsTable: ', ProductGroups);
+    console.log('Fetching data with:');
+    console.log('ProductGroups:', ProductGroups);
+    console.log('Regions:', selectedRegionIDs);
+    console.log('Currencies:', selectedCurrencies);
 
     // Cancel the previous request if there was one
     if (cancelTokenSource.current) {
@@ -107,11 +118,12 @@ const ProductsTable = ({
     // Create a new token for the current request
     cancelTokenSource.current = axios.CancelToken.source();
     const requestId = ++latestRequestId.current;
+
     try {
       const response = await getPreview(
         currentPage,
-        regionIDs,
-        currencies,
+        selectedRegionIDs, // Ensure region filters are applied
+        selectedCurrencies, // Ensure currency filters are applied
         productName,
         productGroupIDs,
         null,
@@ -121,12 +133,9 @@ const ProductsTable = ({
 
       if (requestId === latestRequestId.current) {
         let data = response.data ? response.data : [];
-        // console.log(
-        //   'Request made an accepted, setProducts(data):',
-        //   JSON.stringify(data),
-        // );
         setCurrentPage(response.meta.current_page);
         setTotalPages(response.meta.last_page);
+        console.log('Fetched product data:', JSON.stringify(data));
         setProducts(data);
       }
     } catch (error) {
@@ -157,7 +166,7 @@ const ProductsTable = ({
       .map((option: any) => option.value);
 
     const newCurrencies = allFilters
-      .find((filter: any) => filter.id === 'Denomination currency')
+      .find((filter: any) => filter.id === 'Denomination Currency')
       ?.options.filter((option: any) => option.checked)
       .map((option: any) => option.value);
 
@@ -269,7 +278,7 @@ const ProductsTable = ({
                               </div>
                               <div className="mt-1 sm:hidden">
                                 {product.price}
-                                {product.currency === 'USD' ? '$' : '€'}
+                                {product.currency}
                               </div>
                             </div>
                           </td>
@@ -278,7 +287,7 @@ const ProductsTable = ({
                           </td>
                           <td className="hidden py-4  pr-8 dark:text-gray-300 sm:table-cell  md:py-6">
                             {product.price}
-                            {product.currency === 'USD' ? '$' : '€'}
+                            {product.currency}
                           </td>
 
                           <td className=" py-4   sm:table-cell sm:pr-8  md:py-6">
