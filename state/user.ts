@@ -10,7 +10,40 @@ export const userStore = create((set) => ({
     name: 'null',
     email: 'some.email@gmail.com',
     is2FAEnable: true,
-    acl: {},
+    acl: {
+      orders: {
+        list: {
+          crud: { view: false, store: false },
+          special: { downloadInvoice: false, storePreOrder: false },
+        },
+      },
+      wallet: {
+        list: {
+          crud: { view: false },
+          special: { redeemCards: false, redeemInvoiceCode: false },
+        },
+        transactions: { crud: { view: false } },
+      },
+      profile: {
+        list: {
+          crud: { view: false },
+          special: { login: false, logout: false },
+        },
+      },
+      company: {
+        list: { crud: { view: false } },
+        priceList: { crud: { view: false } },
+      },
+      filters: {
+        list: { crud: { view: false } },
+      },
+      payoutTransaction: {
+        list: { crud: { view: false, store: false } },
+      },
+      payoutMethod: {
+        list: { crud: { view: false } },
+      },
+    },
   },
   setUser: (user: User | null) => {
     if (user) {

@@ -11,36 +11,36 @@ const shimmer =
 export function InvoicesTableSkeleton() {
   return (
     <>
-      <div className="px-4 sm:px-6 lg:px-8">
-        <div className="mt-8 flow-root">
-          <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-            <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
-              <table className="min-w-full divide-y divide-gray-300 dark:divide-gray-700">
-                <thead className="bg-gray-50 dark:bg-gray-800">
+      <div className="rounded-lg px-4 sm:px-6 lg:px-8">
+        <div className="mt-8 flow-root rounded-lg">
+          <div className="-mx-4 -my-2 overflow-x-auto rounded-lg sm:-mx-6 lg:-mx-8">
+            <div className="rounded-lgalign-middle inline-block min-w-full">
+              <table className="min-w-full divide-y divide-gray-300 rounded-lg border shadow dark:divide-gray-700">
+                <thead className="rounded-lg bg-gray-100 dark:bg-gray-700">
                   <tr>
                     <th
                       scope="col"
                       className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 dark:text-gray-200"
                     >
-                      ID
+                      Order ID
                     </th>
                     <th
                       scope="col"
                       className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-200 sm:pl-0"
                     >
-                      Client
+                      Operator
                     </th>
                     <th
                       scope="col"
                       className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 dark:text-gray-200"
                     >
-                      Price
+                      Order Value
                     </th>
                     <th
                       scope="col"
                       className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 dark:text-gray-200"
                     >
-                      Create Date
+                      Date of Order
                     </th>
                     <th
                       scope="col"
@@ -52,15 +52,9 @@ export function InvoicesTableSkeleton() {
                       scope="col"
                       className="px-3 py-3.5 text-center text-sm font-semibold text-gray-900 dark:text-gray-200"
                     ></th>
-                    <th
-                      scope="col"
-                      className="relative py-3.5 pl-3 pr-4 sm:pr-0"
-                    >
-                      <span className="sr-only">Edit</span>
-                    </th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-200 bg-white dark:divide-gray-700 dark:bg-gray-900">
+                <tbody className="divide-y divide-gray-200 rounded-lg bg-white dark:divide-gray-700 dark:bg-gray-900">
                   {[...Array(10)].map((_, index) => (
                     <tr
                       key={index}
@@ -71,6 +65,7 @@ export function InvoicesTableSkeleton() {
                           <div className="ml-4">
                             <Skeleton
                               width={50}
+                              height={16}
                               baseColor="#d1d5db"
                               highlightColor="#e5e7eb"
                             />
@@ -80,6 +75,7 @@ export function InvoicesTableSkeleton() {
                       <td className="whitespace-nowrap px-3 py-5 text-sm text-gray-500 dark:text-gray-400">
                         <Skeleton
                           width={100}
+                          height={16}
                           baseColor="#d1d5db"
                           highlightColor="#e5e7eb"
                         />
@@ -87,13 +83,15 @@ export function InvoicesTableSkeleton() {
                       <td className="whitespace-nowrap px-3 py-5 text-sm text-gray-500 dark:text-gray-400">
                         <Skeleton
                           width={70}
+                          height={16}
                           baseColor="#d1d5db"
                           highlightColor="#e5e7eb"
                         />
                       </td>
                       <td className="whitespace-nowrap px-3 py-5 text-sm text-gray-500 dark:text-gray-400">
                         <Skeleton
-                          width={120}
+                          width={100}
+                          height={16}
                           baseColor="#d1d5db"
                           highlightColor="#e5e7eb"
                         />
@@ -101,13 +99,15 @@ export function InvoicesTableSkeleton() {
                       <td className="whitespace-nowrap px-3 py-5 text-sm text-gray-500 dark:text-gray-400">
                         <Skeleton
                           width={80}
+                          height={16}
                           baseColor="#d1d5db"
                           highlightColor="#e5e7eb"
                         />
                       </td>
-                      <td className="relative whitespace-nowrap py-5 pr-4 text-center text-sm font-medium sm:pr-0">
+                      <td className="relative whitespace-nowrap py-5 pr-4 text-center text-sm font-bold sm:pr-0">
                         <Skeleton
                           width={60}
+                          height={16}
                           baseColor="#d1d5db"
                           highlightColor="#e5e7eb"
                         />
@@ -116,15 +116,24 @@ export function InvoicesTableSkeleton() {
                   ))}
                 </tbody>
               </table>
+              {/* Pagination */}
+              <div className="mt-8 flex items-center justify-between">
+                <Skeleton
+                  width={100}
+                  height={24}
+                  baseColor="#d1d5db"
+                  highlightColor="#e5e7eb"
+                />
+                <Skeleton
+                  width={100}
+                  height={24}
+                  baseColor="#d1d5db"
+                  highlightColor="#e5e7eb"
+                />
+              </div>
             </div>
           </div>
         </div>
-      </div>
-
-      {/* Pagination */}
-      <div className="mt-8 flex items-center justify-between">
-        <Skeleton width={100} baseColor="#d1d5db" highlightColor="#e5e7eb" />
-        <Skeleton width={100} baseColor="#d1d5db" highlightColor="#e5e7eb" />
       </div>
     </>
   );

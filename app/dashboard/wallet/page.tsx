@@ -1,6 +1,8 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { useWalletStore, Wallet } from '@/state/wallets';
+import { userStore } from '@/state/user';
+import { User } from '@/app/lib/types/user';
 import axios from 'axios';
 
 import { ChevronRightIcon, ChevronDownIcon } from '@heroicons/react/24/solid';
@@ -12,6 +14,7 @@ import {
 } from '@/app/ui/catslyst-ui/dropdown';
 import { RedeemCardDialog } from '@/app/ui/dashboard/wallet/redeem-card-dialog';
 import { RedeemInvoiceDialog } from '@/app/ui/dashboard/wallet/redeem-invoice-dialog';
+import { PaymentMethodDialog } from '@/app/ui/dashboard/wallet/PaymentMethodDialog';
 
 import Pagination from '../../ui/dashboard/pagination';
 
@@ -26,10 +29,14 @@ interface Transaction {
 
 export default function WalletPage() {
   const { wallets, selectedWallet } = useWalletStore();
+  const { user } = userStore() as {
+    user: User;
+  };
 
   const [isRedeemCardDialogOpen, setIsRedeemCardDialogOpen] = useState(false);
   const [isRedeemInvoiceDialogOpen, setIsRedeemInvoiceDialogOpen] =
     useState(false);
+  const [isPaymentDialogOpen, setIsPaymentDialogOpen] = useState(false);
 
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState(false);
@@ -37,7 +44,13 @@ export default function WalletPage() {
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const transactionsPerPage = 10;
+
+  interface PayoutMethod {
+    id: number;
+    name: string;
+    payoutCurrency: string;
+    walletCurrency: string;
+  }
 
   // Fetch transactions with API-based pagination
   const fetchTransactions = async (page = 1) => {
@@ -67,7 +80,7 @@ export default function WalletPage() {
           // change
           currency: transaction.amount.includes('$') ? 'USD' : '',
           amount: transaction.amount,
-          method: transaction.method ? transaction.method : 'manual',
+          method: transaction.method ? transaction.method : 'payout',
         }));
 
       console.log(
@@ -110,21 +123,43 @@ export default function WalletPage() {
               </span>
             </div>
           </div>
+          <div>
+            {/* The Payout Methods button now directly opens the payout modal */}
+            {user.acl.payoutTransaction.list.crud.store === true && (
+              <button
+                onClick={() => setIsPaymentDialogOpen(true)}
+                className="mr-4 mt-4 inline-flex items-center justify-between rounded-md bg-zinc-900 px-4 py-[11px] text-sm font-semibold text-white shadow-sm 
+           hover:bg-gray-800 dark:bg-white dark:text-[#000] dark:hover:bg-gray-100 md:py-2 
+        "
+              >
+                Payout
+              </button>
+            )}
 
-          <Dropdown>
-            <DropdownButton className="mt-4 inline-flex h-[42px] w-[150px] items-center rounded-md bg-white px-3 py-2 text-sm font-semibold shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 dark:bg-gray-700 dark:text-white dark:ring-gray-500 dark:hover:bg-gray-600">
-              TopUp
-              <ChevronDownIcon className="mr-2 h-4 w-4" />
-            </DropdownButton>
-            <DropdownMenu className="dark:bg-gray-800 dark:text-white">
-              <DropdownItem onClick={() => setIsRedeemCardDialogOpen(true)}>
-                Redeem a card
-              </DropdownItem>
-              <DropdownItem onClick={() => setIsRedeemInvoiceDialogOpen(true)}>
-                Redeem by invoice code
-              </DropdownItem>
-            </DropdownMenu>
-          </Dropdown>
+            <Dropdown>
+              <DropdownButton
+                className=" inline-flex w-[120px] items-center justify-between rounded-md bg-black px-4 py-2 text-sm font-semibold 
+            text-white shadow-sm hover:bg-gray-50 dark:bg-white dark:text-[#000000] 
+          dark:hover:bg-gray-100"
+              >
+                TopUp
+                <ChevronDownIcon className=" h-4 w-4 text-white dark:text-black" />
+              </DropdownButton>
+              <DropdownMenu
+                anchor="bottom end"
+                className="dark:bg-gray-800 dark:text-white"
+              >
+                <DropdownItem onClick={() => setIsRedeemCardDialogOpen(true)}>
+                  Redeem a card
+                </DropdownItem>
+                <DropdownItem
+                  onClick={() => setIsRedeemInvoiceDialogOpen(true)}
+                >
+                  Redeem by invoice code
+                </DropdownItem>
+              </DropdownMenu>
+            </Dropdown>
+          </div>
         </div>
       </div>
 
@@ -216,6 +251,13 @@ export default function WalletPage() {
         open={isRedeemInvoiceDialogOpen}
         onClose={() => setIsRedeemInvoiceDialogOpen(false)}
         fetchTransactions={() => fetchTransactions(currentPage)}
+      />
+
+      <PaymentMethodDialog
+        open={isPaymentDialogOpen}
+        onClose={() => setIsPaymentDialogOpen(false)}
+        fetchTransactions={() => fetchTransactions(currentPage)}
+        selectedWallet={selectedWallet}
       />
     </>
   );
