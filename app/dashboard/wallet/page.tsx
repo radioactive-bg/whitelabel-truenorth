@@ -10,9 +10,12 @@ import {
   DropdownMenu,
   DropdownItem,
 } from '@/app/ui/catslyst-ui/dropdown';
-import { Link } from '@/app/ui/catslyst-ui/link';
 import { RedeemCardDialog } from '@/app/ui/dashboard/wallet/redeem-card-dialog';
 import { RedeemInvoiceDialog } from '@/app/ui/dashboard/wallet/redeem-invoice-dialog';
+
+import Pagination from '../../ui/dashboard/pagination';
+
+import { WalletTableSkeleton } from '@/app/ui/skeletons';
 
 interface Transaction {
   date: string;
@@ -20,6 +23,7 @@ interface Transaction {
   amount: string;
   method: string | null;
 }
+
 export default function WalletPage() {
   const { wallets, selectedWallet } = useWalletStore();
 
@@ -30,34 +34,45 @@ export default function WalletPage() {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState(false);
 
-  const fetchTransactions = async () => {
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const transactionsPerPage = 10;
+
+  // Fetch transactions with API-based pagination
+  const fetchTransactions = async (page = 1) => {
     setLoading(true);
     try {
       const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_URL}/distributor-crm/v1/wallets/${selectedWallet?.id}/transactions`,
+        `${process.env.NEXT_PUBLIC_API_URL}/distributor-crm/v1/wallets/${selectedWallet?.id}/transactions?page=${page}&type=credit`,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('access_token')}`,
           },
         },
       );
-      console.log(
-        'transactions response.data.data: ' +
-          JSON.stringify(response.data.data),
-      );
-      // Filter data for "redeem card" or "redeem invoice code"
+
+      console.log('Fetched transactions:', response.data.data);
+
+      // Extract pagination metadata
+      const { current_page, last_page } = response.data.meta;
+      setCurrentPage(current_page);
+      setTotalPages(last_page);
+
+      // Filter transactions for "redeem card" or "redeem invoice code"
       const filteredTransactions = response.data.data
-        .filter(
-          (transaction: any) =>
-            transaction.method === 'redeem card' ||
-            transaction.method === 'redeem invoice code',
-        )
+        //.filter((transaction: any) => transaction.method === 'redeem card')
         .map((transaction: any) => ({
-          date: new Date(transaction.created_at).toLocaleDateString(), // Format date
-          currency: transaction.amount.includes('$') ? 'USD' : '', // Assumption: USD if amount includes $
+          date: new Date(transaction.created_at).toLocaleDateString(),
+          // change
+          currency: transaction.amount.includes('$') ? 'USD' : '',
           amount: transaction.amount,
-          method: transaction.method,
+          method: transaction.method ? transaction.method : 'manual',
         }));
+
+      console.log(
+        'filteredTransactions: ' + JSON.stringify(filteredTransactions),
+      );
 
       setTransactions(filteredTransactions);
     } catch (error) {
@@ -68,108 +83,91 @@ export default function WalletPage() {
   };
 
   useEffect(() => {
-    if (selectedWallet?.id) {
-      fetchTransactions();
+    if (selectedWallet?.id && currentPage !== null) {
+      fetchTransactions(currentPage);
     }
-  }, [selectedWallet?.id]);
+  }, [selectedWallet?.id, currentPage]);
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'Approved':
-        return 'bg-green-500/10 text-green-500';
-      case 'Pending':
-        return 'bg-yellow-500/10 text-yellow-500';
-      case 'Rejected':
-        return 'bg-red-500/10 text-red-500';
-      default:
-        return 'bg-gray-500/10 text-gray-500';
-    }
+  const updateTransactions = (page: number) => {
+    setCurrentPage(page); // This triggers useEffect
   };
 
   return (
     <>
-      <div>
-        <div className="mb-4 rounded-lg bg-white p-6 shadow dark:bg-gray-800">
-          <h1 className="mb-6 text-xl font-semibold dark:text-white">Wallet</h1>
-          <div className="flex items-center justify-between">
-            <div>
-              <div className="mb-1 text-sm text-gray-500 dark:text-gray-300">
-                My Balance
-              </div>
-              <div className="flex items-baseline gap-1">
-                <span className="text-sm text-gray-500 dark:text-gray-300">
-                  {selectedWallet?.currency}
-                </span>
-                <span className="text-3xl font-semibold dark:text-white">
-                  {selectedWallet?.availableAmount}
-                </span>
-              </div>
-              <div className="mt-2 text-sm text-gray-500 dark:text-gray-400">
-                Show account balance in USD
-              </div>
+      <div className="mb-4 w-full rounded-lg bg-white p-6 shadow dark:bg-gray-800">
+        <h1 className="mb-6 text-xl font-semibold dark:text-white">Wallet</h1>
+        <div className="flex flex-col items-start justify-between md:flex-row md:items-center">
+          <div>
+            <div className="mb-1 text-sm text-gray-500 dark:text-gray-300">
+              My Balance
             </div>
-
-            <Dropdown>
-              <DropdownButton className="inline-flex h-[42px] w-[150px] items-center rounded-md bg-white px-3 py-2 text-sm font-semibold shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 dark:bg-gray-700 dark:text-white dark:ring-gray-500 dark:hover:bg-gray-600">
-                TopUp
-                <ChevronDownIcon className="mr-2 h-4 w-4" />
-              </DropdownButton>
-              <DropdownMenu className="dark:bg-gray-800 dark:text-white">
-                <DropdownItem
-                  className="flex justify-between dark:hover:bg-gray-700"
-                  onClick={() => {
-                    setIsRedeemCardDialogOpen(true);
-                  }}
-                >
-                  Redeem a card <ChevronRightIcon width={16} height={16} />
-                </DropdownItem>
-                <DropdownItem
-                  className="dark:hover:bg-gray-700"
-                  onClick={() => {
-                    setIsRedeemInvoiceDialogOpen(true);
-                  }}
-                >
-                  Redeem by invoice code
-                  <ChevronRightIcon width={16} height={16} />
-                </DropdownItem>
-              </DropdownMenu>
-            </Dropdown>
+            <div className="flex items-baseline gap-1">
+              <span className="text-sm text-gray-500 dark:text-gray-300">
+                {selectedWallet?.currency}
+              </span>
+              <span className="text-3xl font-semibold dark:text-white">
+                {selectedWallet?.availableAmount}
+              </span>
+            </div>
           </div>
+
+          <Dropdown>
+            <DropdownButton className="mt-4 inline-flex h-[42px] w-[150px] items-center rounded-md bg-white px-3 py-2 text-sm font-semibold shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 dark:bg-gray-700 dark:text-white dark:ring-gray-500 dark:hover:bg-gray-600">
+              TopUp
+              <ChevronDownIcon className="mr-2 h-4 w-4" />
+            </DropdownButton>
+            <DropdownMenu className="dark:bg-gray-800 dark:text-white">
+              <DropdownItem onClick={() => setIsRedeemCardDialogOpen(true)}>
+                Redeem a card
+              </DropdownItem>
+              <DropdownItem onClick={() => setIsRedeemInvoiceDialogOpen(true)}>
+                Redeem by invoice code
+              </DropdownItem>
+            </DropdownMenu>
+          </Dropdown>
         </div>
       </div>
 
-      <div className="rounded-lg bg-white p-6 shadow dark:bg-gray-800">
+      <div className="w-full rounded-lg bg-white p-6 shadow dark:bg-gray-800">
         <h2 className="mb-4 text-lg font-semibold dark:text-white">
           TopUp History
         </h2>
-        <div className="overflow-hidden rounded-lg bg-white shadow dark:bg-gray-800">
-          <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-            <thead className="bg-gray-50 dark:bg-gray-700">
+        <div className="overflow-x-auto rounded-lg bg-white shadow dark:bg-gray-800">
+          <table className=" min-w-full dark:divide-gray-700">
+            <thead className="bg-gray-100 dark:bg-gray-700">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-300">
+                <th className="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider text-gray-800 dark:text-gray-300">
                   Date
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-300">
+                <th className="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider text-gray-800 dark:text-gray-300">
                   Currency
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-300">
+                <th className="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider text-gray-800 dark:text-gray-300">
                   TopUp Type
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-300">
+                <th className="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider text-gray-800 dark:text-gray-300">
                   Amount
                 </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-200 bg-white dark:divide-gray-700 dark:bg-gray-800">
+            <tbody className="divide-y divide-gray-200 dark:bg-gray-900">
               {loading ? (
-                <tr>
-                  <td
-                    colSpan={4}
-                    className="py-4 text-center text-gray-500 dark:text-gray-300"
+                Array.from({ length: 10 }).map((_, index) => (
+                  <tr
+                    key={index}
+                    className="border-b border-gray-200 dark:border-gray-700"
                   >
-                    Loading...
-                  </td>
-                </tr>
+                    {Array.from({ length: 4 }).map((_, colIndex) => (
+                      <td key={colIndex} className="px-6 py-4">
+                        <div
+                          className={`h-5 ${
+                            colIndex % 2 === 1 ? 'w-12' : 'w-20'
+                          } rounded bg-gray-200 dark:bg-gray-600`}
+                        ></div>
+                      </td>
+                    ))}
+                  </tr>
+                ))
               ) : transactions.length > 0 ? (
                 transactions.map((transaction, index) => (
                   <tr key={index}>
@@ -200,15 +198,24 @@ export default function WalletPage() {
             </tbody>
           </table>
         </div>
+
+        {/* Pagination Component */}
+        <Pagination
+          currentPage={currentPage}
+          setCurrentPage={updateTransactions}
+          totalPages={totalPages}
+        />
       </div>
 
       <RedeemCardDialog
         open={isRedeemCardDialogOpen}
         onClose={() => setIsRedeemCardDialogOpen(false)}
+        fetchTransactions={() => fetchTransactions(currentPage)}
       />
       <RedeemInvoiceDialog
         open={isRedeemInvoiceDialogOpen}
         onClose={() => setIsRedeemInvoiceDialogOpen(false)}
+        fetchTransactions={() => fetchTransactions(currentPage)}
       />
     </>
   );

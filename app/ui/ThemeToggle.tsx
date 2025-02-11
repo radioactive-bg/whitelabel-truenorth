@@ -12,7 +12,7 @@ export default function ThemeToggle() {
       {theme === 'light' ? (
         <MoonIcon className="h-6 w-6" />
       ) : (
-        <SunIcon className="h-6 w-6" />
+        <SunIcon className="h-6 w-6 text-gray-100" />
       )}
     </button>
   );

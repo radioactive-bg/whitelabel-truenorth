@@ -109,12 +109,12 @@ export default function Page({}: {}) {
               </p>
             </div>
             <div className="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
-              <button
+              {/* <button
                 type="button"
                 className="block rounded-md bg-black px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-black/70 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black dark:bg-white dark:text-black"
               >
-                Add Order
-              </button>
+                Download All Orders
+              </button> */}
             </div>
           </div>
         </div>
@@ -125,12 +125,12 @@ export default function Page({}: {}) {
           <>
             <div className="px-4 sm:px-6 lg:px-8">
               <div className="mt-8 flow-root">
-                <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-                  <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
+                <div className="-mx-4 -my-2 overflow-x-auto  sm:-mx-6 lg:-mx-8">
+                  <div className="inline-block min-w-full py-2 align-middle  sm:px-6 lg:px-8">
                     <table
                       key={themeKey}
                       id="orderList"
-                      className="min-w-full divide-y divide-gray-300 dark:divide-gray-700"
+                      className="min-w-full divide-y divide-gray-300 rounded-lg shadow dark:divide-gray-700"
                     >
                       <thead className="bg-gray-50 dark:bg-gray-800">
                         <tr>

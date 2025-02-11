@@ -307,3 +307,43 @@ export const SkeletonWallet = () => {
     </div>
   );
 };
+
+export const WalletTableSkeleton = () => {
+  return (
+    <div className="animate-pulse">
+      <div className="mb-4 h-6 w-48 rounded bg-gray-300 dark:bg-gray-600"></div>
+      <div className="w-full rounded-lg bg-white p-6 shadow dark:bg-gray-800">
+        <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+          <thead>
+            <tr>
+              {['Date', 'Currency', 'TopUp Type', 'Amount'].map(
+                (header, index) => (
+                  <th
+                    key={index}
+                    className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-300"
+                  >
+                    {header}
+                  </th>
+                ),
+              )}
+            </tr>
+          </thead>
+          <tbody>
+            {[...Array(10)].map((_, index) => (
+              <tr
+                key={index}
+                className="border-b border-gray-200 dark:border-gray-700"
+              >
+                {[...Array(4)].map((_, colIndex) => (
+                  <td key={colIndex} className="px-6 py-4">
+                    <div className="h-4 w-24 rounded bg-gray-300 dark:bg-gray-600"></div>
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+};

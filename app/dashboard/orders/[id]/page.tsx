@@ -312,59 +312,6 @@ const OrderDetails = () => {
           {/* Attachments Section - Only visible if status is "Completed" */}
           {order.orderDetails.statusText === 'Completed' && (
             <div className="border-t border-gray-100 px-4 py-6 sm:col-span-2 sm:px-0">
-              <dt className="text-sm font-medium leading-6 text-gray-900 dark:text-white">
-                Order Summary
-              </dt>
-              <dd className="mt-2 text-sm text-gray-900">
-                {loading ? (
-                  <div className="flex animate-pulse items-center space-x-4">
-                    <div className="h-6 w-5/6 rounded bg-gray-300"></div>
-                    <div className="ml-4 flex-shrink-0">
-                      <button
-                        // onClick={() =>
-                        //   DownloadPDF(order.orderDetails.id, false)
-                        // }
-                        className="ml-4 rounded-md px-3 py-1 text-indigo-600 transition duration-150 hover:bg-indigo-100 hover:text-indigo-500 active:bg-indigo-200 active:text-indigo-700"
-                      >
-                        Download
-                      </button>
-                    </div>
-                  </div>
-                ) : (
-                  <ul
-                    role="list"
-                    className="divide-y divide-gray-100 rounded-md border border-gray-200"
-                  >
-                    <li className="flex items-center justify-between py-4 pl-4 pr-5 text-sm leading-6">
-                      <div className="flex w-0 flex-1 items-center">
-                        <PaperClipIcon
-                          className="h-5 w-5 flex-shrink-0 text-gray-400"
-                          aria-hidden="true"
-                        />
-                        <div className="ml-4 flex min-w-0 flex-1 gap-2">
-                          <span className="truncate font-medium dark:text-gray-400">
-                            {`Order-${order.orderDetails.id}.pdf`}
-                          </span>
-                          <span className="flex-shrink-0 text-gray-400">
-                            2.4mb
-                          </span>
-                        </div>
-                      </div>
-                      <div className="ml-4 flex-shrink-0">
-                        {/* <button
-                            onClick={() =>
-                              DownloadPDF(order.orderDetails.id)
-                            }
-                            className="ml-4 rounded-md bg-black px-3 py-1 text-white transition duration-150 hover:bg-black/70 hover:text-white active:text-white dark:bg-gray-700 dark:text-white dark:hover:bg-gray-900 dark:hover:text-gray-300 dark:active:bg-gray-600 dark:active:text-gray-200"
-                          >
-                            Download PDF
-                          </button> */}
-                      </div>
-                    </li>
-                  </ul>
-                )}
-              </dd>
-
               <div className="md:direction-row mt-6 flex flex-wrap gap-4 md:justify-end">
                 <button
                   onClick={() => DownloadPDF(order.orderDetails.id, true)}
@@ -378,12 +325,7 @@ const OrderDetails = () => {
                 >
                   Cards
                 </button>
-                <button
-                  onClick={() => DownloadPDF(order.orderDetails.id, false)}
-                  className="rounded-md bg-black px-3 py-2 text-[14px] text-white transition duration-150 hover:bg-black/70 hover:text-white active:text-white dark:bg-gray-700 dark:text-white dark:hover:bg-gray-900 dark:hover:text-gray-300 dark:active:bg-gray-600 dark:active:text-gray-200 md:text-[1rem]"
-                >
-                  Download PDF
-                </button>
+
                 <button
                   className=" rounded-md bg-black px-3 py-2 text-[14px] text-white transition duration-150 hover:bg-black/70 hover:text-white active:text-white dark:bg-gray-700 dark:text-white dark:hover:bg-gray-900 dark:hover:text-gray-300 dark:active:bg-gray-600 dark:active:text-gray-200  md:text-[1rem]"
                   onClick={() => DownloadXLSX(order.orderDetails.id)}

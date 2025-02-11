@@ -217,7 +217,7 @@ export default function TailwindSideNav({
             //see if removing the z-index breaks anything else
             //className="relative z-50 lg:hidden"
             className="relative lg:hidden"
-            onClose={() => setSidebarOpen(false)} // ✅ Correctly closes the modal
+            onClose={() => setSidebarOpen(false)}
           >
             <TransitionChild
               as={Fragment}
@@ -241,33 +241,39 @@ export default function TailwindSideNav({
                 leaveFrom="translate-x-0"
                 leaveTo="-translate-x-full"
               >
-                <DialogPanel className="relative mr-16 flex w-full max-w-xs flex-1 ">
-                  <TransitionChild
-                    as={Fragment}
-                    enter="ease-in-out duration-300"
-                    enterFrom="opacity-0"
-                    enterTo="opacity-100"
-                    leave="ease-in-out duration-300"
-                    leaveFrom="opacity-100"
-                    leaveTo="opacity-0"
-                  >
-                    <div className="absolute left-full top-0 flex w-16 justify-center pt-5">
-                      <button
-                        type="button"
-                        className="-m-2.5 p-2.5"
-                        onClick={() => setSidebarOpen(false)}
-                      >
-                        <span className="sr-only">Close sidebar</span>
-                        <XMarkIcon
-                          className="h-6 w-6 text-white"
+                <DialogPanel
+                  onClick={(e) => e.stopPropagation()}
+                  className="relative mr-16 flex w-full max-w-xs flex-1 "
+                >
+                  <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-white px-6 pb-4 dark:bg-gray-800">
+                    <div className="-mx-2 mt-16 flex h-16 shrink-0  items-center">
+                      {theme === 'dark' ? <LogoWhite /> : <Logo />}
+                    </div>
+                    <div
+                      onClick={() => {
+                        router.push('/dashboard/wallet');
+                        setSidebarOpen(false);
+                      }}
+                      className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-2 rounded-lg border border-gray-300 bg-white px-4 py-5 shadow-md hover:cursor-pointer dark:border-gray-900 dark:bg-gray-900 dark:hover:bg-gray-700 xl:px-8"
+                    >
+                      <div className="flex w-full items-center">
+                        <WalletIcon
+                          className="h-6 w-6 shrink-0 text-gray-400 group-hover:text-[#50C8ED] dark:text-gray-300 dark:group-hover:text-[#50C8ED]"
                           aria-hidden="true"
                         />
-                      </button>
-                    </div>
-                  </TransitionChild>
-                  <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-white px-6 pb-4 dark:bg-gray-800">
-                    <div className="-mx-2 flex h-16 shrink-0  items-center">
-                      {theme === 'dark' ? <LogoWhite /> : <Logo />}
+                        <dt className="ml-[10px] text-sm font-bold leading-6 text-gray-500 dark:text-gray-300">
+                          {'Wallet'}
+                        </dt>
+                      </div>
+                      {loadingWallets ? (
+                        <div className="h-10 w-40 animate-pulse rounded-md bg-gray-200 dark:bg-gray-600"></div>
+                      ) : (
+                        <dd className="w-full flex-none text-2xl font-medium leading-10 tracking-tight text-gray-900 dark:text-white">
+                          {wallets[0].availableAmount
+                            ? wallets[0].availableAmount
+                            : '$ 0'}
+                        </dd>
+                      )}
                     </div>
                     <nav className="flex flex-1 flex-col">
                       <ul role="list" className="flex flex-1 flex-col gap-y-7">
@@ -283,6 +289,9 @@ export default function TailwindSideNav({
                           <Link
                             href="/dashboard/contact-us"
                             onClick={() => {
+                              console.log(
+                                '/dashboard/contact-us  setSidebarOpen(false);',
+                              );
                               setSidebarOpen(false);
                               setOpenShoppingCart(false);
                             }}
@@ -321,16 +330,6 @@ export default function TailwindSideNav({
               {theme && theme === 'dark' ? <LogoWhite /> : <Logo />}
             </div>
             {/* add the wallet  */}
-
-            {/* <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-2 bg-white px-4 py-10 sm:px-6 xl:px-8">
-              <dt className="text-sm font-medium leading-6 text-gray-500">
-                {'Wallet'}
-              </dt>
-
-              <dd className="w-full flex-none text-3xl font-medium leading-10 tracking-tight text-gray-900">
-                {`${wallet[0].availableAmount}`}
-              </dd>
-            </div> */}
             <div
               onClick={() => router.push('/dashboard/wallet')}
               className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-2 rounded-lg border border-gray-300 bg-white px-4 py-5 shadow-md hover:cursor-pointer dark:border-gray-900 dark:bg-gray-900 dark:hover:bg-gray-700 xl:px-8"
@@ -370,6 +369,9 @@ export default function TailwindSideNav({
                   <Link
                     href="/dashboard/contact-us"
                     onClick={() => {
+                      console.log(
+                        '/dashboard/contact-us  setSidebarOpen(false);',
+                      );
                       setSidebarOpen(false);
                       setOpenShoppingCart(false);
                     }}
@@ -407,11 +409,15 @@ export default function TailwindSideNav({
               <button
                 type="button"
                 className="-m-2.5 p-2.5 text-gray-700 lg:hidden"
-                onClick={() => setSidebarOpen((prev) => !prev)} // ✅ Correct toggle behavior
+                onClick={(e) => {
+                  e.stopPropagation();
+                  console.log('clicks the Bars3Icon sidebar button');
+                  setSidebarOpen((prev) => !prev);
+                }}
               >
                 <span className="sr-only">Open sidebar</span>
                 <Bars3Icon
-                  className="pointer-none h-6 w-6"
+                  className="pointer-events-none h-6 w-6 dark:text-gray-100 "
                   aria-hidden="true"
                 />
               </button>
@@ -505,7 +511,10 @@ export default function TailwindSideNav({
                     className="relative -m-2.5 p-2.5 text-gray-400 hover:text-gray-500"
                   >
                     <span className="sr-only">View picked items</span>
-                    <ShoppingBagIcon className=" h-6 w-6" aria-hidden="true" />
+                    <ShoppingBagIcon
+                      className=" h-6 w-6 dark:text-gray-100"
+                      aria-hidden="true"
+                    />
                     {totalItemsInCart > 0 && (
                       <span className="absolute right-1 top-1 flex h-4 min-w-[18px] items-center justify-center rounded-full bg-red-600 px-1 text-[10px] text-white">
                         {totalItemsInCart > 99 ? '99+' : totalItemsInCart}
@@ -575,7 +584,7 @@ export default function TailwindSideNav({
             </div>
           </div>
 
-          <main className=" mx-auto flex min-h-[calc(100vh-80px)] max-w-5xl flex-row flex-wrap items-start px-4 py-10 sm:px-6 lg:max-w-7xl lg:px-8">
+          <main className="mx-auto flex min-h-[calc(100vh-80px)] max-w-5xl flex-row flex-wrap content-start items-start px-4 py-10 sm:px-6 lg:max-w-7xl lg:px-8">
             {children}
           </main>
           <ShoppingCartModal

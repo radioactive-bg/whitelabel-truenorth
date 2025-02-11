@@ -27,17 +27,28 @@ const Catalog = () => {
   //const [allFilters, setAllFilters] = useState<any[]>(filters);
 
   const [allFilters, setAllFilters] = useState<any[]>(() => {
-    if (
-      typeof window !== 'undefined' &&
-      localStorage?.getItem('catalogFilters')
-    ) {
-      try {
-        return JSON.parse(localStorage.getItem('catalogFilters') || '[]');
-      } catch (error) {
-        console.error('Error parsing catalogFilters from localStorage:', error);
-        return filters; // Fallback to default filters if parsing fails
+    if (typeof window !== 'undefined') {
+      const storedFilters = localStorage.getItem('catalogFilters');
+      const accessTokenExpires = localStorage.getItem('access_token_expires');
+      const currentTime = Math.floor(Date.now() / 1000); // Get current time in seconds
+
+      if (
+        storedFilters &&
+        accessTokenExpires &&
+        parseInt(accessTokenExpires) > currentTime
+      ) {
+        try {
+          return JSON.parse(storedFilters);
+        } catch (error) {
+          console.error(
+            'Error parsing catalogFilters from localStorage:',
+            error,
+          );
+          return filters; // Fallback to default filters if parsing fails
+        }
       }
     }
+
     return filters; // Default filters for SSR
   });
 
@@ -139,12 +150,20 @@ const Catalog = () => {
   const fetchAndBuildFilters = async () => {
     try {
       const storedFilters = localStorage.getItem('catalogFilters');
-      if (storedFilters) {
-        const parsedFilters = JSON.parse(storedFilters);
-        console.log('parsedFilters: ', parsedFilters);
-        setAllFilters(parsedFilters);
-        console.log('Using stored filters from localStorage');
-        return;
+      const accessTokenExpires = localStorage.getItem('access_token_expires');
+      const currentTime = Math.floor(Date.now() / 1000); // Current time in seconds
+
+      console.log('Access Token Expiry:', accessTokenExpires);
+      console.log('Current Time:', currentTime);
+
+      // Check if access token has expired
+      if (accessTokenExpires && parseInt(accessTokenExpires) > currentTime) {
+        if (storedFilters) {
+          const parsedFilters = JSON.parse(storedFilters);
+          console.log('Using stored filters from localStorage:', parsedFilters);
+          setAllFilters(parsedFilters);
+          return;
+        }
       }
 
       const [productGroupsResponse, regionsResponse, currenciesResponse] =

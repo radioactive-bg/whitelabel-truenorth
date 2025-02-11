@@ -16,11 +16,13 @@ import { useWalletStore, Wallet } from '@/state/wallets';
 interface RedeemInvoiceDialogProps {
   open: boolean;
   onClose: () => void;
+  fetchTransactions: () => void;
 }
 
 export function RedeemInvoiceDialog({
   open,
   onClose,
+  fetchTransactions,
 }: RedeemInvoiceDialogProps) {
   const { wallets, selectedWallet, fetchWallets } = useWalletStore();
 
@@ -71,15 +73,18 @@ export function RedeemInvoiceDialog({
 
     fetchWallets();
     setTimeout(() => {
+      fetchTransactions();
       setIsSuccess(true);
-    }, 1000);
+    }, 500);
   };
 
   const handleClose = () => {
     onClose();
-    setIsSuccess(false);
-    setFormData({ invoiceCode: '' });
-    setErrorMessage('');
+    setTimeout(() => {
+      setIsSuccess(false);
+      setFormData({ invoiceCode: '' });
+      setErrorMessage('');
+    }, 500);
   };
 
   return (

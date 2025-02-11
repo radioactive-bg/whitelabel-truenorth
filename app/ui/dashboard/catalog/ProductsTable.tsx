@@ -89,6 +89,30 @@ const ProductsTable = ({
     return searchParams.get(param) || '';
   };
 
+  const sortProductsByPrice = (
+    products: any[],
+    order: 'asc' | 'desc' = 'asc',
+  ) => {
+    return products
+      .map((product) => ({
+        ...product,
+        price: parseFloat(product.price), // Convert price to a number
+      }))
+      .sort((a, b) => {
+        // First, sort by product group name (Alphabetically)
+        const groupComparison = a.group.localeCompare(b.group, undefined, {
+          sensitivity: 'base',
+        });
+
+        if (groupComparison !== 0) {
+          return groupComparison; // Sort by group first
+        }
+
+        // If the group is the same, sort by price
+        return order === 'asc' ? a.price - b.price : b.price - a.price;
+      });
+  };
+
   const fetchData = async () => {
     setLoading(true); // Set loading to true before fetching data
 
@@ -132,11 +156,16 @@ const ProductsTable = ({
       );
 
       if (requestId === latestRequestId.current) {
-        let data = response.data ? response.data : [];
+        let data = response.data ?? []; // Ensure we have an array
+
+        // Sort products by group and then by price
+        let sortedProducts =
+          data.length > 0 ? sortProductsByPrice(data, 'asc') : data;
+
+        setProducts(sortedProducts);
         setCurrentPage(response.meta.current_page);
         setTotalPages(response.meta.last_page);
         console.log('Fetched product data:', JSON.stringify(data));
-        setProducts(data);
       }
     } catch (error) {
       if (axios.isCancel(error)) {

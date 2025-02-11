@@ -118,9 +118,9 @@ export default function CatalogPage() {
           </p>
           <Link
             href="/dashboard/catalog"
-            className="inline-flex items-center justify-center rounded-md bg-background px-6 py-3 font-medium text-primary 
-      hover:bg-background/90 focus:outline-none focus-visible:ring-2 focus-visible:ring-background focus-visible:ring-offset-2 
-      dark:bg-gray-800 dark:text-white dark:hover:bg-gray-700 dark:focus-visible:ring-gray-600"
+            className="inline-flex items-center justify-center rounded-md bg-background px-6 py-3 font-bold 
+      text-primary hover:bg-background/90 focus:outline-none focus-visible:ring-2 focus-visible:ring-background 
+      focus-visible:ring-offset-2 dark:bg-white dark:text-black dark:hover:bg-white dark:focus-visible:ring-gray-600"
             prefetch={false}
           >
             Browse Gift Cards
