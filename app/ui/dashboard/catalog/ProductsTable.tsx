@@ -127,11 +127,6 @@ const ProductsTable = ({
       ? denominationQuery.split(',')
       : currencies;
 
-    console.log('Fetching data with:');
-    console.log('ProductGroups:', ProductGroups);
-    console.log('Regions:', selectedRegionIDs);
-    console.log('Currencies:', selectedCurrencies);
-
     // Cancel the previous request if there was one
     if (cancelTokenSource.current) {
       cancelTokenSource.current.cancel(
@@ -165,7 +160,6 @@ const ProductsTable = ({
         setProducts(sortedProducts);
         setCurrentPage(response.meta.current_page);
         setTotalPages(response.meta.last_page);
-        console.log('Fetched product data:', JSON.stringify(data));
       }
     } catch (error) {
       if (axios.isCancel(error)) {
@@ -185,32 +179,52 @@ const ProductsTable = ({
   }, [regionIDs, currencies, productGroupIDs]);
 
   useEffect(() => {
-    // Extracting the checked options' ids from allFilters
-    console.log(
-      'useEffect in ProductsTable for allFilters, currentPage, searchParams',
+    // Get each filter object from allFilters
+    const productGroupFilter = allFilters.find(
+      (filter: any) => filter.id === 'Product Group',
     );
-    const newRegionIDs = allFilters
-      .find((filter: any) => filter.id === 'Activation Region')
-      ?.options.filter((option: any) => option.checked)
-      .map((option: any) => option.value);
+    const regionFilter = allFilters.find(
+      (filter: any) => filter.id === 'Activation Region',
+    );
+    const currencyFilter = allFilters.find(
+      (filter: any) => filter.id === 'Denomination Currency',
+    );
 
-    const newCurrencies = allFilters
-      .find((filter: any) => filter.id === 'Denomination Currency')
-      ?.options.filter((option: any) => option.checked)
-      .map((option: any) => option.value);
+    // Extract the active (checked) option values from each filter
+    const newProductGroupIDs =
+      productGroupFilter?.options
+        .filter((option: any) => option.checked)
+        .map((option: any) => option.value) || [];
+    const newRegionIDs =
+      regionFilter?.options
+        .filter((option: any) => option.checked)
+        .map((option: any) => option.value) || [];
+    const newCurrencies =
+      currencyFilter?.options
+        .filter((option: any) => option.checked)
+        .map((option: any) => option.value) || [];
 
-    const newProductGroupIDs = allFilters
-      .find((filter: any) => filter.id === 'Product Group')
-      ?.options.filter((option: any) => option.checked)
-      .map((option: any) => option.value);
+    // Update state with new filter IDs
+    setProductGroupIDs(newProductGroupIDs);
+    setRegionIDs(newRegionIDs);
+    setCurrencies(newCurrencies);
 
-    // Update state with the new arrays of ids
-    setRegionIDs(newRegionIDs || []);
-    setCurrencies(newCurrencies || []);
-    setProductGroupIDs(newProductGroupIDs || []);
+    // Determine if any filter is active
+    const areFiltersActive =
+      newProductGroupIDs.length > 0 ||
+      newRegionIDs.length > 0 ||
+      newCurrencies.length > 0;
 
+    // Optionally call your checkIfAnyFiltersActive() to update any parent state
     checkIfAnyFiltersActive();
-    fetchData();
+
+    // Only fetch data if at least one filter is active
+    if (areFiltersActive) {
+      fetchData();
+    } else {
+      // No filters active—stop loading and let Catalog render the grid view.
+      // setLoading(false);
+    }
   }, [allFilters, currentPage]);
 
   return (
