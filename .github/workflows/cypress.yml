@@ -24,7 +24,8 @@ jobs:
 
       - name: Build and Run Application Container
         run: |
-          docker build --build-arg NEXT_PUBLIC_API_URL=https://proxy.duegate.com/staging -t radioactivehub0/b2b-arpay-v2:latest .
+          # Build the image with the API URL pointing to our internal hostname
+          docker build --build-arg NEXT_PUBLIC_API_URL=http://app:3000 -t radioactivehub0/b2b-arpay-v2:latest .
           docker network create cypress_network
           docker run -d --rm --network=cypress_network --name app -p 3000:3000 radioactivehub0/b2b-arpay-v2:latest
           sleep 15 # Wait for the app to be fully ready
