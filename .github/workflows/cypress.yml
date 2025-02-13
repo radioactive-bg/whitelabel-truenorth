@@ -26,17 +26,17 @@ jobs:
       - name: Install dependencies
         run: yarn install --frozen-lockfile
 
-      - name: Kill any process running on port 3000 (fix EADDRINUSE)
-        run: |
-          sudo fuser -k 3000/tcp || true
-          sleep 5 # Allow time for processes to exit
+      #   - name: Kill any process running on port 3000 (fix EADDRINUSE)
+      #     run: |
+      #       sudo fuser -k 3000/tcp || true
+      #       sleep 5 # Allow time for processes to exit
 
       - name: Start application
         run: |
           yarn build # If required, build the app first
           yarn start & # Start the app in the background
         env:
-          CYPRESS_BASE_URL: http://localhost:3000
+          CYPRESS_BASE_URL: http://localhost:4000
 
       - name: Wait for application to be ready
         run: npx wait-on http://localhost:3000
@@ -45,7 +45,7 @@ jobs:
         uses: cypress-io/github-action@v6
         with:
           start: yarn start
-          wait-on: 'http://localhost:3000'
+          wait-on: 'http://localhost:4000'
           wait-on-timeout: 120
 
       - name: Upload Cypress screenshots on failure
