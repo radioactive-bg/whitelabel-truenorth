@@ -2,7 +2,7 @@ const { defineConfig } = require('cypress');
 
 module.exports = defineConfig({
   e2e: {
-    baseUrl: 'http://localhost:3000', // Update to match your environment
+    baseUrl: 'http://localhost:4000', // Update to match your environment
     experimentalMemoryManagement: true, // Helps manage memory issues
     numTestsKeptInMemory: 0, // Reduces memory usage
     video: false, // Disables video recording to save resources
