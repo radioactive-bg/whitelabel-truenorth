@@ -1,3 +1,5 @@
+// ACL & User Types
+
 interface ACLActions {
   view: boolean;
   store?: boolean;
@@ -20,15 +22,16 @@ interface ACLWalletSpecial {
   redeemInvoiceCode: boolean;
 }
 
+interface ACLTransactions {
+  crud: ACLActions;
+}
+
 interface ACLWallet {
   list: {
     crud: ACLActions;
     special: ACLWalletSpecial;
   };
-}
-
-interface ACLTransactions {
-  crud: ACLActions;
+  transactions: ACLTransactions; // nested transactions inside wallet
 }
 
 interface ACLProfileSpecial {
@@ -58,13 +61,39 @@ interface ACLFilters {
   };
 }
 
+interface ACLPayoutTransaction {
+  list: {
+    crud: {
+      view: boolean;
+      store: boolean;
+    };
+  };
+}
+
+interface ACLPayoutMethod {
+  list: {
+    crud: {
+      view: boolean;
+    };
+  };
+}
+
+interface CompanyPayout {
+  isEnable: boolean;
+}
+
+export interface Company {
+  payout: CompanyPayout;
+}
+
 export interface ACL {
   orders: ACLOrder;
   wallet: ACLWallet;
-  transactions: ACLTransactions;
   profile: ACLProfile;
   company: ACLCompany;
   filters: ACLFilters;
+  payoutTransaction: ACLPayoutTransaction;
+  payoutMethod: ACLPayoutMethod;
 }
 
 export interface User {
@@ -72,5 +101,6 @@ export interface User {
   name: string;
   email: string;
   is2FAEnable: boolean;
+  company: Company;
   acl: ACL;
 }

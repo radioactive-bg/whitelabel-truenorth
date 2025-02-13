@@ -123,16 +123,16 @@ export default function Page({}: {}) {
           <InvoicesTableSkeleton />
         ) : (
           <>
-            <div className="px-4 sm:px-6 lg:px-8">
-              <div className="mt-8 flow-root">
-                <div className="-mx-4 -my-2 overflow-x-auto  sm:-mx-6 lg:-mx-8">
-                  <div className="inline-block min-w-full py-2 align-middle  sm:px-6 lg:px-8">
+            <div className="rounded-lg px-4 sm:px-6  lg:px-8">
+              <div className="mt-8 flow-root rounded-lg ">
+                <div className="-mx-4 -my-2 overflow-x-auto rounded-lg  sm:-mx-6 lg:-mx-8">
+                  <div className="rounded-lgalign-middle inline-block min-w-full ">
                     <table
                       key={themeKey}
                       id="orderList"
-                      className="min-w-full divide-y divide-gray-300 rounded-lg shadow dark:divide-gray-700"
+                      className="min-w-full divide-y divide-gray-300 rounded-lg border shadow dark:divide-gray-700 "
                     >
-                      <thead className="bg-gray-50 dark:bg-gray-800">
+                      <thead className="rounded-lg bg-gray-100 dark:bg-gray-700">
                         <tr>
                           <th
                             scope="col"
@@ -170,12 +170,9 @@ export default function Page({}: {}) {
                           ></th>
                         </tr>
                       </thead>
-                      <tbody className="divide-y divide-gray-200 bg-white dark:divide-gray-700 dark:bg-gray-900">
+                      <tbody className="divide-y  divide-gray-200 rounded-lg bg-white dark:divide-gray-700 dark:bg-gray-900">
                         {orders.map((order: any) => (
-                          <tr
-                            key={order.id}
-                            className="hover:bg-gray-100 dark:hover:bg-gray-700"
-                          >
+                          <tr key={order.id} className="">
                             <td className="whitespace-nowrap py-5 pr-3 text-sm text-gray-900 dark:text-gray-200 sm:pl-0">
                               <div className="flex items-center">
                                 <div className="ml-4">

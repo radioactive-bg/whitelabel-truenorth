@@ -402,8 +402,7 @@ export default function TailwindSideNav({
           {/* Static topbar for desktop */}
           <div
             //see if removing the z-index braks anything else
-            className="sticky top-0 z-40 md:mt-4 lg:mx-auto lg:px-8"
-            //className="sticky top-0 lg:mx-auto lg:max-w-7xl lg:px-8"
+            className="sticky top-0 z-40 md:pt-4 lg:mx-auto lg:px-8"
           >
             <div className="flex h-16 items-center gap-x-4 bg-white px-4 shadow-sm dark:bg-gray-800 sm:gap-x-6 sm:px-6 md:rounded-md lg:shadow-none">
               <button

@@ -8,12 +8,14 @@ import { Dialog, Transition } from '@headlessui/react';
 import { ChevronDownIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import { FunnelIcon, MinusIcon, PlusIcon } from '@heroicons/react/20/solid';
 
-import { filters } from '@/app/lib/constants';
+//import { filters } from '@/app/lib/constants';
 import { getRegions, getCurrencies } from '@/app/lib/api/filters';
 import { getProductGroupsList } from '@/app/lib/api/productGroup';
 
 import FilterPopover from '@/app/ui/dashboard/catalog/FilterPopover';
 import ProductsTable from '@/app/ui/dashboard/catalog/ProductsTable';
+
+import { CatalogSkeleton } from '@/app/ui/skeletons';
 
 function classNames(...classes: any) {
   return classes.filter(Boolean).join(' ');
@@ -24,33 +26,34 @@ const Catalog = () => {
   const [loading, setLoading] = useState(false);
 
   // filter states
-  //const [allFilters, setAllFilters] = useState<any[]>(filters);
+  const [allFilters, setAllFilters] = useState<any[] | null>(null);
 
-  const [allFilters, setAllFilters] = useState<any[]>(() => {
-    if (typeof window !== 'undefined') {
-      const storedFilters = localStorage.getItem('catalogFilters');
-      const accessTokenExpires = localStorage.getItem('access_token_expires');
-      const currentTime = Math.floor(Date.now() / 1000); // Get current time in seconds
+  // const [allFilters, setAllFilters] = useState<any[]>(() => {
+  //   if (typeof window !== 'undefined') {
+  //     const storedFilters = localStorage.getItem('catalogFilters');
+  //     const accessTokenExpires = localStorage.getItem('access_token_expires');
+  //     const currentTime = Math.floor(Date.now() / 1000); // Get current time in seconds
 
-      if (
-        storedFilters &&
-        accessTokenExpires &&
-        parseInt(accessTokenExpires) > currentTime
-      ) {
-        try {
-          return JSON.parse(storedFilters);
-        } catch (error) {
-          console.error(
-            'Error parsing catalogFilters from localStorage:',
-            error,
-          );
-          return filters; // Fallback to default filters if parsing fails
-        }
-      }
-    }
+  //     if (
+  //       storedFilters &&
+  //       accessTokenExpires &&
+  //       parseInt(accessTokenExpires) > currentTime
+  //     ) {
+  //       try {
+  //         console.log('returns stored filters');
+  //         return JSON.parse(storedFilters);
+  //       } catch (error) {
+  //         console.error(
+  //           'Error parsing catalogFilters from localStorage:',
+  //           error,
+  //         );
+  //         return filters; // Fallback to default filters if parsing fails
+  //       }
+  //     }
+  //   }
 
-    return filters; // Default filters for SSR
-  });
+  //   return filters; // Default filters for SSR
+  // });
 
   //const [updatedAllFilters, setUpdatedAllFilters] = useState(filters);
   const [filtersActive, setFiltersActive] = useState(false);
@@ -73,6 +76,7 @@ const Catalog = () => {
 
   useEffect(() => {
     const initializeFilters = async () => {
+      // Only fetch if we haven't fetched filters before
       if (hasFetchedFilters) return; // Prevent re-fetch
       setLoading(true);
       try {
@@ -103,30 +107,18 @@ const Catalog = () => {
     initializeFilters();
   }, []);
 
-  // useEffect(() => {
-  //   if (allFilters.length > 0) {
-  //     const productGroup = findQueryParam('ProductGroups');
-  //     const denominationCurrency = findQueryParam('DenominationCurrency');
-  //     const activationRegion = findQueryParam('ActivationRegion');
-
-  //     if (denominationCurrency || activationRegion) {
-  //         triggerUpdate();
-  //     }
-
-  //     if (productGroup && productGroup.trim() !== '') {
-  //       console.log(
-  //         'fetchProductsFromQuery in useEffect [searchParams, allFilters]',
-  //       );
-  //       fetchProductsFromQuery(productGroup);
-  //     }
-  //   }
-  // }, [searchParams]); // This triggers whenever query params change
-
   useEffect(() => {
+    const productGroups = findQueryParam('ProductGroups');
+    const denominationCurrency = findQueryParam('DenominationCurrencys');
+    const activationRegions = findQueryParam('ActivationRegions');
+
+    // Only call fetchProductsFromQuery if at least one parameter has a value
+    if (!productGroups && !denominationCurrency && !activationRegions) return;
+
     fetchProductsFromQuery(
-      findQueryParam('ProductGroups'),
-      findQueryParam('DenominationCurrencys'),
-      findQueryParam('ActivationRegions'),
+      productGroups,
+      denominationCurrency,
+      activationRegions,
     );
   }, [searchParams]);
 
@@ -214,7 +206,6 @@ const Catalog = () => {
       console.log('Built filters:', filters);
       setAllFilters(filters);
       localStorage.setItem('catalogFilters', JSON.stringify(filters));
-      // ✅ Log allFilters[0].options after setting filters
       console.log('Product Group Options:', filters[0].options);
     } catch (error) {
       console.error('Error fetching filters:', error);
@@ -222,51 +213,6 @@ const Catalog = () => {
     }
   };
 
-  //test
-  // const fetchProductsFromQuery = async (productGroups: string) => {
-  //   if (allFilters.length === 0) {
-  //     console.log('fetchProductsFromQuery skipped: allFilters is empty');
-  //     return;
-  //   }
-
-  //   setLoading(true);
-
-  //   try {
-  //     // Convert the string to an array of product groups
-  //     const productGroupsArray = productGroups
-  //       .split(',')
-  //       .map((group) => group.trim());
-
-  //     //console.log('productGroupsArray: ', productGroupsArray);
-  //     if (allFilters.length === 0) {
-  //       setTimeout(() => {
-  //         console.log('fetchProductsFromQuery: allFilters is empty');
-  //       }, 600);
-  //     }
-  //     // Step 1: Reset filters and mark relevant ProductGroups as active
-  //     const newAllFilters = allFilters.map((filter) => {
-  //       if (filter.id === allFilters[0].id) {
-  //         const newOptions = filter.options.map((option: any) => ({
-  //           ...option,
-  //           checked: productGroupsArray.includes(option.label), // Check ProductGroups in the array
-  //         }));
-  //         return { ...filter, options: newOptions };
-  //       }
-  //       return filter;
-  //     });
-  //     console.log(
-  //       'Updated Filters in fetchProductsFromQuery function:',
-  //       newAllFilters,
-  //     );
-
-  //     setAllFilters(newAllFilters); // Update filters state
-  //     setFiltersActive(true);
-  //   } catch (error) {
-  //     console.error('Error fetching products:', error);
-  //   } finally {
-  //     setLoading(false); // Stop loading
-  //   }
-  // };
   const fetchProductsFromQuery = async (
     productGroups: any,
     denominationCurrency: any,
@@ -280,7 +226,7 @@ const Catalog = () => {
         : [];
       const regionsArray = activationRegion ? activationRegion.split(',') : [];
 
-      const newAllFilters = allFilters.map((filter) => {
+      const newAllFilters = allFilters?.map((filter) => {
         if (filter.id === 'Product Group') {
           return {
             ...filter,
@@ -311,7 +257,8 @@ const Catalog = () => {
         return filter;
       });
 
-      setAllFilters(newAllFilters);
+      setAllFilters(newAllFilters ? newAllFilters : []);
+      console.log('fetchProductsFromQuery setFiltersActive(true);');
       setFiltersActive(true);
     } catch (error) {
       console.error('Error fetching products:', error);
@@ -322,7 +269,7 @@ const Catalog = () => {
 
   const handleSelectProductGroupIcon = (productLabel: any) => {
     console.log('handleSelectProductGroupIcon productLabel: ', productLabel);
-    let newAllFilters = allFilters.map((filter) => {
+    let newAllFilters = allFilters?.map((filter) => {
       if (filter.id === allFilters[0].id) {
         let newOptions = filter.options.map((option: any) => {
           if (option.label === productLabel) {
@@ -338,7 +285,8 @@ const Catalog = () => {
       return filter;
     });
 
-    setAllFilters(newAllFilters);
+    setAllFilters(newAllFilters ? newAllFilters : []);
+    console.log('handleSelectProductGroupIcon setFiltersActive(true);');
     setFiltersActive(true);
 
     const currentParams = new URLSearchParams(window.location.search);
@@ -356,97 +304,98 @@ const Catalog = () => {
 
   const checkIfAnyFiltersActive = () => {
     console.log('checkIfAnyFiltersActive');
-    //console.log('allFilters: ', allFilters);
-    const isActive = allFilters.some((filter) =>
+    console.log('allfilters: ' + allFilters);
+    console.log('allfilters.length: ' + allFilters?.length);
+
+    const isActive = allFilters?.some((filter) =>
       filter.options.some((option: any) => option.checked),
     );
-    console.log('isActive : ' + isActive);
-    setFiltersActive(isActive);
+    console.log('isActive: ' + isActive);
+    setFiltersActive(isActive ? isActive : false);
   };
 
   return (
-    <div className="w-full rounded-md bg-white  dark:bg-gray-900">
-      {loading === true ? (
-        // add a skeleton for this when the time comes
-        <>Loading...</>
-      ) : (
-        <div>
-          {/* Mobile filter dialog */}
-          <Transition.Root show={mobileFiltersOpen} as={Fragment}>
-            <Dialog
-              className="relative z-40 lg:hidden"
-              onClose={setMobileFiltersOpen}
-            >
-              <Transition.Child
-                as={Fragment}
-                enter="transition-opacity ease-linear duration-300"
-                enterFrom="opacity-0"
-                enterTo="opacity-100"
-                leave="transition-opacity ease-linear duration-300"
-                leaveFrom="opacity-100"
-                leaveTo="opacity-0"
+    <div className="w-full ">
+      <main className="mx-auto max-w-2xl rounded-md bg-white px-4 dark:bg-gray-800 lg:max-w-7xl lg:px-8">
+        {loading === true ? (
+          <CatalogSkeleton />
+        ) : (
+          <>
+            {/* Mobile filter dialog */}
+            <Transition.Root show={mobileFiltersOpen} as={Fragment}>
+              <Dialog
+                className="relative z-40 lg:hidden"
+                onClose={setMobileFiltersOpen}
               >
-                <div className="fixed inset-0 bg-black bg-opacity-25" />
-              </Transition.Child>
-
-              <div className="fixed inset-0 z-40 flex">
                 <Transition.Child
                   as={Fragment}
-                  enter="transition ease-in-out duration-300 transform"
-                  enterFrom="translate-x-full"
-                  enterTo="translate-x-0"
-                  leave="transition ease-in-out duration-300 transform"
-                  leaveFrom="translate-x-0"
-                  leaveTo="translate-x-full"
+                  enter="transition-opacity ease-linear duration-300"
+                  enterFrom="opacity-0"
+                  enterTo="opacity-100"
+                  leave="transition-opacity ease-linear duration-300"
+                  leaveFrom="opacity-100"
+                  leaveTo="opacity-0"
                 >
-                  <Dialog.Panel className="relative ml-auto flex h-full w-full max-w-xs flex-col overflow-y-auto bg-white py-4 pb-12 shadow-xl dark:bg-gray-900">
-                    <div className="flex items-center justify-between px-4">
-                      <h2 className="text-lg font-medium text-gray-900 dark:text-gray-300">
-                        Filters
-                      </h2>
-                      <button
-                        type="button"
-                        className="relative -mr-2 flex h-10 w-10 items-center justify-center rounded-md bg-white p-2 text-gray-400 dark:bg-gray-800 dark:text-gray-300"
-                        onClick={() => setMobileFiltersOpen(false)}
-                      >
-                        <span className="absolute -inset-0.5" />
-                        <span className="sr-only">Close menu</span>
-                        <XMarkIcon className="h-6 w-6" aria-hidden="true" />
-                      </button>
-                    </div>
-
-                    {/* Mobile Filters */}
-                    <div className="mt-4 border-t border-gray-200">
-                      <h3 className="sr-only">Categories</h3>
-
-                      <div className="flex flex-col space-y-4 px-4 py-6">
-                        {allFilters.map((filter) => (
-                          <FilterPopover
-                            key={filter.id}
-                            fullFilter={filter}
-                            setFullFilter={(updatedFilter: any) => {
-                              const newAllFilters = allFilters.map((f) =>
-                                f.id === updatedFilter.id ? updatedFilter : f,
-                              );
-                              setAllFilters(newAllFilters);
-                            }}
-                            checkIfAnyFiltersActive={checkIfAnyFiltersActive}
-                            setFiltersActive={setFiltersActive}
-                          />
-                        ))}
-                      </div>
-                    </div>
-                  </Dialog.Panel>
+                  <div className="fixed inset-0 bg-black bg-opacity-25" />
                 </Transition.Child>
-              </div>
-            </Dialog>
-          </Transition.Root>
 
-          <main className="mx-auto max-w-2xl px-4 lg:max-w-7xl lg:px-8">
-            <div className=" flex items-center justify-end border-b border-gray-200 pb-10 pt-10">
+                <div className="fixed inset-0 z-40 flex">
+                  <Transition.Child
+                    as={Fragment}
+                    enter="transition ease-in-out duration-300 transform"
+                    enterFrom="translate-x-full"
+                    enterTo="translate-x-0"
+                    leave="transition ease-in-out duration-300 transform"
+                    leaveFrom="translate-x-0"
+                    leaveTo="translate-x-full"
+                  >
+                    <Dialog.Panel className="relative ml-auto flex h-full w-full max-w-xs flex-col overflow-y-auto bg-white py-4 pb-12 shadow-xl dark:bg-gray-900">
+                      <div className="flex items-center justify-between px-4">
+                        <h2 className="text-lg font-medium text-gray-900 dark:text-gray-300">
+                          Filters
+                        </h2>
+                        <button
+                          type="button"
+                          className="relative -mr-2 flex h-10 w-10 items-center justify-center rounded-md bg-white p-2 text-gray-400 dark:bg-gray-800 dark:text-gray-300"
+                          onClick={() => setMobileFiltersOpen(false)}
+                        >
+                          <span className="absolute -inset-0.5" />
+                          <span className="sr-only">Close menu</span>
+                          <XMarkIcon className="h-6 w-6" aria-hidden="true" />
+                        </button>
+                      </div>
+
+                      {/* Mobile Filters */}
+                      <div className="mt-4 border-t border-gray-200">
+                        <h3 className="sr-only">Categories</h3>
+
+                        <div className="flex flex-col space-y-4 px-4 py-6">
+                          {allFilters?.map((filter) => (
+                            <FilterPopover
+                              key={filter.id}
+                              fullFilter={filter}
+                              setFullFilter={(updatedFilter: any) => {
+                                const newAllFilters = allFilters.map((f) =>
+                                  f.id === updatedFilter.id ? updatedFilter : f,
+                                );
+                                setAllFilters(newAllFilters);
+                              }}
+                              checkIfAnyFiltersActive={checkIfAnyFiltersActive}
+                              setFiltersActive={setFiltersActive}
+                            />
+                          ))}
+                        </div>
+                      </div>
+                    </Dialog.Panel>
+                  </Transition.Child>
+                </div>
+              </Dialog>
+            </Transition.Root>
+
+            <div className=" hidden items-center justify-end border-b border-gray-300 pb-10 pt-10 dark:border-gray-500 lg:flex">
               <div className="flex hidden items-center lg:block">
                 <div className="flex items-center">
-                  {allFilters.map((filter) => (
+                  {allFilters?.map((filter) => (
                     <FilterPopover
                       key={filter.id}
                       fullFilter={filter}
@@ -464,7 +413,7 @@ const Catalog = () => {
               </div>
             </div>
 
-            <div className="pb-10 pt-10 dark:bg-gray-900 lg:grid lg:grid-cols-3 lg:gap-x-8">
+            <div className="pb-10 pt-10  lg:grid lg:grid-cols-3 lg:gap-x-8">
               <aside className="mb-4 lg:hidden">
                 <h2 className="sr-only">Filters</h2>
 
@@ -498,50 +447,50 @@ const Catalog = () => {
                   />
                 ) : (
                   <div className="grid grid-cols-2 gap-x-4 gap-y-4 sm:grid-cols-2 sm:grid-cols-3 sm:gap-x-6 sm:gap-y-10 md:grid-cols-4 lg:grid-cols-5 lg:gap-x-8 xl:grid-cols-6">
-                    {allFilters[0]?.options?.map(
-                      (product: any, index: number) =>
-                        product.label === 'All' ? null : (
-                          <button
-                            key={product.value}
-                            onClick={(e) =>
-                              handleSelectProductGroupIcon(product.label)
-                            }
-                            className="group flex flex-col items-center"
-                          >
-                            <div className="relative aspect-[1/1] w-full overflow-hidden rounded-lg bg-gray-200  dark:bg-gray-700">
-                              <Image
-                                src={
-                                  product.logo ? product.logo : '/NoPhoto.jpg'
-                                }
-                                width={200}
-                                height={200}
-                                alt={
-                                  product.imageAlt
-                                    ? product.imageAlt
-                                    : 'Default description'
-                                }
-                                className=" h-full w-full rounded-lg border border-gray-700 object-cover object-center  group-hover:opacity-75  dark:border-gray-700"
-                              />
-                            </div>
-                            <h3 className="dark: mt-4 text-xs text-black text-gray-700 dark:text-gray-300">
-                              {product.label}
-                            </h3>
-                          </button>
-                        ),
-                    )}
+                    {allFilters !== null &&
+                      allFilters[0]?.options?.map(
+                        (product: any, index: number) =>
+                          product.label === 'All' ? null : (
+                            <button
+                              key={product.value}
+                              onClick={(e) =>
+                                handleSelectProductGroupIcon(product.label)
+                              }
+                              className="group flex flex-col items-center"
+                            >
+                              <div className="relative aspect-[1/1] w-full overflow-hidden rounded-lg bg-gray-200  dark:bg-gray-700">
+                                <Image
+                                  src={
+                                    product.logo ? product.logo : '/NoPhoto.jpg'
+                                  }
+                                  width={200}
+                                  height={200}
+                                  alt={
+                                    product.imageAlt
+                                      ? product.imageAlt
+                                      : 'Default description'
+                                  }
+                                  className=" h-full w-full rounded-lg border border-gray-200 object-cover object-center  group-hover:opacity-75  dark:border-gray-700"
+                                />
+                              </div>
+                              <h3 className="dark: mt-4 text-xs text-black text-gray-700 dark:text-gray-300">
+                                {product.label}
+                              </h3>
+                            </button>
+                          ),
+                      )}
                   </div>
                 )}
               </section>
             </div>
-          </main>
-
-          <footer aria-labelledby="footer-heading" className="bg-white">
-            <h2 id="footer-heading" className="sr-only">
-              Footer
-            </h2>
-          </footer>
-        </div>
-      )}
+          </>
+        )}
+      </main>
+      <footer aria-labelledby="footer-heading" className="bg-white">
+        <h2 id="footer-heading" className="sr-only">
+          Footer
+        </h2>
+      </footer>
     </div>
   );
 };

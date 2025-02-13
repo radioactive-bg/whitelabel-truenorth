@@ -94,7 +94,7 @@ export function RedeemInvoiceDialog({
       onClose={handleClose}
     >
       {/* Dialog content */}
-      <div className="relative w-full max-w-md rounded-lg bg-white p-6 dark:bg-gray-900 ">
+      <div className="relative w-full max-w-md rounded-lg bg-white py-4 dark:bg-gray-900 ">
         <CustomDialogTitle className="flex items-center justify-between text-black dark:text-white">
           <span className="text-xl font-semibold">Redeem an Invoice Code</span>
           <button

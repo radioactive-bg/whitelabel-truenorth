@@ -28,7 +28,7 @@ const FilterPopover = ({
   // Debounced function for updating query parameters
   const handleDebouncedUpdate = debounce((queryString: string) => {
     router.push(`/dashboard/catalog${queryString ? `?${queryString}` : ''}`);
-  }, 300);
+  }, 500);
 
   const filterOptions = useMemo(() => {
     if (query === '') {
@@ -46,9 +46,6 @@ const FilterPopover = ({
   }, [filterOptions]);
 
   const handleCheckbox = (option: any) => {
-    console.log(' handleCheckbox fullFilter: ' + JSON.stringify(fullFilter));
-    console.log('handleCheckbox option: ' + JSON.stringify(option));
-
     const newValue = !option.checked;
     if (option.checked === newValue) return; // Skip update if no change
 
@@ -78,6 +75,7 @@ const FilterPopover = ({
         .split(',')
         .filter((item) => item !== option.label)
         .join(',');
+      // console.log('handleCheckbox check filtersActve');
       checkIfAnyFiltersActive();
     }
 
@@ -91,7 +89,10 @@ const FilterPopover = ({
     const newQueryString = new URLSearchParams(newQuery).toString();
 
     if (currentQueryString !== newQueryString) {
-      handleDebouncedUpdate(newQueryString);
+      // handleDebouncedUpdate(newQueryString);
+      router.push(
+        `/dashboard/catalog${newQueryString ? `?${newQueryString}` : ''}`,
+      );
     }
   };
 
