@@ -282,9 +282,9 @@ export default function WalletPage() {
           ) : (
             <div className="mb-4">
               <span className="text-lg font-semibold dark:text-white">
-                {allowedTableTypes[0] === 'topup'
-                  ? 'TopUp History'
-                  : 'Payout Transactions'}
+                {allowedTableTypes[0] === 'payout'
+                  ? 'Payout Transactions'
+                  : 'TopUp History'}
               </span>
             </div>
           )}

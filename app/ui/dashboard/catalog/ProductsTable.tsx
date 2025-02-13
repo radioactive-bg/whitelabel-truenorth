@@ -223,7 +223,7 @@ const ProductsTable = ({
       fetchData();
     } else {
       // No filters active—stop loading and let Catalog render the grid view.
-      // setLoading(false);
+      setLoading(false);
     }
   }, [allFilters, currentPage]);
 

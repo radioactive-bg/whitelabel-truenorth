@@ -76,7 +76,7 @@ const FilterPopover = ({
         .filter((item) => item !== option.label)
         .join(',');
       // console.log('handleCheckbox check filtersActve');
-      //checkIfAnyFiltersActive();
+      checkIfAnyFiltersActive();
     }
 
     // Update query parameters dynamically
