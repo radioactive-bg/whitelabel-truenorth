@@ -21,14 +21,15 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 18 # Use stable version
+          node-version: 18
 
       - name: Install dependencies
         run: yarn install --frozen-lockfile
 
       - name: Kill any process running on port 3000 (fix EADDRINUSE)
         run: |
-          sudo kill -9 $(sudo lsof -t -i:3000) 2>/dev/null || true
+          sudo fuser -k 3000/tcp || true
+          sleep 5 # Allow time for processes to exit
 
       - name: Start application
         run: |
