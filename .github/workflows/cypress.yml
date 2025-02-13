@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - main
-      - dev # Run tests on pushes to these branches
+      - dev
   pull_request:
     branches:
       - main
@@ -21,40 +21,40 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 18 # Use latest LTS version
-          cache: 'npm' # Cache dependencies for faster builds
+          node-version: 18
+          cache: 'npm'
 
       - name: Install dependencies
-        run: npm ci # Faster and more reliable than npm install
+        run: npm ci
 
       - name: Start application
         run: |
-          npm run build # Build the app if needed
-          npm start &   # Start the app in the background
+          npm run build
+          npm start & # Run in background
         env:
-          CYPRESS_BASE_URL: http://localhost:3000 # Adjust to match your app's URL
+          CYPRESS_BASE_URL: https://dev.b2b.hksglobal.group
 
-      - name: Wait for application to be ready
-        run: npx wait-on http://localhost:3000 --timeout 300000 # Wait 5 mins
+      - name: Wait for application
+        run: npx wait-on $CYPRESS_BASE_URL --timeout 300000
 
       - name: Run Cypress tests
         uses: cypress-io/github-action@v6
         with:
-          wait-on: 'http://localhost:3000' # Ensure app is running
-          wait-on-timeout: 300 # 5 min timeout
+          wait-on: $CYPRESS_BASE_URL
+          wait-on-timeout: 300
 
       - name: Upload Cypress screenshots on failure
         if: failure()
-        uses: actions/upload-artifact@v4 # Updated from v3 to v4
+        uses: actions/upload-artifact@v4
         with:
           name: cypress-screenshots
           path: cypress/screenshots
-          retention-days: 7 # Optional: Keeps artifacts for 7 days
+          retention-days: 7
 
-      - name: Upload Cypress videos on failure
+      - name: Upload Cypress videos
         if: failure()
-        uses: actions/upload-artifact@v4 # Updated from v3 to v4
+        uses: actions/upload-artifact@v4
         with:
           name: cypress-videos
           path: cypress/videos
-          retention-days: 7 # Optional: Keeps artifacts for 7 days
+          retention-days: 7

@@ -6,9 +6,13 @@ describe('Catalog and Order Workflow Test', () => {
 
     // Step 1.2: Intercept network requests during login and wait for them to complete
     // Intercepting fetch requests for dashboard and profile data
-    cy.intercept('POST', 'https://proxy.duegate.com/staging/oauth/token').as('loginRequest');
+    cy.intercept('POST', 'http://localhost:3000/oauth/token').as(
+      'loginRequest',
+    );
     cy.intercept('GET', '/dashboard?_rsc=*').as('dashboardData');
-    cy.intercept('GET', 'https://proxy.duegate.com/staging/distributor-crm/v1/profile').as('profileData');
+    cy.intercept('GET', 'http://localhost:3000/distributor-crm/v1/profile').as(
+      'profileData',
+    );
 
     // Step 1.3: Wait for network requests to complete
     cy.wait('@loginRequest');
@@ -26,14 +30,14 @@ describe('Catalog and Order Workflow Test', () => {
 
     // Step 5: Navigate to the brand selection
     // Click on the button representing "Brand 1".
-    cy.get('img[alt="Brand 1"]', { timeout: 10000 })
-      .should('exist')
-      .click();
+    cy.get('img[alt="Brand 1"]', { timeout: 10000 }).should('exist').click();
     cy.screenshot('Click-SVG-Button');
 
     // Step 6: Choose an item from the catalog and add it to the cart
     // Locate and click the "Add" button for a specific item.
-    cy.get('button.ml-4.rounded-md.px-3.py-1.text-black.transition.duration-150.hover\\:bg-black.hover\\:text-white.active\\:bg-indigo-200.active\\:text-indigo-700')
+    cy.get(
+      'button.ml-4.rounded-md.px-3.py-1.text-black.transition.duration-150.hover\\:bg-black.hover\\:text-white.active\\:bg-indigo-200.active\\:text-indigo-700',
+    )
       .contains('Add') // Ensure it matches the button with "Add" text
       .should('exist')
       .click();
@@ -57,7 +61,7 @@ describe('Catalog and Order Workflow Test', () => {
     // Click the "Confirm Order" button to finalize the purchase.
     cy.get(
       'div.lg\\:pl-72 > main > div > div > div > div > div > form > div.mt-10.lg\\:mt-0 > div > div > button',
-      { timeout: 10000 }
+      { timeout: 10000 },
     )
       .should('be.visible')
       .click();

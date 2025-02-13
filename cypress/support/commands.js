@@ -26,15 +26,24 @@
 
 // cypress/support/commands.js
 Cypress.Commands.add('login', (email, password) => {
-    cy.visit('https://dev.b2b.hksglobal.group/login', {
-        auth: {
-          username: 'user',
-          password: '7mCbeCHaWarbCgJO0e',
-        },
-        failOnStatusCode: false,
-      });
-    cy.get('input[id="email"]').type(email);
-    cy.get('input[id="password"]').type(password);
-    cy.get('button[type="submit"]').click();
+  cy.request({
+    method: 'POST',
+    url: 'https://dev.b2b.hksglobal.group/oauth/token',
+    body: {
+      grant_type: 'password',
+      username: email,
+      password: password,
+    },
+    auth: {
+      username: 'user',
+      password: '7mCbeCHaWarbCgJO0e', // Basic auth if required
+    },
+  }).then((response) => {
+    expect(response.status).to.eq(200);
+    window.localStorage.setItem('access_token', response.body.access_token);
+    window.localStorage.setItem('refresh_token', response.body.refresh_token);
   });
-  
+
+  // Now visit the dashboard
+  cy.visit('/dashboard');
+});
