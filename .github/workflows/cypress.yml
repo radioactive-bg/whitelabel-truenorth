@@ -21,24 +21,27 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 22.13.1
+          node-version: 18 # Use latest LTS version
+          cache: 'npm' # Cache node_modules
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci # Faster than npm install
 
       - name: Start application
         run: |
-          npm run build # If required, build the app first
+          npm run build # Build the app if needed
           npm start &   # Start the app in the background
         env:
-          CYPRESS_BASE_URL: http://localhost:3000 # Adjust to your app's URL
+          CYPRESS_BASE_URL: http://localhost:3000 # Adjust to match your app's URL
+
+      - name: Wait for application to be ready
+        run: npx wait-on http://localhost:3000 --timeout 300000 # 5 min timeout
 
       - name: Run Cypress tests
         uses: cypress-io/github-action@v6
         with:
-          start: npm start
-          wait-on: 'http://localhost:3000' # Wait for the app to be ready
-          wait-on-timeout: 120 # Wait up to 2 minutes
+          wait-on: 'http://localhost:3000' # Ensure app is running
+          wait-on-timeout: 300 # 5 min timeout
 
       - name: Upload Cypress screenshots on failure
         if: failure()
@@ -48,7 +51,7 @@ jobs:
           path: cypress/screenshots
 
       - name: Upload Cypress videos
-        if: always()
+        if: failure()
         uses: actions/upload-artifact@v3
         with:
           name: cypress-videos
