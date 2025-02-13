@@ -21,27 +21,27 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 18
-          cache: 'npm'
+          node-version: 18 # Use a stable Node.js version
 
       - name: Install dependencies
-        run: npm ci
+        run: yarn install --frozen-lockfile
 
       - name: Start application
         run: |
-          npm run build
-          npm start & # Run in background
+          yarn build # If required, build the app first
+          yarn start & # Start the app in the background
         env:
-          CYPRESS_BASE_URL: https://dev.b2b.hksglobal.group
+          CYPRESS_BASE_URL: http://localhost:3000 # This is an environment variable, not a command!
 
-      - name: Wait for application
-        run: npx wait-on $CYPRESS_BASE_URL --timeout 300000
+      - name: Wait for application to be ready
+        run: npx wait-on $CYPRESS_BASE_URL
 
       - name: Run Cypress tests
         uses: cypress-io/github-action@v6
         with:
-          wait-on: $CYPRESS_BASE_URL
-          wait-on-timeout: 300
+          start: yarn start
+          wait-on: 'http://localhost:3000' # Ensures the app is running before running tests
+          wait-on-timeout: 120
 
       - name: Upload Cypress screenshots on failure
         if: failure()
@@ -49,12 +49,10 @@ jobs:
         with:
           name: cypress-screenshots
           path: cypress/screenshots
-          retention-days: 7
 
       - name: Upload Cypress videos
-        if: failure()
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: cypress-videos
           path: cypress/videos
-          retention-days: 7
