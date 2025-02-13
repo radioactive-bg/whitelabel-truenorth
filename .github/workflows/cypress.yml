@@ -22,10 +22,10 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 18 # Use latest LTS version
-          cache: 'npm' # Cache node_modules
+          cache: 'npm' # Cache dependencies for faster builds
 
       - name: Install dependencies
-        run: npm ci # Faster than npm install
+        run: npm ci # Faster and more reliable than npm install
 
       - name: Start application
         run: |
@@ -35,7 +35,7 @@ jobs:
           CYPRESS_BASE_URL: http://localhost:3000 # Adjust to match your app's URL
 
       - name: Wait for application to be ready
-        run: npx wait-on http://localhost:3000 --timeout 300000 # 5 min timeout
+        run: npx wait-on http://localhost:3000 --timeout 300000 # Wait 5 mins
 
       - name: Run Cypress tests
         uses: cypress-io/github-action@v6
@@ -45,14 +45,16 @@ jobs:
 
       - name: Upload Cypress screenshots on failure
         if: failure()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4 # Updated from v3 to v4
         with:
           name: cypress-screenshots
           path: cypress/screenshots
+          retention-days: 7 # Optional: Keeps artifacts for 7 days
 
-      - name: Upload Cypress videos
+      - name: Upload Cypress videos on failure
         if: failure()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4 # Updated from v3 to v4
         with:
           name: cypress-videos
           path: cypress/videos
+          retention-days: 7 # Optional: Keeps artifacts for 7 days
