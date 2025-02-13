@@ -1,0 +1,55 @@
+name: Cypress Tests
+
+on:
+  push:
+    branches:
+      - main
+      - dev # Run tests on pushes to these branches
+  pull_request:
+    branches:
+      - main
+      - dev
+
+jobs:
+  cypress-run:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.13.1
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Start application
+        run: |
+          npm run build # If required, build the app first
+          npm start &   # Start the app in the background
+        env:
+          CYPRESS_BASE_URL: http://localhost:3000 # Adjust to your app's URL
+
+      - name: Run Cypress tests
+        uses: cypress-io/github-action@v6
+        with:
+          start: npm start
+          wait-on: 'http://localhost:3000' # Wait for the app to be ready
+          wait-on-timeout: 120 # Wait up to 2 minutes
+
+      - name: Upload Cypress screenshots on failure
+        if: failure()
+        uses: actions/upload-artifact@v3
+        with:
+          name: cypress-screenshots
+          path: cypress/screenshots
+
+      - name: Upload Cypress videos
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: cypress-videos
+          path: cypress/videos
