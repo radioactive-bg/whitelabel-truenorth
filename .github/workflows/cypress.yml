@@ -21,26 +21,30 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 18 # Use a stable Node.js version
+          node-version: 18 # Use stable version
 
       - name: Install dependencies
         run: yarn install --frozen-lockfile
+
+      - name: Kill any process running on port 3000 (fix EADDRINUSE)
+        run: |
+          sudo kill -9 $(sudo lsof -t -i:3000) 2>/dev/null || true
 
       - name: Start application
         run: |
           yarn build # If required, build the app first
           yarn start & # Start the app in the background
         env:
-          CYPRESS_BASE_URL: http://localhost:3000 # This is an environment variable, not a command!
+          CYPRESS_BASE_URL: http://localhost:3000
 
       - name: Wait for application to be ready
-        run: npx wait-on $CYPRESS_BASE_URL
+        run: npx wait-on http://localhost:3000
 
       - name: Run Cypress tests
         uses: cypress-io/github-action@v6
         with:
           start: yarn start
-          wait-on: 'http://localhost:3000' # Ensures the app is running before running tests
+          wait-on: 'http://localhost:3000'
           wait-on-timeout: 120
 
       - name: Upload Cypress screenshots on failure
