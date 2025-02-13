@@ -34,6 +34,8 @@ jobs:
       - name: Run Cypress Tests in a Docker Container
         run: |
           docker run --rm --network=cypress_network -v $PWD:/e2e -w /e2e cypress/included:14.0.2 \
+            -e CYPRESS_apiUrl=http://app:3000 \
+            cypress/included:14.0.2 \
             --config baseUrl=http://app:3000
 
       - name: Upload Cypress screenshots on failure

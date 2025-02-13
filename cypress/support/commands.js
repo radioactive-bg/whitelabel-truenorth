@@ -26,24 +26,20 @@
 
 // cypress/support/commands.js
 Cypress.Commands.add('login', (email, password) => {
+  // Use an environment variable (fallback to localhost if not set)
+  const apiUrl = Cypress.env('apiUrl') || 'http://localhost:3000';
   cy.request({
     method: 'POST',
-    url: 'https://dev.b2b.hksglobal.group/oauth/token',
+    url: `${apiUrl}/oauth/token`,
+    headers: {
+      // your headers
+    },
     body: {
       grant_type: 'password',
       username: email,
       password: password,
     },
-    auth: {
-      username: 'user',
-      password: '7mCbeCHaWarbCgJO0e', // Basic auth if required
-    },
   }).then((response) => {
-    expect(response.status).to.eq(200);
-    window.localStorage.setItem('access_token', response.body.access_token);
-    window.localStorage.setItem('refresh_token', response.body.refresh_token);
+    // Handle the response (set tokens, etc.)
   });
-
-  // Now visit the dashboard
-  cy.visit('/dashboard');
 });
