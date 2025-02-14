@@ -1,4 +1,4 @@
-name: Cypress Tests in Docker
+name: Cypress Tests
 
 on:
   push:
@@ -10,49 +10,28 @@ on:
 
 jobs:
   cypress-run:
-    runs-on: ubuntu-latest
-
+    runs-on: ubuntu-24.04
+    env:
+      # Override the API URL for your testing environment.
+      NEXT_PUBLIC_API_URL: 'https://proxy.duegate.com/staging'
+      CYPRESS_apiUrl: 'http://localhost:3000'
     steps:
-      - name: Checkout repository
+      - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Login to Docker Hub
-        uses: docker/login-action@v1
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
         with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_TOKEN }}
+          node-version: '16'
 
-      - name: Build and Run Application Container
-        run: |
-          # Build the image with the API URL set to the internal container address.
-          # This ensures the app uses "http://app:3000" for API requests.
-          docker build --build-arg NEXT_PUBLIC_API_URL=http://app:3000 -t radioactivehub0/b2b-arpay-v2:latest .
-          docker network create cypress_network
-          docker run -d --rm --network=cypress_network --name app -p 3000:3000 radioactivehub0/b2b-arpay-v2:latest
-          sleep 15 # Wait for the app to be fully ready
+      - name: Install Dependencies
+        run: npm ci
 
-      - name: Run Cypress Tests in a Docker Container
-        run: |
-          docker run --rm --network=cypress_network -v $PWD:/e2e -w /e2e cypress/included:14.0.2 \
-            -e CYPRESS_apiUrl=http://app:3000 \
-            cypress/included:14.0.2 \
-            --config baseUrl=http://app:3000
-
-      - name: Upload Cypress screenshots on failure
-        if: failure()
-        uses: actions/upload-artifact@v4
+      - name: Cypress Run
+        uses: cypress-io/github-action@v6
         with:
-          name: cypress-screenshots
-          path: cypress/screenshots
-
-      - name: Upload Cypress videos
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: cypress-videos
-          path: cypress/videos
-
-      - name: Stop Running Containers
-        run: |
-          docker stop app
-          docker network rm cypress_network
+          build: npm run build
+          start: npm start
+          wait-on: 'http://localhost:3000'
+          wait-on-timeout: 120
+          browser: chrome
