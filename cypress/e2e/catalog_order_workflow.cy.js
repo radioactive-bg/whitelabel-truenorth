@@ -8,10 +8,10 @@ describe('Catalog and Order Workflow Test', () => {
         refresh_token: 'dummy-refresh-token',
       },
     }).as('loginRequest');
-    cy.intercept(
-      'GET',
-      'https://proxy.duegate.com/staging/dashboard?_rsc=*',
-    ).as('dashboardData');
+    // cy.intercept(
+    //   'GET',
+    //   'https://proxy.duegate.com/staging/dashboard?_rsc=*',
+    // ).as('dashboardData');
     cy.intercept(
       'GET',
       'https://proxy.duegate.com/staging/distributor-crm/v1/profile',
@@ -22,7 +22,7 @@ describe('Catalog and Order Workflow Test', () => {
 
     // Wait for login and subsequent data requests to complete
     cy.wait('@loginRequest');
-    cy.wait('@dashboardData');
+    //cy.wait('@dashboardData');
     cy.wait('@profileData');
 
     // Step 3: Debugging - log local and session storage
