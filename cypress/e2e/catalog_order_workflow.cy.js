@@ -2,7 +2,7 @@ describe('Catalog and Order Workflow Test', () => {
   it('navigating through the catalog, interacting with the Amazon brand, adding items to the cart, and completing the order.', () => {
     // Set up intercepts BEFORE calling cy.login
     cy.intercept('POST', 'https://proxy.duegate.com/staging/oauth/token', {
-      statusCode: 200,
+      //statusCode: 200,
       body: {
         access_token: 'dummy-token',
         refresh_token: 'dummy-refresh-token',
