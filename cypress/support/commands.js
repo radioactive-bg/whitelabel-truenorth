@@ -27,7 +27,7 @@
 // cypress/support/commands.js
 Cypress.Commands.add('login', (email, password) => {
   // Use an environment variable (fallback to localhost if not set)
-  const apiUrl = Cypress.env('apiUrl') || 'http://localhost:3000';
+  const apiUrl = Cypress.env('apiUrl') || 'https://proxy.duegate.com/staging';
   cy.request({
     method: 'POST',
     url: `${apiUrl}/oauth/token`,

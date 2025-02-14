@@ -14,7 +14,7 @@ jobs:
     env:
       # Keep NEXT_PUBLIC_API_URL as required.
       NEXT_PUBLIC_API_URL: 'https://proxy.duegate.com/staging'
-      CYPRESS_apiUrl: 'http://localhost:3000'
+      CYPRESS_apiUrl: 'https://proxy.duegate.com/staging'
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
