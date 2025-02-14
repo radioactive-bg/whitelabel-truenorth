@@ -32,7 +32,7 @@ Cypress.Commands.add('login', (email, password) => {
     method: 'POST',
     url: `${apiUrl}/oauth/token`,
     headers: {
-      // your headers
+      'Content-Type': 'application/x-www-form-urlencoded',
     },
     body: {
       grant_type: 'password',
