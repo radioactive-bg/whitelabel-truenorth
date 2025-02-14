@@ -1,19 +1,25 @@
 describe('Catalog and Order Workflow Test', () => {
   it('navigating through the catalog, interacting with the Amazon brand, adding items to the cart, and completing the order.', () => {
-    // Step 1: Log in using custom login command
-    cy.login('a.miladinov@radioactive.bg', '0:y5g5NBv)$zy0<');
-
-    // Use glob patterns to intercept the network requests regardless of hostname
-    cy.intercept('POST', '**/oauth/token').as('loginRequest');
+    // Set up intercepts BEFORE calling cy.login
+    cy.intercept('POST', '**/oauth/token', {
+      statusCode: 200,
+      body: {
+        access_token: 'dummy-token',
+        refresh_token: 'dummy-refresh-token',
+      },
+    }).as('loginRequest');
     cy.intercept('GET', '**/dashboard?_rsc=*').as('dashboardData');
     cy.intercept('GET', '**/distributor-crm/v1/profile').as('profileData');
 
-    // Step 1.3: Wait for network requests to complete
+    // Step 1: Log in using custom login command
+    cy.login('a.miladinov@radioactive.bg', '0:y5g5NBv)$zy0<');
+
+    // Wait for login and subsequent data requests to complete
     cy.wait('@loginRequest');
     cy.wait('@dashboardData');
     cy.wait('@profileData');
 
-    // Step 3: Log local storage and session storage (optional debugging step)
+    // Step 3: Debugging - log local and session storage
     cy.window().then((win) => {
       console.log(win.localStorage);
       console.log(win.sessionStorage);
