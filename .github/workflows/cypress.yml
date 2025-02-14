@@ -35,4 +35,4 @@ jobs:
           wait-on: 'http://localhost:3000'
           wait-on-timeout: 120
           browser: chrome
-          command: run --config baseUrl=http://localhost:3000
+          config: run --config baseUrl=http://localhost:3000
