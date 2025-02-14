@@ -12,7 +12,7 @@ jobs:
   cypress-run:
     runs-on: ubuntu-24.04
     env:
-      # Override the API URL for your testing environment.
+      # Keep NEXT_PUBLIC_API_URL as required.
       NEXT_PUBLIC_API_URL: 'https://proxy.duegate.com/staging'
       CYPRESS_apiUrl: 'http://localhost:3000'
     steps:
@@ -35,3 +35,4 @@ jobs:
           wait-on: 'http://localhost:3000'
           wait-on-timeout: 120
           browser: chrome
+          command: run --config baseUrl=http://localhost:3000
