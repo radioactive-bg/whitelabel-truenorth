@@ -335,6 +335,7 @@ const ProductsTable = ({
 
                           <td className=" py-4   sm:table-cell sm:pr-8  md:py-6">
                             <input
+                              disabled={!product.isEnabled}
                               type="number"
                               id={`quantity-${product.id}`}
                               name={`quantity-${product.id}`}
