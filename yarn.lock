@@ -238,6 +238,14 @@
   resolved "https://registry.npmjs.org/@colors/colors/-/colors-1.6.0.tgz"
   integrity sha512-Ir+AOibqzrIsL6ajt3Rz3LskB7OiMVHqltZmspbW/TJuTVuyOMirVqAkjfY6JISiLHgyNqicAC8AyHHGzNd/dA==
 
+"@contrast/fn-inspect@^3.3.0":
+  version "3.4.0"
+  resolved "https://registry.npmjs.org/@contrast/fn-inspect/-/fn-inspect-3.4.0.tgz"
+  integrity sha512-Jw6dMFEIt/FXF1ihJri2GFNayeEKQ6r+WRjjWl7MdgMup2D4vCPu99ZV8eHSMqNNkj3BEzUNC91ZaJVB1XJmfg==
+  dependencies:
+    nan "^2.17.0"
+    node-gyp-build "^4.6.0"
+
 "@cypress/request@^3.0.6":
   version "3.0.7"
   resolved "https://registry.npmjs.org/@cypress/request/-/request-3.0.7.tgz"
@@ -549,15 +557,10 @@
   dependencies:
     glob "7.1.7"
 
-"@next/swc-linux-x64-gnu@14.2.3":
+"@next/swc-win32-x64-msvc@14.2.3":
   version "14.2.3"
-  resolved "https://registry.npmjs.org/@next/swc-linux-x64-gnu/-/swc-linux-x64-gnu-14.2.3.tgz"
-  integrity sha512-ENPiNnBNDInBLyUU5ii8PMQh+4XLr4pG51tOp6aJ9xqFQ2iRI6IH0Ds2yJkAzNV1CfyagcyzPfROMViS2wOZ9w==
-
-"@next/swc-linux-x64-musl@14.2.3":
-  version "14.2.3"
-  resolved "https://registry.npmjs.org/@next/swc-linux-x64-musl/-/swc-linux-x64-musl-14.2.3.tgz"
-  integrity sha512-BTAbq0LnCbF5MtoM7I/9UeUu/8ZBY0i8SFjUMCbPDOLv+un67e2JgyN4pmgfXBwy/I+RHu8q+k+MCkDN6P9ViQ==
+  resolved "https://registry.npmjs.org/@next/swc-win32-x64-msvc/-/swc-win32-x64-msvc-14.2.3.tgz"
+  integrity sha512-Q1/zm43RWynxrO7lW4ehciQVj+5ePBhOK+/K2P7pLFX3JaJ/IZVC69SHidrmZSOkqz7ECIOhhy7XhAFG4JYyHA==
 
 "@nicolo-ribaudo/eslint-scope-5-internals@5.1.1-v1":
   version "5.1.1-v1"
@@ -4544,7 +4547,7 @@ mz@^2.7.0:
     object-assign "^4.0.1"
     thenify-all "^1.0.0"
 
-nan@^2.19.0:
+nan@^2.17.0, nan@^2.19.0:
   version "2.22.0"
   resolved "https://registry.npmjs.org/nan/-/nan-2.22.0.tgz"
   integrity sha512-nbajikzWTMwsW+eSsNm3QwlOs7het9gGJU5dDZzRTQGk03vyBOauxgI4VakDzE0PtsGTmXPsXTbbjVhRwR5mpw==
@@ -4642,7 +4645,7 @@ node-fetch@^2.6.7:
   dependencies:
     whatwg-url "^5.0.0"
 
-node-gyp-build@^4.3.0, node-gyp-build@^4.8.1:
+node-gyp-build@^4.3.0, node-gyp-build@^4.6.0, node-gyp-build@^4.8.1:
   version "4.8.4"
   resolved "https://registry.npmjs.org/node-gyp-build/-/node-gyp-build-4.8.4.tgz"
   integrity sha512-LA4ZjwlnUblHVgq0oBF3Jl/6h/Nvs5fzBLwdEF4nuxnFdsfajde4WfxtJr3CaiH+F6ewcIB/q4jQ4UzPyid+CQ==
