@@ -43,11 +43,11 @@ module.exports = defineConfig({
       },
     },
 
-    // Allows you to write setup code that executes before each test file
-    setupNodeEvents(on, config) {
-      // Add any custom plugins or configuration here
-      return config;
-    },
+    // // Allows you to write setup code that executes before each test file
+    // setupNodeEvents(on, config) {
+    //   // Add any custom plugins or configuration here
+    //   return config;
+    // },
   },
 
   viewportWidth: 1980,
