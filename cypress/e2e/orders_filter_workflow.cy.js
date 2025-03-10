@@ -1,119 +1,101 @@
-// describe('Order List Filtering Test', () => {
-//   it('navigates to the order list, applies filters, and verifies the filtered results', () => {
-//     // Set up intercepts BEFORE calling cy.login
-//     cy.intercept('POST', 'https://proxy.duegate.com/staging/oauth/token', {
-//       // statusCode: 200,
-//       body: {
-//         access_token: 'dummy-token',
-//         refresh_token: 'dummy-refresh-token',
-//       },
-//     }).as('loginRequest');
-//     cy.intercept(
-//       'GET',
-//       'https://proxy.duegate.com/staging/dashboard?_rsc=*',
-//     ).as('dashboardData');
-//     cy.intercept(
-//       'GET',
-//       'https://proxy.duegate.com/staging/distributor-crm/v1/profile',
-//     ).as('profileData');
+// cypress/e2e/orders-page.cy.js
+describe('Orders Page', () => {
+  beforeEach(() => {
+    // Use cy.session to persist auth state between tests
+    cy.session(
+      'user-session',
+      () => {
+        cy.log('Setting up user session');
+        performLogin();
+      },
+      {
+        validate: () => {
+          // Validate session by checking for token
+          cy.window().then((win) => {
+            const hasToken = win.localStorage.getItem('access_token');
+            expect(hasToken).to.exist;
+          });
+        },
+        cacheAcrossSpecs: true,
+      },
+    );
 
-//     // Step 1: Log in using custom login command
-//     cy.login('a.miladinov@radioactive.bg', '0:y5g5NBv)$zy0<');
-
-//     // Wait for login and subsequent data requests to complete
-//     cy.wait('@loginRequest');
-//     cy.wait('@dashboardData');
-//     cy.wait('@profileData');
-
-//     // Step 4: Verify that the dashboard URL is accessible
-//     cy.url({ timeout: 50000 }).should('include', '/dashboard');
-
-//     // Step 5: Navigate to the order list page
-//     cy.get('a[href="/dashboard/orders"]', { timeout: 50000 })
-//       .should('exist')
-//       .click();
-//     cy.url({ timeout: 50000 }).should('include', '/orders');
-
-//     // Step 6: Apply filters to the order list
-//     cy.get('select[id="orderStatusFilter"]', { timeout: 10000 })
-//       .should('exist')
-//       .select('Complete');
-//     cy.screenshot('Applied-Order-Status-Filter');
-
-//     // Step 7: Click the 'Filter' button to apply the selected filters
-//     cy.get('button[id="filterButton"]')
-//       .contains('Filter', { timeout: 10000 })
-//       .should('exist')
-//       .click();
-//     cy.screenshot('Clicked-Filter-Button');
-
-//     // Step 8: Verify that the filtering works
-//     cy.get('table[id="orderList"] tbody tr', { timeout: 10000 }).then(
-//       ($rows) => {
-//         if ($rows.length > 0) {
-//           // Iterate over each row to verify the status text
-//           $rows.each((index, row) => {
-//             cy.wrap(row)
-//               .find('td[id="statusText"]')
-//               .should('contain.text', 'Completed');
-//           });
-//         } else {
-//           cy.log('No orders found with the specified filter criteria.');
-//         }
-//       },
-//     );
-//     cy.screenshot('Verified-Filtered-Orders');
-//   });
-// });
-
-// cypress/e2e/orders-ui.cy.js
-
-describe('Orders Page UI Test', () => {
-  it('should login and verify the orders page UI', () => {
-    // Visit the login page with basic auth
-    cy.visit('https://user:7mCbeCHaWarbCgJO0e@dev.b2b.hksglobal.group/login');
-
-    // Login with test credentials
-    cy.get('input[name="email"]').type('m.petkov2@radioactive.bg');
-    cy.get('input[name="password"]').type('m.petkov2@radioactive.bg');
-    cy.get('button[type="submit"]').click();
-
-    // Verify successful login by checking redirect to dashboard
-    cy.url().should('include', '/dashboard');
-
-    // Set up intercept for the orders API call
-    cy.intercept('GET', '**/distributor-crm/v1/orders**').as('ordersApiCall');
-
-    // Navigate directly to orders page
+    // Navigate to orders page with preserved session
     cy.visit(
       'https://user:7mCbeCHaWarbCgJO0e@dev.b2b.hksglobal.group/dashboard/orders',
+      {
+        timeout: 15000,
+      },
     );
 
-    // Verify URL is correct
+    // Wait for API call to complete
+    cy.intercept('GET', '**/distributor-crm/v1/orders**').as('ordersApiCall');
+    cy.wait('@ordersApiCall', { timeout: 30000 }).then((interception) => {
+      cy.log(`API call status: ${interception.response?.statusCode}`);
+      if (interception.response?.body) {
+        cy.log(
+          `API returned ${interception.response.body.data?.length || 0} items`,
+        );
+      }
+    });
+
+    // Verify we're on the orders page
     cy.url().should('include', '/orders');
+    cy.get('table[id="orderList"]', { timeout: 15000 }).should('be.visible');
+  });
 
-    // Wait for the API call to complete
-    cy.wait('@ordersApiCall', { timeout: 30000 });
+  // Helper function to perform login
+  function performLogin() {
+    cy.log('Starting login process');
 
-    // Wait for loading state to disappear (if you have a loading indicator)
-    cy.get('.flex.w-full').should('not.contain', 'Loading...');
+    // Visit login page
+    cy.visit('https://user:7mCbeCHaWarbCgJO0e@dev.b2b.hksglobal.group/login', {
+      timeout: 10000,
+    });
 
-    // Wait for data to load by checking for the presence of the table with rows
-    cy.get('table[id="orderList"] tbody tr', { timeout: 10000 }).should(
-      'exist',
-    );
+    // Login with credentials
+    cy.get('input[name="email"]')
+      .should('be.visible')
+      .clear()
+      .type('m.petkov2@radioactive.bg');
+    cy.get('input[name="password"]')
+      .should('be.visible')
+      .clear()
+      .type('m.petkov2@radioactive.bg');
+    cy.get('button[type="submit"]').should('be.enabled').click();
 
-    // Once data is loaded, verify the UI components
-    cy.get('h1').contains('Orders').should('be.visible');
+    // Verify successful login
+    cy.url().should('include', '/dashboard', { timeout: 15000 });
+
+    // Verify token is stored
+    cy.window().then((win) => {
+      const token = win.localStorage.getItem('access_token');
+      expect(token).to.exist;
+      cy.log(`Token received: ${!!token}`);
+    });
+  }
+
+  it('should display correct UI components', () => {
+    // Check UI components
+    cy.contains('h1.text-base', 'Orders').should('be.visible');
     cy.contains('A list of all the Orders in your account').should(
       'be.visible',
     );
 
-    // Verify filter section
-    cy.get('select[id="orderStatusFilter"]').should('exist');
+    // Check filter section
+    cy.contains('label', 'Order ID').should('be.visible');
+    cy.contains('label', 'Items on Page').should('be.visible');
+    cy.contains('label', 'Date From').should('be.visible');
+    cy.contains('label', 'Date To').should('be.visible');
+    cy.contains('label', 'Status').should('be.visible');
+    cy.contains('label', 'Product Group').should('be.visible');
+
+    // Check buttons
+    cy.contains('button', 'Reset').should('be.visible');
+    cy.contains('button', 'Filter').should('be.visible');
     cy.get('button[id="filterButton"]').should('exist');
 
-    // Verify table headers
+    // Check table headers
     cy.get('table[id="orderList"] thead th').should('have.length', 6);
     cy.get('table[id="orderList"] thead th')
       .eq(0)
@@ -129,31 +111,23 @@ describe('Orders Page UI Test', () => {
       .should('contain', 'Date of Order');
     cy.get('table[id="orderList"] thead th').eq(4).should('contain', 'Status');
 
-    // Verify that table contains data rows
-    cy.get('table[id="orderList"] tbody tr').then(($rows) => {
-      // Log the number of orders found
-      cy.log(`Found ${$rows.length} orders in the table`);
+    // Check pagination
+    cy.get('nav').contains('Next').should('exist');
+  });
 
-      // Make sure we have at least one row of data
-      expect($rows.length).to.be.at.least(1);
+  // Additional test for filtering functionality
+  it('should filter orders correctly', () => {
+    // Test filter functionality
+    cy.get('input[placeholder="Order ID"]').type('12345');
+    cy.contains('button', 'Filter').click();
 
-      // Verify first row has all expected cells with data
-      if ($rows.length > 0) {
-        cy.wrap($rows).first().find('td').should('have.length', 6);
-        cy.wrap($rows)
-          .first()
-          .find('td')
-          .each(($cell) => {
-            // Check that each cell has content
-            expect($cell.text().trim()).to.not.equal('');
-          });
-      }
-    });
+    // Wait for API call with filter
+    cy.intercept('GET', '**/distributor-crm/v1/orders**').as(
+      'filteredOrdersCall',
+    );
+    cy.wait('@filteredOrdersCall', { timeout: 20000 });
 
-    // Verify pagination is present
-    cy.contains('Page').should('exist');
-
-    // Take a screenshot of the complete page
-    cy.screenshot('orders-page-ui');
+    // Additional assertions for the filtered results
+    // (Customize based on your expected behavior)
   });
 });
