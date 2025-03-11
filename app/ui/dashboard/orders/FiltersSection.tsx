@@ -171,6 +171,7 @@ const FiltersSection: React.FC<FiltersSectionProps> = ({
           </label>
           <input
             type="number"
+            id="perPage"
             min={1}
             max={20}
             value={itemsPerPage}
