@@ -282,6 +282,7 @@ const FiltersSection: React.FC<FiltersSectionProps> = ({
           </label>
           <select
             value={selectedProduct}
+            id="productGroupSelect"
             onChange={(e) => setSelectedProduct(e.target.value)}
             className="mt-1 block w-full rounded-md border border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50 dark:border-gray-600 dark:bg-gray-900 dark:text-white dark:focus:ring-white"
           >
