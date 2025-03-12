@@ -253,7 +253,10 @@ const ProductsTable = ({
                     Order placed on <time dateTime={'test'}>{'test'}</time>
                   </h3>
 
-                  <table className="mt-4 w-full text-gray-500 dark:bg-gray-900 sm:mt-6">
+                  <table
+                    id="dataTable"
+                    className="mt-4 w-full text-gray-500 dark:bg-gray-900 sm:mt-6"
+                  >
                     <caption className="sr-only">Products</caption>
                     <thead className="sr-only text-left text-sm text-gray-500 dark:bg-gray-900 sm:not-sr-only">
                       <tr>
