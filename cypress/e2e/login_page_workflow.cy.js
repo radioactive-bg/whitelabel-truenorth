@@ -2,6 +2,7 @@
 describe('Login Page Tests', () => {
   // Common selectors
   const selectors = {
+    loginForm: 'form',
     email: 'input[name="email"]',
     password: 'input[name="password"]',
     submitButton: 'button[type="submit"]',
@@ -27,9 +28,80 @@ describe('Login Page Tests', () => {
     productGroupsEndpoint: '**/distributor-crm/v1/product-groups*',
   };
 
-  beforeEach(() => {
+  // Helper functions
+  function setupSuccessfulLoginIntercepts() {
+    // Intercept login API with success response
+    cy.intercept('POST', endpoints.loginEndpoint, {
+      statusCode: 200,
+      body: {
+        access_token: 'fake_token',
+        refresh_token: 'fake_refresh',
+        expires_in: 3600,
+      },
+    }).as('loginRequest');
+
+    // Intercept user profile API - setting is2FAEnable to false to skip OTP
+    cy.intercept('GET', endpoints.profileEndpoint, {
+      statusCode: 200,
+      body: {
+        is2FAEnable: false,
+        // Other user profile fields
+      },
+    }).as('profileRequest');
+
+    // Intercept product groups API call that happens in the dashboard
+    cy.intercept('GET', endpoints.productGroupsEndpoint, {
+      statusCode: 200,
+      body: {
+        1: 'Amazon',
+        2: 'PlayStation Store',
+        3: 'Google Play',
+        4: 'Apple',
+        5: 'Steam',
+        6: 'Nintendo',
+      },
+    }).as('productGroupsRequest');
+  }
+
+  function verifyLocalStorage() {
+    cy.window().then((win) => {
+      expect(win.localStorage.getItem('access_token')).to.equal('fake_token');
+      expect(win.localStorage.getItem('refresh_token')).to.equal(
+        'fake_refresh',
+      );
+      expect(win.localStorage.getItem('access_token_expires')).to.equal('3600');
+    });
+  }
+
+  const login = () => {
     // Visit the login page with basic auth
     cy.visit('https://user:7mCbeCHaWarbCgJO0e@dev.b2b.hksglobal.group/login');
+
+    // Wait for the login form to be visible
+    cy.get(selectors.loginForm).should('be.visible');
+
+    // Login with test credentials
+    cy.get(selectors.email).type(testData.validEmail);
+    cy.get(selectors.password).type(testData.validPassword);
+    cy.get(selectors.submitButton).click();
+
+    // Wait for successful login and redirect
+    cy.url().should('include', '/dashboard');
+
+    // Add a small delay to ensure the dashboard is fully loaded
+    cy.wait(2000);
+  };
+
+  beforeEach(() => {
+    // Clear any existing session data
+    cy.clearLocalStorage();
+    cy.clearCookies();
+
+    // Visit the login page with basic auth
+    cy.visit('https://user:7mCbeCHaWarbCgJO0e@dev.b2b.hksglobal.group/login');
+
+    // Wait for the login form to be visible
+    cy.get(selectors.loginForm).should('be.visible');
   });
 
   it('should render the login page with all UI elements', () => {
@@ -94,6 +166,9 @@ describe('Login Page Tests', () => {
     // Verify redirection to dashboard
     cy.url().should('include', '/dashboard');
 
+    // Wait for the page to be fully loaded
+    cy.get('body').should('be.visible');
+
     // Verify dashboard content is loaded correctly
     cy.get(selectors.dashboardTitle)
       .contains('Find the Perfect Gift Card')
@@ -117,49 +192,4 @@ describe('Login Page Tests', () => {
       .type(testData.testPassword)
       .should('have.value', testData.testPassword);
   });
-
-  // Helper functions
-  function setupSuccessfulLoginIntercepts() {
-    // Intercept login API with success response
-    cy.intercept('POST', endpoints.loginEndpoint, {
-      statusCode: 200,
-      body: {
-        access_token: 'fake_token',
-        refresh_token: 'fake_refresh',
-        expires_in: 3600,
-      },
-    }).as('loginRequest');
-
-    // Intercept user profile API - setting is2FAEnable to false to skip OTP
-    cy.intercept('GET', endpoints.profileEndpoint, {
-      statusCode: 200,
-      body: {
-        is2FAEnable: false,
-        // Other user profile fields
-      },
-    }).as('profileRequest');
-
-    // Intercept product groups API call that happens in the dashboard
-    cy.intercept('GET', endpoints.productGroupsEndpoint, {
-      statusCode: 200,
-      body: {
-        1: 'Amazon',
-        2: 'PlayStation Store',
-        3: 'Google Play',
-        4: 'Apple',
-        5: 'Steam',
-        6: 'Nintendo',
-      },
-    }).as('productGroupsRequest');
-  }
-
-  function verifyLocalStorage() {
-    cy.window().then((win) => {
-      expect(win.localStorage.getItem('access_token')).to.equal('fake_token');
-      expect(win.localStorage.getItem('refresh_token')).to.equal(
-        'fake_refresh',
-      );
-      expect(win.localStorage.getItem('access_token_expires')).to.equal('3600');
-    });
-  }
 });

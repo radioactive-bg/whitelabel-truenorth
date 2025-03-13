@@ -3,6 +3,7 @@ describe('Orders Dashboard Tests', () => {
   // Common selectors
   const selectors = {
     // Login form
+    loginForm: 'form',
     email: 'input[name="email"]',
     password: 'input[name="password"]',
     submitButton: 'button[type="submit"]',
@@ -57,26 +58,44 @@ describe('Orders Dashboard Tests', () => {
     cy.wait('@ordersApiCall', { timeout: 30000 });
   };
 
-  beforeEach(() => {
+  const login = () => {
     // Visit the login page with basic auth
     cy.visit('https://user:7mCbeCHaWarbCgJO0e@dev.b2b.hksglobal.group/login');
+
+    // Wait for the login form to be visible
+    cy.get(selectors.loginForm).should('be.visible');
 
     // Login with test credentials
     cy.get(selectors.email).type(testData.loginEmail);
     cy.get(selectors.password).type(testData.loginPassword);
     cy.get(selectors.submitButton).click();
 
-    // Verify successful login by checking redirect to dashboard
+    // Wait for successful login and redirect
     cy.url().should('include', '/dashboard');
-    cy.screenshot('after-login-dashboard');
 
-    // Visit the orders page
+    // Add a small delay to ensure the dashboard is fully loaded
+    cy.wait(2000);
+  };
+
+  beforeEach(() => {
+    // Set up API intercepts
+    cy.intercept('GET', endpoints.ordersEndpoint).as('ordersApiCall');
+
+    // Login before each test
+    login();
+
+    // Visit the orders page and wait for it to load
     cy.visit(
       'https://user:7mCbeCHaWarbCgJO0e@dev.b2b.hksglobal.group/dashboard/orders',
     );
 
-    // Intercept and wait for orders API call
-    cy.intercept('GET', endpoints.ordersEndpoint).as('ordersApiCall');
+    // Wait for the page to be fully loaded
+    cy.get('body').should('be.visible');
+
+    // Add a check to ensure we're not redirected to login
+    cy.url().should('include', '/dashboard/orders');
+
+    // Wait for orders API call to complete
     cy.wait('@ordersApiCall', { timeout: 30000 });
   });
 

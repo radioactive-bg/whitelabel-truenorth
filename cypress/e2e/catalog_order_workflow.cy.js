@@ -9,6 +9,10 @@ describe('Catalog Page Tests', () => {
     filterButtons: '.hidden.lg\\:block .items-center button',
     popover: '.absolute',
     checkboxes: '.absolute input[type="checkbox"]',
+    loginForm: 'form',
+    emailInput: 'input[name="email"]',
+    passwordInput: 'input[name="password"]',
+    submitButton: 'button[type="submit"]',
   };
 
   // Common verification functions
@@ -48,6 +52,25 @@ describe('Catalog Page Tests', () => {
     cy.get('body').click(0, 0);
   };
 
+  const login = () => {
+    // Visit the login page with basic auth
+    cy.visit('https://user:7mCbeCHaWarbCgJO0e@dev.b2b.hksglobal.group/login');
+
+    // Wait for the login form to be visible
+    cy.get(selectors.loginForm).should('be.visible');
+
+    // Login with test credentials
+    cy.get(selectors.emailInput).type('m.petkov2@radioactive.bg');
+    cy.get(selectors.passwordInput).type('m.petkov2@radioactive.bg');
+    cy.get(selectors.submitButton).click();
+
+    // Wait for successful login and redirect
+    cy.url().should('include', '/dashboard');
+
+    // Add a small delay to ensure the dashboard is fully loaded
+    cy.wait(2000);
+  };
+
   beforeEach(() => {
     // Set up API intercepts
     cy.intercept('GET', '**/distributor-crm/v1/filters/regions').as(
@@ -63,22 +86,19 @@ describe('Catalog Page Tests', () => {
       'productPreviewCall',
     );
 
-    // Visit the login page with basic auth
-    cy.visit('https://user:7mCbeCHaWarbCgJO0e@dev.b2b.hksglobal.group/login');
+    // Login before each test
+    login();
 
-    // Login with test credentials
-    cy.get('input[name="email"]').type('m.petkov2@radioactive.bg');
-    cy.get('input[name="password"]').type('m.petkov2@radioactive.bg');
-    cy.get('button[type="submit"]').click();
-
-    // Verify successful login by checking redirect to dashboard
-    cy.url().should('include', '/dashboard');
-    cy.screenshot('after-login-dashboard');
-
-    // Visit the catalog page
+    // Visit the catalog page and wait for it to load
     cy.visit(
       'https://user:7mCbeCHaWarbCgJO0e@dev.b2b.hksglobal.group/dashboard/catalog',
     );
+
+    // Wait for the page to be fully loaded
+    cy.get('body').should('be.visible');
+
+    // Add a check to ensure we're not redirected to login
+    cy.url().should('include', '/dashboard/catalog');
   });
 
   it('should show skeleton loading state and then display product groups', () => {
@@ -110,6 +130,7 @@ describe('Catalog Page Tests', () => {
     cy.get(selectors.productButton).first().click();
 
     // Wait for product data to load
+    cy.get(selectors.productsTable).should('be.visible');
 
     // Verify products are displayed
     cy.get(selectors.productsTable).should('be.visible');
@@ -136,6 +157,7 @@ describe('Catalog Page Tests', () => {
     cy.get(selectors.checkboxes).eq(1).click();
 
     // Wait for product data to load
+    cy.get(selectors.productsTable).should('be.visible');
 
     // Verify products are displayed
     cy.get(selectors.productsTable).should('be.visible');
@@ -157,6 +179,7 @@ describe('Catalog Page Tests', () => {
     selectFilterOption(1);
 
     // Wait for product data to load
+    cy.get(selectors.productsTable).should('be.visible');
 
     // Verify URL and product display
     cy.url().should('include', 'ActivationRegions=');
@@ -176,6 +199,7 @@ describe('Catalog Page Tests', () => {
     selectFilterOption(2);
 
     // Wait for product data to load
+    cy.get(selectors.productsTable).should('be.visible');
 
     // Verify URL and product display
     cy.url().should('include', 'DenominationCurrencys=');
