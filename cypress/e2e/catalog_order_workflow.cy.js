@@ -101,115 +101,115 @@ describe('Catalog Page Tests', () => {
     cy.url().should('include', '/dashboard/catalog');
   });
 
-  // it('should show skeleton loading state and then display product groups', () => {
-  //   // Verify skeleton loading state
-  //   cy.get('.rounded').should('be.visible');
+  it('should show skeleton loading state and then display product groups', () => {
+    // Verify skeleton loading state
+    cy.get('.rounded').should('be.visible');
 
-  //   // Wait for API calls to complete
-  //   waitForApiCalls();
-  //   cy.screenshot('catalog-page-loaded');
+    // Wait for API calls to complete
+    waitForApiCalls();
+    cy.screenshot('catalog-page-loaded');
 
-  //   // Verify product grid content
-  //   cy.get(selectors.productGrid).should('be.visible');
-  //   cy.get(selectors.productButton).should('have.length.at.least', 1);
+    // Verify product grid content
+    cy.get(selectors.productGrid).should('be.visible');
+    cy.get(selectors.productButton).should('have.length.at.least', 1);
 
-  //   // Verify first product has expected elements
-  //   cy.get(selectors.productButton)
-  //     .first()
-  //     .within(() => {
-  //       cy.get('img').should('be.visible');
-  //       cy.get('h3').should('be.visible');
-  //     });
-  // });
+    // Verify first product has expected elements
+    cy.get(selectors.productButton)
+      .first()
+      .within(() => {
+        cy.get('img').should('be.visible');
+        cy.get('h3').should('be.visible');
+      });
+  });
 
-  // it('should filter products by clicking on product group', () => {
-  //   // Wait for API calls to complete
-  //   waitForApiCalls();
+  it('should filter products by clicking on product group', () => {
+    // Wait for API calls to complete
+    waitForApiCalls();
 
-  //   // Click on the first product group
-  //   cy.get(selectors.productButton).first().click();
+    // Click on the first product group
+    cy.get(selectors.productButton).first().click();
 
-  //   // Wait for product data to load
-  //   cy.get(selectors.productsTable).should('be.visible');
+    // Wait for product data to load
+    cy.get(selectors.productsTable).should('be.visible');
 
-  //   // Verify products are displayed
-  //   cy.get(selectors.productsTable).should('be.visible');
-  //   cy.get(selectors.tableRows).should('have.length.at.least', 1);
+    // Verify products are displayed
+    cy.get(selectors.productsTable).should('be.visible');
+    cy.get(selectors.tableRows).should('have.length.at.least', 1);
 
-  //   // Verify product data
-  //   verifyProductData();
+    // Verify product data
+    verifyProductData();
 
-  //   // Check URL contains the selected product group
-  //   cy.url().should('include', 'ProductGroups=');
-  //   cy.screenshot('catalog-filtered-products');
-  // });
+    // Check URL contains the selected product group
+    cy.url().should('include', 'ProductGroups=');
+    cy.screenshot('catalog-filtered-products');
+  });
 
-  // it('should filter products using Product Group filter with multiple selections', () => {
-  //   // Wait for API calls to complete
-  //   waitForApiCalls();
+  it('should filter products using Product Group filter with multiple selections', () => {
+    // Wait for API calls to complete
+    waitForApiCalls();
 
-  //   // Open Product Group filter and select multiple options
-  //   cy.get(selectors.filterButtons).first().click();
-  //   cy.get(selectors.popover).should('be.visible');
+    // Open Product Group filter and select multiple options
+    cy.get(selectors.filterButtons).first().click();
+    cy.get(selectors.popover).should('be.visible');
 
-  //   // Select first two options
-  //   cy.get(selectors.checkboxes).first().click();
-  //   cy.get(selectors.checkboxes).eq(1).click();
+    // Select first two options
+    cy.get(selectors.checkboxes).first().click();
+    cy.get(selectors.checkboxes).eq(1).click();
 
-  //   // Wait for product data to load
-  //   cy.get(selectors.productsTable).should('be.visible');
+    // Wait for product data to load
+    cy.get(selectors.productsTable).should('be.visible');
 
-  //   // Verify products are displayed
-  //   cy.get(selectors.productsTable).should('be.visible');
-  //   cy.get(selectors.tableRows).should('have.length.at.least', 1);
+    // Verify products are displayed
+    cy.get(selectors.productsTable).should('be.visible');
+    cy.get(selectors.tableRows).should('have.length.at.least', 1);
 
-  //   // Verify product data
-  //   verifyProductData();
+    // Verify product data
+    verifyProductData();
 
-  //   // Check URL contains the filter parameter
-  //   cy.url().should('include', 'ProductGroups=');
-  //   cy.screenshot('catalog-multiple-filters');
-  // });
+    // Check URL contains the filter parameter
+    cy.url().should('include', 'ProductGroups=');
+    cy.screenshot('catalog-multiple-filters');
+  });
 
-  // it('should filter products using Activation Region filter', () => {
-  //   // Wait for API calls to complete
-  //   waitForApiCalls();
+  it('should filter products using Activation Region filter', () => {
+    // Wait for API calls to complete
+    waitForApiCalls();
 
-  //   // Select the first option from the Activation Region filter
-  //   selectFilterOption(1);
+    // Select the first option from the Activation Region filter
+    selectFilterOption(1);
 
-  //   // Wait for product data to load
-  //   cy.get(selectors.productsTable).should('be.visible');
+    // Wait for product data to load
+    cy.get(selectors.productsTable).should('be.visible');
 
-  //   // Verify URL and product display
-  //   cy.url().should('include', 'ActivationRegions=');
-  //   cy.get(selectors.productsTable).should('be.visible');
-  //   cy.get(selectors.tableRows).should('have.length.at.least', 1);
+    // Verify URL and product display
+    cy.url().should('include', 'ActivationRegions=');
+    cy.get(selectors.productsTable).should('be.visible');
+    cy.get(selectors.tableRows).should('have.length.at.least', 1);
 
-  //   // Verify product data
-  //   verifyProductData();
-  //   cy.screenshot('catalog-region-filter');
-  // });
+    // Verify product data
+    verifyProductData();
+    cy.screenshot('catalog-region-filter');
+  });
 
-  // it('should filter products using Denomination Currency filter', () => {
-  //   // Wait for API calls to complete
-  //   waitForApiCalls();
+  it('should filter products using Denomination Currency filter', () => {
+    // Wait for API calls to complete
+    waitForApiCalls();
 
-  //   // Select the first option from the Denomination Currency filter
-  //   selectFilterOption(2);
+    // Select the first option from the Denomination Currency filter
+    selectFilterOption(2);
 
-  //   // Wait for product data to load
-  //   cy.get(selectors.productsTable).should('be.visible');
+    // Wait for product data to load
+    cy.get(selectors.productsTable).should('be.visible');
 
-  //   // Verify URL and product display
-  //   cy.url().should('include', 'DenominationCurrencys=');
-  //   cy.get(selectors.productsTable).should('be.visible');
-  //   cy.get(selectors.tableRows).should('have.length.at.least', 1);
+    // Verify URL and product display
+    cy.url().should('include', 'DenominationCurrencys=');
+    cy.get(selectors.productsTable).should('be.visible');
+    cy.get(selectors.tableRows).should('have.length.at.least', 1);
 
-  //   // Verify product data
-  //   verifyProductData();
-  //   cy.screenshot('catalog-currency-filter');
-  // });
+    // Verify product data
+    verifyProductData();
+    cy.screenshot('catalog-currency-filter');
+  });
 
   it('should complete a full order workflow from catalog to checkout', () => {
     // Wait for API calls to complete
