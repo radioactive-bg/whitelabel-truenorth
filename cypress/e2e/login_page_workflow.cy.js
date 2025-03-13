@@ -13,8 +13,8 @@ describe('Login Page Tests', () => {
 
   // Test data
   const testData = {
-    validEmail: 'm.petkov2@radioactive.bg',
-    validPassword: 'm.petkov2@radioactive.bg',
+    validEmail: Cypress.env('TEST_EMAIL') || 'm.petkov2@radioactive.bg',
+    validPassword: Cypress.env('TEST_PASSWORD') || 'm.petkov2@radioactive.bg',
     invalidEmail: 'invalid@example.com',
     invalidPassword: 'wrongpassword',
     testEmail: 'test@example.com',
@@ -81,8 +81,8 @@ describe('Login Page Tests', () => {
     cy.get(selectors.loginForm).should('be.visible');
 
     // Login with test credentials
-    cy.get(selectors.email).type(testData.validEmail);
-    cy.get(selectors.password).type(testData.validPassword);
+    cy.get(selectors.email).type(Cypress.env('TEST_EMAIL'));
+    cy.get(selectors.password).type(Cypress.env('TEST_PASSWORD'));
     cy.get(selectors.submitButton).click();
 
     // Wait for successful login and redirect

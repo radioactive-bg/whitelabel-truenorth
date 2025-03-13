@@ -15,6 +15,9 @@ jobs:
       # Keep NEXT_PUBLIC_API_URL as required.
       NEXT_PUBLIC_API_URL: 'https://proxy.duegate.com/staging'
       CYPRESS_apiUrl: 'https://proxy.duegate.com/staging'
+      # Add test credentials as environment variables
+      CYPRESS_TEST_EMAIL: ${{ secrets.CYPRESS_TEST_EMAIL }}
+      CYPRESS_TEST_PASSWORD: ${{ secrets.CYPRESS_TEST_PASSWORD }}
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -36,3 +39,27 @@ jobs:
           wait-on-timeout: 120
           browser: chrome
           config: baseUrl=http://localhost:3000
+          spec: |
+            cypress/e2e/login_page_workflow.cy.js
+            cypress/e2e/orders_filter_workflow.cy.js
+            cypress/e2e/catalog_order_workflow.cy.js
+          record: true
+          parallel: true
+          group: 'e2e-tests'
+          ci-build-id: ${{ github.run_id }}
+
+      - name: Upload Cypress Screenshots
+        uses: actions/upload-artifact@v3
+        if: failure()
+        with:
+          name: cypress-screenshots
+          path: cypress/screenshots
+          retention-days: 7
+
+      - name: Upload Cypress Videos
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: cypress-videos
+          path: cypress/videos
+          retention-days: 7
