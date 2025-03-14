@@ -19,7 +19,6 @@ jobs:
       CYPRESS_TEST_EMAIL: ${{ secrets.CYPRESS_TEST_EMAIL }}
       CYPRESS_TEST_PASSWORD: ${{ secrets.CYPRESS_TEST_PASSWORD }}
       CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
-      CYPRESS_PROJECT_ID: ${{ secrets.CYPRESS_PROJECT_ID }}
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -35,6 +34,16 @@ jobs:
 
       - name: Build Next.js App
         run: npm run build
+
+      - name: Verify Environment Variables
+        run: |
+          echo "Checking if environment variables are set..."
+          if [ -n "$CYPRESS_RECORD_KEY" ]; then
+            echo "CYPRESS_RECORD_KEY is set"
+          else
+            echo "CYPRESS_RECORD_KEY is not set"
+            exit 1
+          fi
 
       - name: Cypress Run
         uses: cypress-io/github-action@v6
@@ -53,8 +62,9 @@ jobs:
           parallel: true
           group: 'e2e-tests'
           ci-build-id: ${{ github.run_id }}
-          project-id: ${{ secrets.CYPRESS_PROJECT_ID }}
+          project-id: '979hmh'
           record-key: ${{ secrets.CYPRESS_RECORD_KEY }}
+          tag: ${{ github.sha }}
 
       - name: Upload Cypress Screenshots
         uses: actions/upload-artifact@v4
