@@ -8,8 +8,32 @@ on:
         value: ${{ jobs.cypress-summary.outputs.test_status }}
 
 jobs:
+  build:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20.x'
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Build Next.js App
+        run: npm run build
+
+      - name: Upload Build Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: nextjs-build
+          path: .next  # Ensure the correct build directory
   cypress-run:
     runs-on: ubuntu-24.04
+    needs: build  # Ensure Cypress runs only after the build
     strategy:
       matrix:
         spec: 
@@ -35,33 +59,25 @@ jobs:
           node-version: '20.x'
           cache: 'npm'
 
-      - name: Cache Cypress Binary
-        uses: actions/cache@v4
+      - name: Install Dependencies (Without Build)
+        run: npm ci --ignore-scripts  # Install dependencies but don't rebuild
+
+      - name: Download Build Artifact
+        uses: actions/download-artifact@v4
         with:
-          path: ~/.cache/Cypress
-          key: cypress-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
-          restore-keys: |
-            cypress-${{ runner.os }}-
+          name: nextjs-build
+          path: .next  # Ensure it matches the build directory
 
-      - name: Install Dependencies
-        run: npm ci
-
-      - name: Build Next.js App
-        run: npm run build
+      - name: Start Next.js Server
+        run: npm start &  # Start server in background
 
       - name: Run Cypress Tests
         uses: cypress-io/github-action@v6
         with:
-          build: npm run build
-          start: npm start
-          wait-on: 'http://localhost:3000'
-          wait-on-timeout: 120
           browser: chrome
-          headed: false
+          wait-on: 'http://localhost:3000'
           spec: ${{ matrix.spec }}
           record: true
-          ci-build-id: ${{ github.run_id }}
-          tag: ${{ github.sha }}
 
       - name: Upload Cypress Screenshots
         uses: actions/upload-artifact@v4
