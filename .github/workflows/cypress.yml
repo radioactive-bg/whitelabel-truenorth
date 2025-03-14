@@ -1,26 +1,30 @@
 name: Cypress Tests
 
 on:
-  push:
-    branches:
-      - dev
-  pull_request:
-    branches:
-      - dev
+  workflow_call:
+    outputs:
+      test_status:
+        description: "Cypress Test Status"
+        value: ${{ jobs.cypress-summary.outputs.test_status }}
 
 jobs:
   cypress-run:
     runs-on: ubuntu-24.04
+    strategy:
+      matrix:
+        spec: 
+          - cypress/e2e/login_page_workflow.cy.js
+          - cypress/e2e/orders_filter_workflow.cy.js
+          - cypress/e2e/catalog_order_workflow.cy.js
+
     env:
-      # API URLs
       NEXT_PUBLIC_API_URL: 'https://proxy.duegate.com/staging'
       CYPRESS_apiUrl: 'https://proxy.duegate.com/staging'
-      # Cypress configuration
-      CYPRESS_PROJECT_ID: '979hmh'
-      CYPRESS_RECORD_KEY: 'c744aa28-7f9e-4efd-9579-6400811e4fef'
-      # Test credentials (sensitive - using secrets)
+      CYPRESS_PROJECT_ID: ${{ secrets.CYPRESS_PROJECT_ID }}
+      CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
       CYPRESS_TEST_EMAIL: ${{ secrets.CYPRESS_TEST_EMAIL }}
       CYPRESS_TEST_PASSWORD: ${{ secrets.CYPRESS_TEST_PASSWORD }}
+
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -31,13 +35,21 @@ jobs:
           node-version: '20.x'
           cache: 'npm'
 
+      - name: Cache Cypress Binary
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/Cypress
+          key: cypress-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            cypress-${{ runner.os }}-
+
       - name: Install Dependencies
         run: npm ci
 
       - name: Build Next.js App
         run: npm run build
 
-      - name: Cypress Run
+      - name: Run Cypress Tests
         uses: cypress-io/github-action@v6
         with:
           build: npm run build
@@ -45,17 +57,10 @@ jobs:
           wait-on: 'http://localhost:3000'
           wait-on-timeout: 120
           browser: chrome
-          config: baseUrl=http://localhost:3000
-          spec: |
-            cypress/e2e/login_page_workflow.cy.js
-            cypress/e2e/orders_filter_workflow.cy.js
-            cypress/e2e/catalog_order_workflow.cy.js
+          headed: false
+          spec: ${{ matrix.spec }}
           record: true
-          parallel: true
-          group: 'e2e-tests'
           ci-build-id: ${{ github.run_id }}
-          project-id: '979hmh'
-          record-key: 'c744aa28-7f9e-4efd-9579-6400811e4fef'
           tag: ${{ github.sha }}
 
       - name: Upload Cypress Screenshots
@@ -68,8 +73,18 @@ jobs:
 
       - name: Upload Cypress Videos
         uses: actions/upload-artifact@v4
-        if: always()
+        if: failure()
         with:
           name: cypress-videos
           path: cypress/videos
           retention-days: 7
+  cypress-summary:
+      runs-on: ubuntu-24.04
+      needs: cypress-run
+      if: always()  # Run even if Cypress tests fail
+      outputs:
+        test_status: ${{ steps.set-status.outputs.test_status }}
+      steps:
+        - name: Set Cypress Test Status
+          id: set-status
+          run: echo "test_status=${{ job.status }}" >> $GITHUB_ENV
