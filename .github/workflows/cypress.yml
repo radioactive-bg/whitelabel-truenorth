@@ -29,8 +29,9 @@ jobs:
       - name: Upload Build Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: nextjs-build
+          name: nextjs-build-${{ github.run_id }}
           path: .next  # Ensure the correct build directory
+
   cypress-run:
     runs-on: ubuntu-24.04
     needs: build  # Ensure Cypress runs only after the build
@@ -65,7 +66,7 @@ jobs:
       - name: Download Build Artifact
         uses: actions/download-artifact@v4
         with:
-          name: nextjs-build
+          name: nextjs-build-${{ github.run_id }}
           path: .next  # Ensure it matches the build directory
 
       - name: Start Next.js Server
@@ -83,7 +84,7 @@ jobs:
         uses: actions/upload-artifact@v4
         if: failure()
         with:
-          name: cypress-screenshots
+          name: cypress-screenshots-${{ matrix.spec }}
           path: cypress/screenshots
           retention-days: 7
 
@@ -91,16 +92,17 @@ jobs:
         uses: actions/upload-artifact@v4
         if: failure()
         with:
-          name: cypress-videos
+          name: cypress-videos-${{ matrix.spec }}
           path: cypress/videos
           retention-days: 7
+
   cypress-summary:
-      runs-on: ubuntu-24.04
-      needs: cypress-run
-      if: always()  # Run even if Cypress tests fail
-      outputs:
-        test_status: ${{ steps.set-status.outputs.test_status }}
-      steps:
-        - name: Set Cypress Test Status
-          id: set-status
-          run: echo "test_status=${{ job.status }}" >> $GITHUB_ENV
+    runs-on: ubuntu-24.04
+    needs: cypress-run
+    if: always()  # Run even if Cypress tests fail
+    outputs:
+      test_status: ${{ steps.set-status.outputs.test_status }}
+    steps:
+      - name: Set Cypress Test Status
+        id: set-status
+        run: echo "test_status=${{ job.status }}" >> $GITHUB_ENV
