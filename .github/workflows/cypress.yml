@@ -18,6 +18,8 @@ jobs:
       # Add test credentials as environment variables
       CYPRESS_TEST_EMAIL: ${{ secrets.CYPRESS_TEST_EMAIL }}
       CYPRESS_TEST_PASSWORD: ${{ secrets.CYPRESS_TEST_PASSWORD }}
+      CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
+      CYPRESS_PROJECT_ID: ${{ secrets.CYPRESS_PROJECT_ID }}
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -25,7 +27,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '22.13.1'
+          node-version: '20.x'
 
       - name: Install Dependencies
         run: npm ci
@@ -47,6 +49,7 @@ jobs:
           parallel: true
           group: 'e2e-tests'
           ci-build-id: ${{ github.run_id }}
+          project-id: ${{ secrets.CYPRESS_PROJECT_ID }}
 
       - name: Upload Cypress Screenshots
         uses: actions/upload-artifact@v4
