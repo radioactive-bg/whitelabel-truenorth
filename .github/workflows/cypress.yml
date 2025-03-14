@@ -24,25 +24,17 @@ jobs:
         run: |
           docker build --build-arg NEXT_PUBLIC_API_URL=https://proxy.duegate.com/staging -t b2b-hksglobal-group .
 
-      - name: Start Docker Container
-        id: start-container
+      - name: Save Docker Image as Artifact
         run: |
-          CONTAINER_ID=$(docker run -d -p 3000:3000 --name b2b-hksglobal-group-container b2b-hksglobal-group)
-          echo "container_id=$CONTAINER_ID" >> $GITHUB_ENV
+          docker save -o b2b-hksglobal-group.tar b2b-hksglobal-group
+        shell: bash
 
-      - name: Wait for Application to be Ready
-        run: |
-          echo "Waiting for application to start..."
-          for i in {1..30}; do
-            if curl -s http://localhost:3000 > /dev/null; then
-              echo "Application is up!"
-              exit 0
-            fi
-            echo "Waiting..."
-            sleep 5
-          done
-          echo "Application did not start in time."
-          exit 1
+      - name: Upload Docker Image
+        uses: actions/upload-artifact@v4
+        with:
+          name: b2b-hksglobal-group-image
+          path: b2b-hksglobal-group.tar
+          retention-days: 1
 
   # ---------------------------------
   # 2) CYPRESS TEST JOB
@@ -69,8 +61,22 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Wait for Container to be Ready
+      - name: Download Docker Image
+        uses: actions/download-artifact@v4
+        with:
+          name: b2b-hksglobal-group-image
+
+      - name: Load Docker Image
         run: |
+          docker load -i b2b-hksglobal-group.tar
+
+      - name: Start Docker Container
+        run: |
+          docker run -d -p 3000:3000 --name b2b-hksglobal-group-container b2b-hksglobal-group
+
+      - name: Wait for Application to be Ready
+        run: |
+          echo "Waiting for application to start..."
           for i in {1..30}; do
             if curl -s http://localhost:3000 > /dev/null; then
               echo "Application is up!"
@@ -99,7 +105,7 @@ jobs:
           browser: chrome
           headed: false
           spec: ${{ matrix.spec }}
-          record: true
+          record: false
           ci-build-id: ${{ github.run_id }}
           tag: ${{ github.sha }}
 
@@ -119,6 +125,9 @@ jobs:
           path: cypress/videos
           retention-days: 7
 
+  # ---------------------------------
+  # 3) CLEANUP JOB
+  # ---------------------------------
   stop-container:
     runs-on: ubuntu-24.04
     needs: cypress-run
@@ -130,7 +139,7 @@ jobs:
           docker rm b2b-hksglobal-group-container || true
 
   # ---------------------------------
-  # 3) TEST SUMMARY JOB
+  # 4) TEST SUMMARY JOB
   # ---------------------------------
   cypress-summary:
     runs-on: ubuntu-24.04
