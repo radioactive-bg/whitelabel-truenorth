@@ -26,6 +26,9 @@ jobs:
       - name: Build Next.js App
         run: npm run build
 
+      - name: Verify Build Output
+        run: ls -lah .next  # Debugging step to confirm build directory exists
+
       - name: Upload Build Artifact
         uses: actions/upload-artifact@v4
         with:
@@ -37,7 +40,7 @@ jobs:
     needs: build  # Ensure Cypress runs only after the build
     strategy:
       matrix:
-        spec: 
+        spec:
           - cypress/e2e/login_page_workflow.cy.js
           - cypress/e2e/orders_filter_workflow.cy.js
           - cypress/e2e/catalog_order_workflow.cy.js
@@ -69,6 +72,9 @@ jobs:
           name: nextjs-build-${{ github.run_id }}
           path: .next  # Ensure it matches the build directory
 
+      - name: Verify Downloaded Build
+        run: ls -lah .next  # Debugging step to confirm build was downloaded
+
       - name: Start Next.js Server
         run: npm start &  # Start server in background
 
@@ -80,11 +86,17 @@ jobs:
           spec: ${{ matrix.spec }}
           record: true
 
+      - name: Normalize Spec Name
+        id: normalize-spec
+        run: |
+          SPEC_NAME=$(echo ${{ matrix.spec }} | tr '/' '_')
+          echo "spec_name=$SPEC_NAME" >> $GITHUB_OUTPUT
+
       - name: Upload Cypress Screenshots
         uses: actions/upload-artifact@v4
         if: failure()
         with:
-          name: cypress-screenshots-${{ matrix.spec }}
+          name: cypress-screenshots-${{ steps.normalize-spec.outputs.spec_name }}
           path: cypress/screenshots
           retention-days: 7
 
@@ -92,7 +104,7 @@ jobs:
         uses: actions/upload-artifact@v4
         if: failure()
         with:
-          name: cypress-videos-${{ matrix.spec }}
+          name: cypress-videos-${{ steps.normalize-spec.outputs.spec_name }}
           path: cypress/videos
           retention-days: 7
 
