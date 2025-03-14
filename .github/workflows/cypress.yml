@@ -4,43 +4,52 @@ on:
   workflow_call:
     outputs:
       test_status:
-        description: "Cypress Test Status"
+        description: 'Cypress Test Status'
         value: ${{ jobs.cypress-summary.outputs.test_status }}
 
 jobs:
   # ---------------------------------
   # 1) BUILD JOB
   # ---------------------------------
-  build:
+  build-and-start:
     runs-on: ubuntu-24.04
+    outputs:
+      container_id: ${{ steps.start-container.outputs.container_id }}
+
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '20.x'
-          cache: 'npm'
+      - name: Build Docker Image
+        run: |
+          docker build --build-arg NEXT_PUBLIC_API_URL=https://proxy.duegate.com/staging -t b2b-hksglobal-group .
 
-      - name: Install Dependencies
-        run: npm ci
+      - name: Start Docker Container
+        id: start-container
+        run: |
+          CONTAINER_ID=$(docker run -d -p 3000:3000 --name b2b-hksglobal-group-container b2b-hksglobal-group)
+          echo "container_id=$CONTAINER_ID" >> $GITHUB_ENV
 
-      - name: Build Next.js App
-        run: npm run build
-
-      - name: Upload Build Artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: next-build
-          path: .next
+      - name: Wait for Application to be Ready
+        run: |
+          echo "Waiting for application to start..."
+          for i in {1..30}; do
+            if curl -s http://localhost:3000 > /dev/null; then
+              echo "Application is up!"
+              exit 0
+            fi
+            echo "Waiting..."
+            sleep 5
+          done
+          echo "Application did not start in time."
+          exit 1
 
   # ---------------------------------
   # 2) CYPRESS TEST JOB
   # ---------------------------------
   cypress-run:
     runs-on: ubuntu-24.04
-    needs: build
+    needs: build-and-start
     strategy:
       matrix:
         spec:
@@ -60,11 +69,18 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '20.x'
-          cache: 'npm'
+      - name: Wait for Container to be Ready
+        run: |
+          for i in {1..30}; do
+            if curl -s http://localhost:3000 > /dev/null; then
+              echo "Application is up!"
+              exit 0
+            fi
+            echo "Waiting..."
+            sleep 5
+          done
+          echo "Application did not start in time."
+          exit 1
 
       # Optionally cache Cypress binary, if you'd like
       - name: Cache Cypress Binary
@@ -74,57 +90,44 @@ jobs:
           key: cypress-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
           restore-keys: |
             cypress-${{ runner.os }}-
-      
-      - name: Install Dependencies
-        run: npm ci
-
-      - name: Download Build Artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: next-build
-          path: .next
-
-      # If you need a .env file or any other config, create it here.
-
-      - name: Start Next.js App
-        run: npm start &
-        # The ampersand (&) ensures it runs in the background.
-        # Make sure "start" is defined in your package.json 
-        # as "next start -p 3000" or similar.
-
-      - name: Wait for App to be Ready
-        run: npx wait-on http://localhost:3000 --timeout 120000
-        # Wait for up to 120 seconds
 
       - name: Run Cypress Tests
         uses: cypress-io/github-action@v6
         with:
-          # Since we already built the app, do NOT rebuild here
-          # we only start it above. So we can remove "build" from these inputs.
-          start: false
-          wait-on: false
+          wait-on: 'http://localhost:3000'
+          wait-on-timeout: 120
           browser: chrome
           headed: false
           spec: ${{ matrix.spec }}
-          record: false
+          record: true
           ci-build-id: ${{ github.run_id }}
           tag: ${{ github.sha }}
 
-      # - name: Upload Cypress Screenshots
-      #   uses: actions/upload-artifact@v4
-      #   if: failure()
-      #   with:
-      #     name: cypress-screenshots
-      #     path: cypress/screenshots
-      #     retention-days: 7
+      - name: Upload Cypress Screenshots
+        uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: cypress-screenshots
+          path: cypress/screenshots
+          retention-days: 7
 
-      # - name: Upload Cypress Videos
-      #   uses: actions/upload-artifact@v4
-      #   if: failure()
-      #   with:
-      #     name: cypress-videos
-      #     path: cypress/videos
-      #     retention-days: 7
+      - name: Upload Cypress Videos
+        uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: cypress-videos
+          path: cypress/videos
+          retention-days: 7
+
+  stop-container:
+    runs-on: ubuntu-24.04
+    needs: cypress-run
+    if: always()
+    steps:
+      - name: Stop and Remove Docker Container
+        run: |
+          docker stop b2b-hksglobal-group-container || true
+          docker rm b2b-hksglobal-group-container || true
 
   # ---------------------------------
   # 3) TEST SUMMARY JOB
@@ -132,7 +135,7 @@ jobs:
   cypress-summary:
     runs-on: ubuntu-24.04
     needs: cypress-run
-    if: always()  # Run even if Cypress tests fail
+    if: always() # Run even if Cypress tests fail
     outputs:
       test_status: ${{ steps.set-status.outputs.test_status }}
     steps:
