@@ -105,7 +105,7 @@ jobs:
           browser: chrome
           headed: false
           spec: ${{ matrix.spec }}
-          record: false
+          record: true
           ci-build-id: ${{ github.run_id }}
           tag: ${{ github.sha }}
 
