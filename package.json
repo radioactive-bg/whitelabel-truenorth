@@ -4,7 +4,7 @@
     "build": "next build",
     "cypress:open": "cypress open",
     "cypress:run": "cypress run",
-    "cypress:run:ci": "cypress run --record --key c744aa28-7f9e-4efd-9579-6400811e4fef --project-id 979hmh",
+    "cypress:run:ci": "cypress run --record --key c744aa28-7f9e-4efd-9579-6400811e4fef",
     "dev": "next",
     "prettier": "prettier --write --ignore-unknown .",
     "prettier:check": "prettier --check --ignore-unknown .",
