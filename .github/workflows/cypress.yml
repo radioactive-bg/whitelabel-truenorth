@@ -8,6 +8,9 @@ on:
         value: ${{ jobs.cypress-summary.outputs.test_status }}
 
 jobs:
+  # ---------------------------------
+  # 1) BUILD JOB
+  # ---------------------------------
   build:
     runs-on: ubuntu-24.04
     steps:
@@ -26,18 +29,20 @@ jobs:
       - name: Build Next.js App
         run: npm run build
 
-      - name: Verify Build Output
-        run: ls -lah .next  # Debugging step to confirm build directory exists
-
-      - name: Upload Build Artifact
+      - name: Upload Build Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: nextjs-build-${{ github.run_id }}
-          path: .next  # Ensure the correct build directory
+          name: next-build
+          path: |
+            .next
+            # If you need other build artifacts or public folder, include them
 
+  # ---------------------------------
+  # 2) CYPRESS TEST JOB
+  # ---------------------------------
   cypress-run:
     runs-on: ubuntu-24.04
-    needs: build  # Ensure Cypress runs only after the build
+    needs: build
     strategy:
       matrix:
         spec:
@@ -63,40 +68,46 @@ jobs:
           node-version: '20.x'
           cache: 'npm'
 
-      - name: Install Dependencies (Without Build)
-        run: npm ci --ignore-scripts  # Install dependencies but don't rebuild
+      - name: Install Dependencies
+        run: npm ci
 
       - name: Download Build Artifact
         uses: actions/download-artifact@v4
         with:
-          name: nextjs-build-${{ github.run_id }}
-          path: .next  # Ensure it matches the build directory
+          name: next-build
+          path: ./.next  # Download to your .next folder
 
-      - name: Verify Downloaded Build
-        run: ls -lah .next  # Debugging step to confirm build was downloaded
+      # If you need a .env file or any other config, create it here.
 
-      - name: Start Next.js Server
-        run: npm start &  # Start server in background
+      - name: Start Next.js App
+        run: npm start &
+        # The ampersand (&) ensures it runs in the background.
+        # Make sure "start" is defined in your package.json 
+        # as "next start -p 3000" or similar.
+
+      - name: Wait for App to be Ready
+        run: npx wait-on http://localhost:3000 --timeout 120000
+        # Wait for up to 120 seconds
 
       - name: Run Cypress Tests
         uses: cypress-io/github-action@v6
         with:
+          # Since we already built the app, do NOT rebuild here
+          # we only start it above. So we can remove "build" from these inputs.
+          start: false
+          wait-on: false
           browser: chrome
-          wait-on: 'http://localhost:3000'
+          headed: false
           spec: ${{ matrix.spec }}
           record: true
-
-      - name: Normalize Spec Name
-        id: normalize-spec
-        run: |
-          SPEC_NAME=$(echo ${{ matrix.spec }} | tr '/' '_')
-          echo "spec_name=$SPEC_NAME" >> $GITHUB_OUTPUT
+          ci-build-id: ${{ github.run_id }}
+          tag: ${{ github.sha }}
 
       - name: Upload Cypress Screenshots
         uses: actions/upload-artifact@v4
         if: failure()
         with:
-          name: cypress-screenshots-${{ steps.normalize-spec.outputs.spec_name }}
+          name: cypress-screenshots
           path: cypress/screenshots
           retention-days: 7
 
@@ -104,10 +115,13 @@ jobs:
         uses: actions/upload-artifact@v4
         if: failure()
         with:
-          name: cypress-videos-${{ steps.normalize-spec.outputs.spec_name }}
+          name: cypress-videos
           path: cypress/videos
           retention-days: 7
 
+  # ---------------------------------
+  # 3) TEST SUMMARY JOB
+  # ---------------------------------
   cypress-summary:
     runs-on: ubuntu-24.04
     needs: cypress-run
