@@ -19,7 +19,7 @@ jobs:
       CYPRESS_TEST_EMAIL: ${{ secrets.CYPRESS_TEST_EMAIL }}
       CYPRESS_TEST_PASSWORD: ${{ secrets.CYPRESS_TEST_PASSWORD }}
       CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
-      CYPRESS_PROJECT_ID: ${{ secrets.CYPRESS_PROJECT_ID }}
+      CYPRESS_PROJECT_ID: '979hmh'
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -53,7 +53,7 @@ jobs:
           parallel: true
           group: 'e2e-tests'
           ci-build-id: ${{ github.run_id }}
-          project-id: ${{ secrets.CYPRESS_PROJECT_ID }}
+          project-id: '979hmh'
 
       - name: Upload Cypress Screenshots
         uses: actions/upload-artifact@v4
