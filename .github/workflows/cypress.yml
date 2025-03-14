@@ -28,9 +28,13 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: '20.x'
+          cache: 'npm'
 
       - name: Install Dependencies
         run: npm ci
+
+      - name: Build Next.js App
+        run: npm run build
 
       - name: Cypress Run
         uses: cypress-io/github-action@v6
@@ -52,7 +56,7 @@ jobs:
           project-id: ${{ secrets.CYPRESS_PROJECT_ID }}
 
       - name: Upload Cypress Screenshots
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         if: failure()
         with:
           name: cypress-screenshots
@@ -60,7 +64,7 @@ jobs:
           retention-days: 7
 
       - name: Upload Cypress Videos
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         if: always()
         with:
           name: cypress-videos
