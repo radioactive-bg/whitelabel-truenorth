@@ -7,7 +7,7 @@ import Image from 'next/image';
 import { Dialog, Transition } from '@headlessui/react';
 import { ChevronDownIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import { FunnelIcon, MinusIcon, PlusIcon } from '@heroicons/react/20/solid';
-
+import useCatalogWebhook from '@/app/lib/useCatalogWebhook';
 //import { filters } from '@/app/lib/constants';
 import { getRegions, getCurrencies } from '@/app/lib/api/filters';
 import { getProductGroupsList } from '@/app/lib/api/productGroup';
@@ -16,6 +16,7 @@ import FilterPopover from '@/app/ui/dashboard/catalog/FilterPopover';
 import ProductsTable from '@/app/ui/dashboard/catalog/ProductsTable';
 
 import { CatalogSkeleton } from '@/app/ui/skeletons';
+import { io } from 'socket.io-client';
 
 function classNames(...classes: any) {
   return classes.filter(Boolean).join(' ');
@@ -73,6 +74,19 @@ const Catalog = () => {
   const triggerUpdate = () => {
     setForceUpdate((prev) => !prev);
   };
+
+  const refreshCatalog = async () => {
+    try {
+      console.log('Refreshing catalog from webhook...');
+      await fetchAndBuildFilters();
+    } catch (error) {
+      console.error('Error refreshing catalog:', error);
+    }
+  };
+
+  useCatalogWebhook(() => {
+    refreshCatalog();
+  });
 
   useEffect(() => {
     const initializeFilters = async () => {
