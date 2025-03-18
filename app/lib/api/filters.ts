@@ -33,7 +33,7 @@ export async function getProductGroups() {
         },
       },
     );
-    //console.log('getProductGroups response.data.data: ', response.data);
+    console.log('getProductGroups response.data.data: ', response.data);
     return response.data;
   } catch (error) {
     console.error('Fetch Error:', error);

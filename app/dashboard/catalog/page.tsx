@@ -148,15 +148,15 @@ const Catalog = () => {
       console.log('Access Token Expiry:', accessTokenExpires);
       console.log('Current Time:', currentTime);
 
-      // Check if access token has expired
-      if (accessTokenExpires && parseInt(accessTokenExpires) > currentTime) {
-        if (storedFilters) {
-          const parsedFilters = JSON.parse(storedFilters);
-          console.log('Using stored filters from localStorage:', parsedFilters);
-          setAllFilters(parsedFilters);
-          return;
-        }
-      }
+      // // Check if access token has expired
+      // if (accessTokenExpires && parseInt(accessTokenExpires) > currentTime) {
+      //   if (storedFilters) {
+      //     const parsedFilters = JSON.parse(storedFilters);
+      //     console.log('Using stored filters from localStorage:', parsedFilters);
+      //     setAllFilters(parsedFilters);
+      //     return;
+      //   }
+      // }
 
       const [productGroupsResponse, regionsResponse, currenciesResponse] =
         await Promise.all([

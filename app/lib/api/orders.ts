@@ -175,13 +175,11 @@ export async function createOrder(products: any[], vat: number | null) {
     vat: vat,
   };
   console.log('requestBody in createOrder :', JSON.stringify(requestBody));
-
   const token = localStorage.getItem('access_token');
 
   if (!token) {
     throw new Error('No access token found');
   }
-
   console.log('requestBody in createOrder :', requestBody);
 
   try {
@@ -195,7 +193,6 @@ export async function createOrder(products: any[], vat: number | null) {
         },
       },
     );
-
     console.log('Axios response.data.data from createOrder:', response.data);
 
     return response.data;

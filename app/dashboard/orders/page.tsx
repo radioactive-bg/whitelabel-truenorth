@@ -52,15 +52,20 @@ export default function Page({}: {}) {
     page: 1,
   });
 
+  // First, initialize auth if needed
   useEffect(() => {
-    const localValue = localStorage.getItem('access_token') || 'no value';
-
-    if (localValue === 'no value') {
-      router.push('/login');
-      return;
+    if (!auth.access_token) {
+      initializeAuth();
     }
-    fetchOrders(currentPage, filters);
-  }, [currentPage, auth.access_token, router]);
+  }, [auth.access_token, initializeAuth]);
+
+  // Then, fetch orders only when auth is available
+  useEffect(() => {
+    // Check if we have authentication before fetching
+    if (auth.access_token) {
+      fetchOrders(currentPage, filters);
+    }
+  }, [currentPage, filters, auth.access_token]);
 
   const fetchOrders = async (page: number, appliedFilters: any) => {
     setLoading(true);
@@ -74,6 +79,7 @@ export default function Page({}: {}) {
       setTotalPages(Number(lastPage));
     } catch (error) {
       console.error('Error fetching orders:', error);
+      // Don't redirect on error, just set empty orders
       setOrders([]);
     } finally {
       setLoading(false);
@@ -130,7 +136,7 @@ export default function Page({}: {}) {
                     <table
                       key={themeKey}
                       id="orderList"
-                      className="min-w-full divide-y divide-gray-300 rounded-lg border shadow dark:divide-gray-700 "
+                      className="orderList min-w-full divide-y divide-gray-300 rounded-lg border shadow dark:divide-gray-700 "
                     >
                       <thead className="rounded-lg bg-gray-100 dark:bg-gray-700">
                         <tr>
@@ -231,7 +237,7 @@ export default function Page({}: {}) {
                       currentPage={currentPage}
                       setCurrentPage={setCurrentPage}
                       totalPages={totalPages}
-                    />{' '}
+                    />
                   </div>
                 </div>
               </div>
