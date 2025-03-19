@@ -62,7 +62,7 @@ export default function ShoppingCartModal({
 
   return (
     <Transition show={open}>
-      <Dialog className="z-100 relative rounded-md" onClose={setOpen}>
+      <Dialog className="relative rounded-md" onClose={setOpen}>
         <Transition.Child
           enter="ease-out duration-300"
           enterFrom="opacity-0"
@@ -71,10 +71,10 @@ export default function ShoppingCartModal({
           leaveFrom="opacity-100"
           leaveTo="opacity-0"
         >
-          <div className="hidden sm:fixed sm:inset-0 sm:block sm:bg-gray-500 sm:bg-opacity-75 sm:transition-opacity" />
+          <div className="z-50 hidden sm:fixed sm:inset-0 sm:block sm:bg-gray-500 sm:bg-opacity-75 sm:transition-opacity" />
         </Transition.Child>
 
-        <div className="fixed inset-0 z-10 mt-[60px] w-screen overflow-y-auto">
+        <div className="fixed inset-0 z-[75]  mt-[60px] w-screen overflow-y-auto">
           <div className="flex min-h-full items-stretch justify-center text-center sm:items-center sm:px-6 lg:px-8">
             <Transition.Child
               enter="ease-out duration-300"
@@ -85,7 +85,7 @@ export default function ShoppingCartModal({
               leaveTo="opacity-0 scale-105"
             >
               <Dialog.Panel
-                className={` flex w-full max-w-3xl transform rounded-md text-left text-base transition sm:my-8 ${
+                className={`  flex w-full max-w-3xl transform rounded-md text-left text-base transition sm:my-8 ${
                   isDark
                     ? 'bg-gray-900 text-gray-200'
                     : 'bg-white text-gray-900'
@@ -226,8 +226,13 @@ export default function ShoppingCartModal({
                     <button
                       onClick={continueToPayment}
                       id="ContinueToPaymentButton"
+                      disabled={cartItems.length === 0}
                       type="button"
-                      className="inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-medium shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 dark:bg-gray-700 dark:text-white dark:ring-gray-500 dark:hover:bg-gray-600"
+                      className={`ml-4 rounded-md bg-black px-3 py-1 text-white transition duration-150 hover:bg-black/70 dark:bg-gray-700 dark:hover:bg-gray-800 ${
+                        cartItems.length === 0
+                          ? 'cursor-not-allowed opacity-50'
+                          : ''
+                      }`}
                     >
                       Continue to Payment
                     </button>

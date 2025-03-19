@@ -52,15 +52,20 @@ export default function Page({}: {}) {
     page: 1,
   });
 
+  // First, initialize auth if needed
   useEffect(() => {
-    const localValue = localStorage.getItem('access_token') || 'no value';
-
-    if (localValue === 'no value') {
-      router.push('/login');
-      return;
+    if (!auth.access_token) {
+      initializeAuth();
     }
-    fetchOrders(currentPage, filters);
-  }, [currentPage, auth.access_token, router]);
+  }, [auth.access_token, initializeAuth]);
+
+  // Then, fetch orders only when auth is available
+  useEffect(() => {
+    // Check if we have authentication before fetching
+    if (auth.access_token) {
+      fetchOrders(currentPage, filters);
+    }
+  }, [currentPage, filters, auth.access_token]);
 
   const fetchOrders = async (page: number, appliedFilters: any) => {
     setLoading(true);
@@ -74,6 +79,7 @@ export default function Page({}: {}) {
       setTotalPages(Number(lastPage));
     } catch (error) {
       console.error('Error fetching orders:', error);
+      // Don't redirect on error, just set empty orders
       setOrders([]);
     } finally {
       setLoading(false);
@@ -109,12 +115,12 @@ export default function Page({}: {}) {
               </p>
             </div>
             <div className="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
-              <button
+              {/* <button
                 type="button"
                 className="block rounded-md bg-black px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-black/70 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black dark:bg-white dark:text-black"
               >
-                Add Order
-              </button>
+                Download All Orders
+              </button> */}
             </div>
           </div>
         </div>
@@ -123,16 +129,16 @@ export default function Page({}: {}) {
           <InvoicesTableSkeleton />
         ) : (
           <>
-            <div className="px-4 sm:px-6 lg:px-8">
-              <div className="mt-8 flow-root">
-                <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-                  <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
+            <div className="rounded-lg px-4 sm:px-6  lg:px-8">
+              <div className="mt-8 flow-root rounded-lg ">
+                <div className="-mx-4 -my-2 overflow-x-auto rounded-lg  sm:-mx-6 lg:-mx-8">
+                  <div className="rounded-lgalign-middle inline-block min-w-full ">
                     <table
                       key={themeKey}
                       id="orderList"
-                      className="min-w-full divide-y divide-gray-300 dark:divide-gray-700"
+                      className="orderList min-w-full divide-y divide-gray-300 rounded-lg border shadow dark:divide-gray-700 "
                     >
-                      <thead className="bg-gray-50 dark:bg-gray-800">
+                      <thead className="rounded-lg bg-gray-100 dark:bg-gray-700">
                         <tr>
                           <th
                             scope="col"
@@ -170,12 +176,9 @@ export default function Page({}: {}) {
                           ></th>
                         </tr>
                       </thead>
-                      <tbody className="divide-y divide-gray-200 bg-white dark:divide-gray-700 dark:bg-gray-900">
+                      <tbody className="divide-y  divide-gray-200 rounded-lg bg-white dark:divide-gray-700 dark:bg-gray-900">
                         {orders.map((order: any) => (
-                          <tr
-                            key={order.id}
-                            className="hover:bg-gray-100 dark:hover:bg-gray-700"
-                          >
+                          <tr key={order.id} className="">
                             <td className="whitespace-nowrap py-5 pr-3 text-sm text-gray-900 dark:text-gray-200 sm:pl-0">
                               <div className="flex items-center">
                                 <div className="ml-4">
@@ -219,7 +222,7 @@ export default function Page({}: {}) {
                             <td className="relative whitespace-nowrap py-5 pr-4 text-center text-sm font-bold sm:pr-0">
                               <button
                                 onClick={() => viewOrder(order.id)}
-                                className="ml-4 rounded-md px-3 py-1 text-black transition duration-150 hover:bg-black hover:text-white active:bg-black active:text-black dark:text-white dark:hover:bg-gray-700 dark:hover:text-white"
+                                className="ml-4 rounded-md px-3 py-1 text-black transition duration-150 hover:bg-black hover:text-white active:bg-black active:text-black dark:text-white dark:hover:bg-gray-800 dark:hover:text-white"
                               >
                                 View
                                 <span className="sr-only">, {order.name}</span>
@@ -234,7 +237,7 @@ export default function Page({}: {}) {
                       currentPage={currentPage}
                       setCurrentPage={setCurrentPage}
                       totalPages={totalPages}
-                    />{' '}
+                    />
                   </div>
                 </div>
               </div>

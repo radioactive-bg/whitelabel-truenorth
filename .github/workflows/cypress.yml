@@ -1,0 +1,153 @@
+name: Cypress Tests
+
+on:
+  workflow_call:
+    outputs:
+      test_status:
+        description: 'Cypress Test Status'
+        value: ${{ jobs.cypress-summary.outputs.test_status }}
+
+jobs:
+  # ---------------------------------
+  # 1) BUILD JOB
+  # ---------------------------------
+  build-and-start:
+    runs-on: ubuntu-24.04
+    outputs:
+      container_id: ${{ steps.start-container.outputs.container_id }}
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Build Docker Image
+        run: |
+          docker build --build-arg NEXT_PUBLIC_API_URL=https://proxy.duegate.com/staging -t b2b-hksglobal-group .
+
+      - name: Save Docker Image as Artifact
+        run: |
+          docker save -o b2b-hksglobal-group.tar b2b-hksglobal-group
+        shell: bash
+
+      - name: Upload Docker Image
+        uses: actions/upload-artifact@v4
+        with:
+          name: b2b-hksglobal-group-image
+          path: b2b-hksglobal-group.tar
+          retention-days: 1
+
+  # ---------------------------------
+  # 2) CYPRESS TEST JOB
+  # ---------------------------------
+  cypress-run:
+    runs-on: ubuntu-24.04
+    needs: build-and-start
+    strategy:
+      matrix:
+        spec:
+          - cypress/e2e/login_page_workflow.cy.js
+          - cypress/e2e/orders_filter_workflow.cy.js
+          - cypress/e2e/catalog_order_workflow.cy.js
+
+    env:
+      NEXT_PUBLIC_API_URL: 'https://proxy.duegate.com/staging'
+      CYPRESS_apiUrl: 'https://proxy.duegate.com/staging'
+      CYPRESS_PROJECT_ID: ${{ secrets.CYPRESS_PROJECT_ID }}
+      CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
+      CYPRESS_TEST_EMAIL: ${{ secrets.CYPRESS_TEST_EMAIL }}
+      CYPRESS_TEST_PASSWORD: ${{ secrets.CYPRESS_TEST_PASSWORD }}
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Download Docker Image
+        uses: actions/download-artifact@v4
+        with:
+          name: b2b-hksglobal-group-image
+
+      - name: Load Docker Image
+        run: |
+          docker load -i b2b-hksglobal-group.tar
+
+      - name: Start Docker Container
+        run: |
+          docker run -d -p 3000:3000 --name b2b-hksglobal-group-container b2b-hksglobal-group
+
+      - name: Wait for Application to be Ready
+        run: |
+          echo "Waiting for application to start..."
+          for i in {1..30}; do
+            if curl -s http://localhost:3000 > /dev/null; then
+              echo "Application is up!"
+              exit 0
+            fi
+            echo "Waiting..."
+            sleep 5
+          done
+          echo "Application did not start in time."
+          exit 1
+
+      # Optionally cache Cypress binary, if you'd like
+      - name: Cache Cypress Binary
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/Cypress
+          key: cypress-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            cypress-${{ runner.os }}-
+
+      - name: Run Cypress Tests
+        uses: cypress-io/github-action@v6
+        with:
+          wait-on: 'http://localhost:3000'
+          wait-on-timeout: 120
+          browser: chrome
+          headed: false
+          spec: ${{ matrix.spec }}
+          record: true
+          ci-build-id: ${{ github.run_id }}
+          tag: ${{ github.sha }}
+
+      - name: Upload Cypress Screenshots
+        uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: cypress-screenshots
+          path: cypress/screenshots
+          retention-days: 7
+
+      - name: Upload Cypress Videos
+        uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: cypress-videos
+          path: cypress/videos
+          retention-days: 7
+
+  # ---------------------------------
+  # 3) CLEANUP JOB
+  # ---------------------------------
+  stop-container:
+    runs-on: ubuntu-24.04
+    needs: cypress-run
+    if: always()
+    steps:
+      - name: Stop and Remove Docker Container
+        run: |
+          docker stop b2b-hksglobal-group-container || true
+          docker rm b2b-hksglobal-group-container || true
+
+  # ---------------------------------
+  # 4) TEST SUMMARY JOB
+  # ---------------------------------
+  cypress-summary:
+    runs-on: ubuntu-24.04
+    needs: cypress-run
+    if: always() # Run even if Cypress tests fail
+    outputs:
+      test_status: ${{ steps.set-status.outputs.test_status }}
+    steps:
+      - name: Set Cypress Test Status
+        id: set-status
+        run: echo "test_status=${{ job.status }}" >> $GITHUB_ENV

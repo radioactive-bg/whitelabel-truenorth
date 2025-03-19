@@ -89,13 +89,43 @@ const ProductsTable = ({
     return searchParams.get(param) || '';
   };
 
+  const sortProductsByPrice = (
+    products: any[],
+    order: 'asc' | 'desc' = 'asc',
+  ) => {
+    return products
+      .map((product) => ({
+        ...product,
+        price: parseFloat(product.price), // Convert price to a number
+      }))
+      .sort((a, b) => {
+        // First, sort by product group name (Alphabetically)
+        const groupComparison = a.group.localeCompare(b.group, undefined, {
+          sensitivity: 'base',
+        });
+
+        if (groupComparison !== 0) {
+          return groupComparison; // Sort by group first
+        }
+
+        // If the group is the same, sort by price
+        return order === 'asc' ? a.price - b.price : b.price - a.price;
+      });
+  };
+
   const fetchData = async () => {
     setLoading(true); // Set loading to true before fetching data
+
+    // Extract values from URL query parameters
     const searchQuery = findQueryParam('ProductGroups');
+    const denominationQuery = findQueryParam('DenominationCurrencys');
+    const regionQuery = findQueryParam('ActivationRegions');
 
     let ProductGroups = searchQuery ? searchQuery : null;
-
-    console.log('ProductGroups in fetchData in ProductsTable: ', ProductGroups);
+    let selectedRegionIDs = regionQuery ? regionQuery.split(',') : regionIDs;
+    let selectedCurrencies = denominationQuery
+      ? denominationQuery.split(',')
+      : currencies;
 
     // Cancel the previous request if there was one
     if (cancelTokenSource.current) {
@@ -107,11 +137,12 @@ const ProductsTable = ({
     // Create a new token for the current request
     cancelTokenSource.current = axios.CancelToken.source();
     const requestId = ++latestRequestId.current;
+
     try {
       const response = await getPreview(
         currentPage,
-        regionIDs,
-        currencies,
+        selectedRegionIDs, // Ensure region filters are applied
+        selectedCurrencies, // Ensure currency filters are applied
         productName,
         productGroupIDs,
         null,
@@ -120,14 +151,15 @@ const ProductsTable = ({
       );
 
       if (requestId === latestRequestId.current) {
-        let data = response.data ? response.data : [];
-        // console.log(
-        //   'Request made an accepted, setProducts(data):',
-        //   JSON.stringify(data),
-        // );
+        let data = response.data ?? []; // Ensure we have an array
+
+        // Sort products by group and then by price
+        let sortedProducts =
+          data.length > 0 ? sortProductsByPrice(data, 'asc') : data;
+
+        setProducts(sortedProducts);
         setCurrentPage(response.meta.current_page);
         setTotalPages(response.meta.last_page);
-        setProducts(data);
       }
     } catch (error) {
       if (axios.isCancel(error)) {
@@ -147,32 +179,52 @@ const ProductsTable = ({
   }, [regionIDs, currencies, productGroupIDs]);
 
   useEffect(() => {
-    // Extracting the checked options' ids from allFilters
-    console.log(
-      'useEffect in ProductsTable for allFilters, currentPage, searchParams',
+    // Get each filter object from allFilters
+    const productGroupFilter = allFilters.find(
+      (filter: any) => filter.id === 'Product Group',
     );
-    const newRegionIDs = allFilters
-      .find((filter: any) => filter.id === 'Activation Region')
-      ?.options.filter((option: any) => option.checked)
-      .map((option: any) => option.value);
+    const regionFilter = allFilters.find(
+      (filter: any) => filter.id === 'Activation Region',
+    );
+    const currencyFilter = allFilters.find(
+      (filter: any) => filter.id === 'Denomination Currency',
+    );
 
-    const newCurrencies = allFilters
-      .find((filter: any) => filter.id === 'Denomination currency')
-      ?.options.filter((option: any) => option.checked)
-      .map((option: any) => option.value);
+    // Extract the active (checked) option values from each filter
+    const newProductGroupIDs =
+      productGroupFilter?.options
+        .filter((option: any) => option.checked)
+        .map((option: any) => option.value) || [];
+    const newRegionIDs =
+      regionFilter?.options
+        .filter((option: any) => option.checked)
+        .map((option: any) => option.value) || [];
+    const newCurrencies =
+      currencyFilter?.options
+        .filter((option: any) => option.checked)
+        .map((option: any) => option.value) || [];
 
-    const newProductGroupIDs = allFilters
-      .find((filter: any) => filter.id === 'Product Group')
-      ?.options.filter((option: any) => option.checked)
-      .map((option: any) => option.value);
+    // Update state with new filter IDs
+    setProductGroupIDs(newProductGroupIDs);
+    setRegionIDs(newRegionIDs);
+    setCurrencies(newCurrencies);
 
-    // Update state with the new arrays of ids
-    setRegionIDs(newRegionIDs || []);
-    setCurrencies(newCurrencies || []);
-    setProductGroupIDs(newProductGroupIDs || []);
+    // Determine if any filter is active
+    const areFiltersActive =
+      newProductGroupIDs.length > 0 ||
+      newRegionIDs.length > 0 ||
+      newCurrencies.length > 0;
 
+    // Optionally call your checkIfAnyFiltersActive() to update any parent state
     checkIfAnyFiltersActive();
-    fetchData();
+
+    // Only fetch data if at least one filter is active
+    if (areFiltersActive) {
+      fetchData();
+    } else {
+      // No filters active—stop loading and let Catalog render the grid view.
+      setLoading(false);
+    }
   }, [allFilters, currentPage]);
 
   return (
@@ -201,7 +253,10 @@ const ProductsTable = ({
                     Order placed on <time dateTime={'test'}>{'test'}</time>
                   </h3>
 
-                  <table className="mt-4 w-full text-gray-500 dark:bg-gray-900 sm:mt-6">
+                  <table
+                    id="dataTable"
+                    className="mt-4 w-full text-gray-500 dark:bg-gray-900 sm:mt-6"
+                  >
                     <caption className="sr-only">Products</caption>
                     <thead className="sr-only text-left text-sm text-gray-500 dark:bg-gray-900 sm:not-sr-only">
                       <tr>
@@ -269,7 +324,7 @@ const ProductsTable = ({
                               </div>
                               <div className="mt-1 sm:hidden">
                                 {product.price}
-                                {product.currency === 'USD' ? '$' : '€'}
+                                {product.currency}
                               </div>
                             </div>
                           </td>
@@ -278,11 +333,12 @@ const ProductsTable = ({
                           </td>
                           <td className="hidden py-4  pr-8 dark:text-gray-300 sm:table-cell  md:py-6">
                             {product.price}
-                            {product.currency === 'USD' ? '$' : '€'}
+                            {product.currency}
                           </td>
 
                           <td className=" py-4   sm:table-cell sm:pr-8  md:py-6">
                             <input
+                              disabled={!product.isEnabled}
                               type="number"
                               id={`quantity-${product.id}`}
                               name={`quantity-${product.id}`}

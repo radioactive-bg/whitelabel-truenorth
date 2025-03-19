@@ -59,7 +59,7 @@ export default function FirstTimeLoginQRCode({
           <p>Scan the QR Code to enable 2FA on your device.</p>
 
           <button
-            className="mt-4 rounded-md bg-[#50C8ED] px-4 py-2 text-white"
+            className="mt-10 flex w-full justify-center rounded-md bg-black px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-black/70 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
             onClick={onQRCodeScanned}
           >
             Proceed to OTP Verification

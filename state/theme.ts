@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
 
 type ThemeState = {
   theme: string; // "light" or "dark"
@@ -6,19 +7,19 @@ type ThemeState = {
   setTheme: (theme: string) => void;
 };
 
-export const useThemeStore = create<ThemeState>((set) => ({
-  theme:
-    typeof window !== 'undefined'
-      ? localStorage.getItem('theme') || 'light'
-      : 'light',
-  toggleTheme: () =>
-    set((state) => {
-      const newTheme = state.theme === 'light' ? 'dark' : 'light';
-      localStorage.setItem('theme', newTheme);
-      return { theme: newTheme };
+export const useThemeStore = create<ThemeState>()(
+  persist(
+    (set) => ({
+      theme: 'light', // Default to light, will sync with localStorage
+      toggleTheme: () =>
+        set((state) => {
+          const newTheme = state.theme === 'light' ? 'dark' : 'light';
+          return { theme: newTheme };
+        }),
+      setTheme: (theme) => set({ theme }),
     }),
-  setTheme: (theme) => {
-    localStorage.setItem('theme', theme);
-    set({ theme });
-  },
-}));
+    {
+      name: 'theme-storage', // Key for localStorage
+    },
+  ),
+);

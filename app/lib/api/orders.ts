@@ -113,10 +113,14 @@ export async function fetchOrderById(ID: string) {
 }
 
 //works
-export async function downloadInvoice(ID: number) {
+export async function downloadInvoice(
+  ID: number,
+  invoiceFormat: string,
+  onlyFirstPage: boolean,
+) {
   const params = {
-    invoiceFormat: 'pdf',
-    onlyFirstPage: false,
+    invoiceFormat: invoiceFormat,
+    onlyFirstPage: onlyFirstPage === true ? 1 : 0,
   };
 
   try {
@@ -135,12 +139,12 @@ export async function downloadInvoice(ID: number) {
     return response.data;
   } catch (error) {
     console.error('Fetch Error:', error);
-    throw new Error('Failed to fetch invoice by ID.');
+    throw new Error('Failed to download invoice by ID.');
   }
 }
 
 //works
-export async function getInvoice(ID: number) {
+export async function getInvoiceCards(ID: string) {
   try {
     const response = await axios.get(
       `${API_URL}/distributor-crm/v1/orders/${ID}/cards`,
@@ -152,7 +156,7 @@ export async function getInvoice(ID: number) {
       },
     );
 
-    return response.data.data;
+    return response.data;
   } catch (error) {
     if (axios.isAxiosError(error)) {
       console.error('Axios error response data:', error.response?.data);
@@ -161,7 +165,7 @@ export async function getInvoice(ID: number) {
     } else {
       console.error('Unexpected error:', error);
     }
-    throw new Error('Failed to fetch invoice by ID.');
+    throw new Error('Failed to fetch Invoice Cards by ID.');
   }
 }
 
@@ -171,13 +175,11 @@ export async function createOrder(products: any[], vat: number | null) {
     vat: vat,
   };
   console.log('requestBody in createOrder :', JSON.stringify(requestBody));
-
   const token = localStorage.getItem('access_token');
 
   if (!token) {
     throw new Error('No access token found');
   }
-
   console.log('requestBody in createOrder :', requestBody);
 
   try {
@@ -191,23 +193,23 @@ export async function createOrder(products: any[], vat: number | null) {
         },
       },
     );
-
     console.log('Axios response.data.data from createOrder:', response.data);
 
     return response.data;
-  } catch (error) {
+  } catch (error: any) {
     if (axios.isAxiosError(error)) {
+      const errorMessage = error.response?.data?.message || error.message;
       console.error('Axios error response data:', error.response?.data);
       console.error('Axios error response status:', error.response?.status);
       console.error('Axios error response headers:', error.response?.headers);
-      throw new Error('Failed to create order:', error.response?.data.message);
-      // return error.response?.data;
+      // Build a single error message string
+      throw new Error(`Failed to create order: ${errorMessage}`);
     } else {
-      console.error('Unexpected error:');
-      throw new Error('Failed to create order:');
+      console.error('Unexpected error:', error);
+      throw new Error(
+        `Failed to create order: ${error.message || 'Unknown error'}`,
+      );
     }
-    //console.error('Failed to create order:', error.message);
-    //throw new Error('Failed to create order:');
   }
 }
 

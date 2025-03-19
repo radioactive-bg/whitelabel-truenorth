@@ -11,7 +11,7 @@ export default function LogoWhite() {
         src="/HKS-Logo-White.svg"
         width={130}
         height={40}
-        alt="Screenshots of the dashboard project showing desktop version"
+        alt="HKS Logo"
         priority
       />
     </div>

@@ -2,6 +2,8 @@
 
 import { useEffect } from 'react';
 
+import { ChatBubbleLeftRightIcon } from '@heroicons/react/24/outline';
+
 import Image from 'next/image';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
@@ -110,15 +112,16 @@ export default function ContactPage() {
 
         {/* Right Column - Image and Contact Options */}
         <div className="flex flex-col items-center justify-center space-y-8 ">
-          <Image
+          {/* <Image
             src="/call-sign-with-message.png"
             alt="Contact illustration"
             width={352.14}
             height={320.91}
             className=""
-          />
+          /> */}
+          <ChatBubbleLeftRightIcon className="w-[200px]" />
 
-          <div className="w-full max-w-md rounded-lg bg-gray-50 p-6 dark:bg-gray-800">
+          <div className="w-full max-w-md rounded-lg bg-white p-6 dark:bg-gray-800">
             <h3 className="mb-4 text-xl font-semibold dark:text-gray-200">
               Contact Via
             </h3>

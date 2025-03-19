@@ -17,9 +17,14 @@ import { set } from 'date-fns';
 interface RedeemCardDialogProps {
   open: boolean;
   onClose: () => void;
+  fetchTransactions: () => void;
 }
 
-export function RedeemCardDialog({ open, onClose }: RedeemCardDialogProps) {
+export function RedeemCardDialog({
+  open,
+  onClose,
+  fetchTransactions,
+}: RedeemCardDialogProps) {
   const { wallets, selectedWallet, fetchWallets } = useWalletStore();
 
   const router = useRouter();
@@ -91,8 +96,9 @@ export function RedeemCardDialog({ open, onClose }: RedeemCardDialogProps) {
       // Fetch wallets and show success message
       fetchWallets();
       setTimeout(() => {
+        fetchTransactions();
         setIsSuccess(true);
-      }, 1000);
+      }, 500);
     } catch (error: Error | any) {
       console.error(
         'Error redeeming the card:',
@@ -104,9 +110,11 @@ export function RedeemCardDialog({ open, onClose }: RedeemCardDialogProps) {
 
   const handleClose = () => {
     onClose();
-    setIsSuccess(false);
-    setFormData({ giftCardNumber: '', cvvNumber: '' });
-    setErrorMessage('');
+    setTimeout(() => {
+      setIsSuccess(false);
+      setFormData({ giftCardNumber: '', cvvNumber: '' });
+      setErrorMessage('');
+    }, 500);
   };
 
   return (
@@ -116,7 +124,7 @@ export function RedeemCardDialog({ open, onClose }: RedeemCardDialogProps) {
       onClose={handleClose}
     >
       {/* Dialog content */}
-      <div className="relative w-full max-w-md rounded-lg bg-white p-6  dark:bg-gray-900">
+      <div className="relative w-full max-w-md rounded-lg bg-white py-4  dark:bg-gray-900">
         <CustomDialogTitle className="flex items-center justify-between text-black dark:text-white">
           <span className="text-xl font-semibold">Redeem a card</span>
           <button
