@@ -19,6 +19,8 @@ import { userStore } from '@/state/user';
 import { User } from '@/app/lib/types/user';
 import { authStore, Auth } from '@/state/auth';
 
+import { useWalletStore, Wallet } from '@/state/wallets';
+
 const OrderDetails = () => {
   const { id } = useParams();
   const [order, setOrder] = useState<any>(null);
@@ -30,6 +32,9 @@ const OrderDetails = () => {
     auth: Auth;
     initializeAuth: () => void;
   };
+
+  const { wallets, loadingWallets, error, fetchWallets, removeWallet } =
+    useWalletStore();
 
   const { user } = userStore() as { user: User };
   let permissionToDownloadCodes = user.acl.orders.list.special.downloadInvoice
@@ -67,6 +72,7 @@ const OrderDetails = () => {
       intervalId = setInterval(() => {
         // Do not set the loading indicator during polling if data is already present.
         fetchOrderDetails(id as string, false);
+        fetchWallets();
       }, 3000);
     }
     return () => {
@@ -203,7 +209,7 @@ const OrderDetails = () => {
       </div>
       <div className="mt-6">
         <dl className="grid grid-cols-1 sm:grid-cols-2">
-          <div className="border-t border-gray-100 px-4 py-6 sm:col-span-1 sm:px-0">
+          <div className="dark: border-t border-gray-100 px-4 py-6 dark:border-gray-400 sm:col-span-1 sm:px-0">
             <dt className="text-sm font-bold leading-6 text-gray-900 dark:text-white">
               Order Number
             </dt>
@@ -211,7 +217,7 @@ const OrderDetails = () => {
               {order.orderDetails.displayId}
             </dd>
           </div>
-          <div className="border-t border-gray-100 px-4 py-6 sm:col-span-1 sm:px-0">
+          <div className="border-t border-gray-100 px-4 py-6 dark:border-gray-400 sm:col-span-1 sm:px-0">
             <dt className="text-sm font-bold leading-6 text-gray-900 dark:text-white">
               Placed On
             </dt>
@@ -219,7 +225,7 @@ const OrderDetails = () => {
               {order.orderDetails.createdAt}
             </dd>
           </div>
-          <div className="border-t border-gray-100 px-4 py-6 sm:col-span-1 sm:px-0">
+          <div className="border-t border-gray-100  px-4 py-6 dark:border-gray-400 sm:col-span-1 sm:px-0">
             <dt className="text-sm font-bold leading-6 text-gray-900 dark:text-white">
               Amount
             </dt>
@@ -227,7 +233,7 @@ const OrderDetails = () => {
               {order.orderDetails.amountTotal}
             </dd>
           </div>
-          <div className="border-t border-gray-100 px-4 py-6 sm:col-span-1 sm:px-0">
+          <div className="border-t border-gray-100 px-4 py-6 dark:border-gray-400 sm:col-span-1 sm:px-0">
             <dt className="text-sm font-bold leading-6 text-gray-900 dark:text-white">
               Status
             </dt>
@@ -255,7 +261,7 @@ const OrderDetails = () => {
               )}
             </dd>
           </div>
-          <div className="border-t border-gray-100 px-4 py-6 sm:col-span-2 sm:px-0">
+          <div className="border-t border-gray-100 px-4 py-6 dark:border-gray-400 sm:col-span-2 sm:px-0">
             <dt className="text-sm font-bold leading-6 text-gray-900 dark:text-white">
               About
             </dt>
@@ -303,7 +309,7 @@ const OrderDetails = () => {
             </dd>
           </div>
 
-          <div className="border-t border-gray-100 px-4 py-6 sm:col-span-2 sm:px-0">
+          <div className="border-t border-gray-100 px-4 py-6 dark:border-gray-400 sm:col-span-2 sm:px-0">
             <dt className="text-sm font-bold leading-6 text-gray-900 dark:text-white">
               Card Download Log:
             </dt>
@@ -323,7 +329,7 @@ const OrderDetails = () => {
           {/* Attachments Section - Only visible if status is "Completed" */}
           {order.orderDetails.statusText === 'Completed' &&
             permissionToDownloadCodes && (
-              <div className="border-t border-gray-100 px-4 py-6 sm:col-span-2 sm:px-0">
+              <div className="border-t border-gray-100 px-4 py-6 dark:border-gray-400 sm:col-span-2 sm:px-0">
                 <div className="md:direction-row mt-6 flex flex-wrap gap-4 md:justify-end">
                   <button
                     onClick={() => DownloadPDF(order.orderDetails.id, true)}

@@ -20,6 +20,8 @@ import {
 import { userStore } from '@/state/user';
 import { User } from '@/app/lib/types/user';
 
+import { useWalletStore, Wallet } from '@/state/wallets';
+
 const OrderDetailsContent = () => {
   const searchParams = useSearchParams();
   const orderId = searchParams.get('orderId');
@@ -31,6 +33,9 @@ const OrderDetailsContent = () => {
 
   const [openCardsDialog, setOpenCardsDialog] = useState(false);
   const [orderCards, setOrderCards] = useState<any>(null);
+
+  const { wallets, loadingWallets, error, fetchWallets, removeWallet } =
+    useWalletStore();
 
   const { user } = userStore() as { user: User };
   let permissionToDownloadCodes = user.acl.orders.list.special.downloadInvoice
@@ -56,7 +61,12 @@ const OrderDetailsContent = () => {
     ) {
       intervalId = setInterval(() => {
         fetchOrderDetails(orderId as string);
+        fetchWallets();
       }, 3000); // Fetch order details every 3 seconds
+    }
+
+    if (order?.orderDetails?.statusText === 'Completed') {
+      fetchWallets();
     }
     return () => {
       if (intervalId) {
