@@ -17,45 +17,25 @@ import ProductsTable from '@/app/ui/dashboard/catalog/ProductsTable';
 
 import { CatalogSkeleton } from '@/app/ui/skeletons';
 
+import { userStore } from '@/state/user';
+import { User } from '@/app/lib/types/user';
+
 function classNames(...classes: any) {
   return classes.filter(Boolean).join(' ');
 }
 
 const Catalog = () => {
+  const { user } = userStore() as { user: User };
+  const permissionToViewFilters = user.acl.filters.list.crud.view
+    ? user.acl.orders.list.crud.view
+    : false;
+
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 
   // filter states
   const [allFilters, setAllFilters] = useState<any[] | null>(null);
 
-  // const [allFilters, setAllFilters] = useState<any[]>(() => {
-  //   if (typeof window !== 'undefined') {
-  //     const storedFilters = localStorage.getItem('catalogFilters');
-  //     const accessTokenExpires = localStorage.getItem('access_token_expires');
-  //     const currentTime = Math.floor(Date.now() / 1000); // Get current time in seconds
-
-  //     if (
-  //       storedFilters &&
-  //       accessTokenExpires &&
-  //       parseInt(accessTokenExpires) > currentTime
-  //     ) {
-  //       try {
-  //         console.log('returns stored filters');
-  //         return JSON.parse(storedFilters);
-  //       } catch (error) {
-  //         console.error(
-  //           'Error parsing catalogFilters from localStorage:',
-  //           error,
-  //         );
-  //         return filters; // Fallback to default filters if parsing fails
-  //       }
-  //     }
-  //   }
-
-  //   return filters; // Default filters for SSR
-  // });
-
-  //const [updatedAllFilters, setUpdatedAllFilters] = useState(filters);
   const [filtersActive, setFiltersActive] = useState(false);
 
   const router = useRouter();
@@ -370,20 +350,25 @@ const Catalog = () => {
                         <h3 className="sr-only">Categories</h3>
 
                         <div className="flex flex-col space-y-4 px-4 py-6">
-                          {allFilters?.map((filter) => (
-                            <FilterPopover
-                              key={filter.id}
-                              fullFilter={filter}
-                              setFullFilter={(updatedFilter: any) => {
-                                const newAllFilters = allFilters.map((f) =>
-                                  f.id === updatedFilter.id ? updatedFilter : f,
-                                );
-                                setAllFilters(newAllFilters);
-                              }}
-                              checkIfAnyFiltersActive={checkIfAnyFiltersActive}
-                              setFiltersActive={setFiltersActive}
-                            />
-                          ))}
+                          {permissionToViewFilters &&
+                            allFilters?.map((filter) => (
+                              <FilterPopover
+                                key={filter.id}
+                                fullFilter={filter}
+                                setFullFilter={(updatedFilter: any) => {
+                                  const newAllFilters = allFilters.map((f) =>
+                                    f.id === updatedFilter.id
+                                      ? updatedFilter
+                                      : f,
+                                  );
+                                  setAllFilters(newAllFilters);
+                                }}
+                                checkIfAnyFiltersActive={
+                                  checkIfAnyFiltersActive
+                                }
+                                setFiltersActive={setFiltersActive}
+                              />
+                            ))}
                         </div>
                       </div>
                     </Dialog.Panel>
@@ -395,20 +380,21 @@ const Catalog = () => {
             <div className=" hidden items-center justify-end border-b border-gray-300 pb-10 pt-10 dark:border-gray-500 lg:flex">
               <div className="flex hidden items-center lg:block">
                 <div className="flex items-center">
-                  {allFilters?.map((filter) => (
-                    <FilterPopover
-                      key={filter.id}
-                      fullFilter={filter}
-                      setFullFilter={(updatedFilter: any) => {
-                        const newAllFilters = allFilters.map((f) =>
-                          f.id === updatedFilter.id ? updatedFilter : f,
-                        );
-                        setAllFilters(newAllFilters);
-                      }}
-                      checkIfAnyFiltersActive={checkIfAnyFiltersActive}
-                      setFiltersActive={setFiltersActive}
-                    />
-                  ))}
+                  {permissionToViewFilters &&
+                    allFilters?.map((filter) => (
+                      <FilterPopover
+                        key={filter.id}
+                        fullFilter={filter}
+                        setFullFilter={(updatedFilter: any) => {
+                          const newAllFilters = allFilters.map((f) =>
+                            f.id === updatedFilter.id ? updatedFilter : f,
+                          );
+                          setAllFilters(newAllFilters);
+                        }}
+                        checkIfAnyFiltersActive={checkIfAnyFiltersActive}
+                        setFiltersActive={setFiltersActive}
+                      />
+                    ))}
                 </div>
               </div>
             </div>

@@ -15,6 +15,9 @@ import {
   DialogPanel,
   DialogTitle,
 } from '@headlessui/react';
+import { userStore } from '@/state/user';
+import { User } from '@/app/lib/types/user';
+import { authStore, Auth } from '@/state/auth';
 
 const OrderDetails = () => {
   const { id } = useParams();
@@ -23,6 +26,15 @@ const OrderDetails = () => {
 
   const { theme } = useThemeStore();
   const [themeKey, setThemeKey] = useState(0);
+  const { auth, initializeAuth } = authStore() as {
+    auth: Auth;
+    initializeAuth: () => void;
+  };
+
+  const { user } = userStore() as { user: User };
+  let permissionToDownloadCodes = user.acl.orders.list.special.downloadInvoice
+    ? user.acl.orders.list.special.downloadInvoice
+    : false;
 
   const [openCardsDialog, setOpenCardsDialog] = useState(false);
 
@@ -30,6 +42,13 @@ const OrderDetails = () => {
   useEffect(() => {
     setThemeKey((prev) => prev + 1); // Update state to trigger re-render
   }, [theme]);
+
+  // First, initialize auth if needed
+  useEffect(() => {
+    if (!auth.access_token) {
+      initializeAuth();
+    }
+  }, [auth.access_token, initializeAuth]);
 
   useEffect(() => {
     if (id) {
@@ -42,7 +61,8 @@ const OrderDetails = () => {
     let intervalId: NodeJS.Timeout | null = null;
     if (
       order?.orderDetails?.statusText === 'In process' ||
-      order?.orderDetails?.statusText === 'Waiting for cancel'
+      order?.orderDetails?.statusText === 'Waiting for cancel' ||
+      order?.orderDetails?.statusText === 'Waiting for completion'
     ) {
       intervalId = setInterval(() => {
         // Do not set the loading indicator during polling if data is already present.
@@ -61,21 +81,10 @@ const OrderDetails = () => {
       setLoading(true);
     }
     try {
-      const [orderResponse, cardsResponse] = await Promise.all([
-        fetchOrderById(orderId),
-        getInvoiceCards(orderId),
-      ]);
+      const orderResponse = await fetchOrderById(orderId);
 
-      console.log('Order details:', orderResponse.data);
+      console.log('Order details:', JSON.stringify(orderResponse.data));
       setOrder(orderResponse.data);
-
-      console.log('Invoice Cards details:', cardsResponse.data);
-      setOrderCards(cardsResponse.data);
-
-      // const orderResponse = await fetchOrderById(orderId);
-      // console.log('Order details:', orderResponse.data);
-      // setOrder(orderResponse.data);
-
       setLoading(false);
     } catch (error) {
       console.error('Error fetching order details:', error);
@@ -84,7 +93,15 @@ const OrderDetails = () => {
   };
 
   const showCards = async (orderId: number) => {
-    setOpenCardsDialog(true);
+    try {
+      const cardsResponse = await getInvoiceCards(String(orderId));
+      setOrderCards(cardsResponse.data);
+      //setOpenCardsDialog(true);
+    } catch (error) {
+      console.error('Error fetching invoice cards:', error);
+    } finally {
+      setOpenCardsDialog(true);
+    }
   };
 
   // Download functions (without shared caching)
@@ -234,12 +251,6 @@ const OrderDetails = () => {
                       ? `:   ${order.orderDetails.errorText}`
                       : ''}
                   </span>
-
-                  {/* {order.orderDetails.statusText === 'Cancelled' && (
-                    <span className="text-sm text-red-500">
-                      {order.orderDetails.errorText}
-                    </span>
-                  )} */}
                 </div>
               )}
             </dd>
@@ -294,7 +305,7 @@ const OrderDetails = () => {
 
           <div className="border-t border-gray-100 px-4 py-6 sm:col-span-2 sm:px-0">
             <dt className="text-sm font-bold leading-6 text-gray-900 dark:text-white">
-              Operator Login
+              Card Download Log:
             </dt>
             <dd className="mt-1 max-h-40 overflow-y-auto rounded-md text-sm leading-6 text-gray-700 dark:bg-gray-900 dark:text-gray-400 sm:mt-2">
               {order.orderInfo.clientDownloadInvoices.map(
@@ -310,37 +321,38 @@ const OrderDetails = () => {
           </div>
 
           {/* Attachments Section - Only visible if status is "Completed" */}
-          {order.orderDetails.statusText === 'Completed' && (
-            <div className="border-t border-gray-100 px-4 py-6 sm:col-span-2 sm:px-0">
-              <div className="md:direction-row mt-6 flex flex-wrap gap-4 md:justify-end">
-                <button
-                  onClick={() => DownloadPDF(order.orderDetails.id, true)}
-                  className="rounded-md bg-black px-3 py-2 text-[14px] text-white transition duration-150 hover:bg-black/70 hover:text-white active:text-white dark:bg-gray-700 dark:text-white dark:hover:bg-gray-900 dark:hover:text-gray-300 dark:active:bg-gray-600 dark:active:text-gray-200 md:text-[1rem]"
-                >
-                  Download Summary
-                </button>
-                <button
-                  onClick={() => showCards(order.orderDetails.id)}
-                  className="rounded-md bg-black px-3 py-2 text-[14px] text-white transition duration-150 hover:bg-black/70 hover:text-white active:text-white dark:bg-gray-700 dark:text-white dark:hover:bg-gray-900 dark:hover:text-gray-300 dark:active:bg-gray-600 dark:active:text-gray-200 md:text-[1rem]"
-                >
-                  Cards
-                </button>
+          {order.orderDetails.statusText === 'Completed' &&
+            permissionToDownloadCodes && (
+              <div className="border-t border-gray-100 px-4 py-6 sm:col-span-2 sm:px-0">
+                <div className="md:direction-row mt-6 flex flex-wrap gap-4 md:justify-end">
+                  <button
+                    onClick={() => DownloadPDF(order.orderDetails.id, true)}
+                    className="rounded-md bg-black px-3 py-2 text-[14px] text-white transition duration-150 hover:bg-black/70 hover:text-white active:text-white dark:bg-gray-700 dark:text-white dark:hover:bg-gray-900 dark:hover:text-gray-300 dark:active:bg-gray-600 dark:active:text-gray-200 md:text-[1rem]"
+                  >
+                    Download Summary
+                  </button>
+                  <button
+                    onClick={() => showCards(order.orderDetails.id)}
+                    className="rounded-md bg-black px-3 py-2 text-[14px] text-white transition duration-150 hover:bg-black/70 hover:text-white active:text-white dark:bg-gray-700 dark:text-white dark:hover:bg-gray-900 dark:hover:text-gray-300 dark:active:bg-gray-600 dark:active:text-gray-200 md:text-[1rem]"
+                  >
+                    Cards
+                  </button>
 
-                <button
-                  className=" rounded-md bg-black px-3 py-2 text-[14px] text-white transition duration-150 hover:bg-black/70 hover:text-white active:text-white dark:bg-gray-700 dark:text-white dark:hover:bg-gray-900 dark:hover:text-gray-300 dark:active:bg-gray-600 dark:active:text-gray-200  md:text-[1rem]"
-                  onClick={() => DownloadXLSX(order.orderDetails.id)}
-                >
-                  Download XLSX
-                </button>
-                <button
-                  className=" rounded-md bg-black px-3  py-2 text-[14px] text-white transition duration-150 hover:bg-black/70 hover:text-white active:text-white dark:bg-gray-700 dark:text-white dark:hover:bg-gray-900 dark:hover:text-gray-300 dark:active:bg-gray-600 dark:active:text-gray-200 md:text-[1rem]"
-                  onClick={() => DownloadCSV(order.orderDetails.id)}
-                >
-                  Download CSV
-                </button>
+                  <button
+                    className=" rounded-md bg-black px-3 py-2 text-[14px] text-white transition duration-150 hover:bg-black/70 hover:text-white active:text-white dark:bg-gray-700 dark:text-white dark:hover:bg-gray-900 dark:hover:text-gray-300 dark:active:bg-gray-600 dark:active:text-gray-200  md:text-[1rem]"
+                    onClick={() => DownloadXLSX(order.orderDetails.id)}
+                  >
+                    Download XLSX
+                  </button>
+                  <button
+                    className=" rounded-md bg-black px-3  py-2 text-[14px] text-white transition duration-150 hover:bg-black/70 hover:text-white active:text-white dark:bg-gray-700 dark:text-white dark:hover:bg-gray-900 dark:hover:text-gray-300 dark:active:bg-gray-600 dark:active:text-gray-200 md:text-[1rem]"
+                    onClick={() => DownloadCSV(order.orderDetails.id)}
+                  >
+                    Download CSV
+                  </button>
+                </div>
               </div>
-            </div>
-          )}
+            )}
         </dl>
       </div>
       <Dialog

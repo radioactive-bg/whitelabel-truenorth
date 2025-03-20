@@ -144,9 +144,12 @@ export default function TailwindSideNav({
         refresh_token: '',
         isLoggedIn: false,
       };
-      localStorage.setItem('access_token', '');
-      localStorage.setItem('refresh_token', '');
-      localStorage.setItem('access_token_expires', '');
+
+      localStorage.removeItem('access_token');
+      localStorage.removeItem('refresh_token');
+      localStorage.removeItem('access_token_expires');
+      localStorage.removeItem('username');
+      localStorage.removeItem('user');
       setAuth(authInfo);
       router.push('/');
     } catch (error) {

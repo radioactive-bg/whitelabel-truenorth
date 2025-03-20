@@ -34,13 +34,30 @@ export default function WalletPage() {
   // -------------------------
   // ACL Flags based on the user object
   // -------------------------
-  const canViewTopup = user.acl.wallet.list.crud.view; // TopUp history permission
-  const canViewPayout = user.acl.payoutTransaction.list.crud.view; // Payout history permission
 
+  const canViewTopup = user.acl.wallet.list.crud.view
+    ? user.acl.wallet.list.crud.view
+    : false; // TopUp history permission
+  const canViewPayoutTransactions = user.acl.payoutTransaction.list.crud.view
+    ? user.acl.payoutTransaction.list.crud.view
+    : false; // Payout history permission
+
+  const revealPayoutButton = user.acl.payoutMethod.list.crud.view
+    ? user.acl.payoutMethod.list.crud.view
+    : false;
+
+  const revealRedeemCardTopupOption = user.acl.wallet.list.special.redeemCards
+    ? user.acl.wallet.list.special.redeemCards
+    : false;
+
+  const revealRedeemInvoiceCodeTopupOption = user.acl.wallet.list.special
+    .redeemInvoiceCode
+    ? user.acl.wallet.list.special.redeemInvoiceCode
+    : false;
   // Allowed table types array based on ACL
   const allowedTableTypes: ('topup' | 'payout')[] = [];
   if (canViewTopup) allowedTableTypes.push('topup');
-  if (canViewPayout) allowedTableTypes.push('payout');
+  if (canViewPayoutTransactions) allowedTableTypes.push('payout');
 
   // -------------------------
   // Dialog states
@@ -223,7 +240,7 @@ export default function WalletPage() {
             </div>
           </div>
           <div>
-            {user.acl.payoutTransaction.list.crud.store === true && (
+            {revealPayoutButton === true && (
               <button
                 onClick={() => setIsPaymentDialogOpen(true)}
                 className="mr-4 mt-4 inline-flex items-center justify-between rounded-md bg-zinc-900 px-4 py-[11px] text-sm font-semibold text-white shadow-sm hover:bg-gray-800 dark:bg-white dark:text-[#000] dark:hover:bg-gray-100 md:py-2"
@@ -241,14 +258,21 @@ export default function WalletPage() {
                   anchor="bottom end"
                   className="dark:bg-gray-800 dark:text-white"
                 >
-                  <DropdownItem onClick={() => setIsRedeemCardDialogOpen(true)}>
-                    Redeem a card
-                  </DropdownItem>
-                  <DropdownItem
-                    onClick={() => setIsRedeemInvoiceDialogOpen(true)}
-                  >
-                    Redeem by invoice code
-                  </DropdownItem>
+                  {revealRedeemCardTopupOption && (
+                    <DropdownItem
+                      onClick={() => setIsRedeemCardDialogOpen(true)}
+                    >
+                      Redeem a card
+                    </DropdownItem>
+                  )}
+
+                  {revealRedeemInvoiceCodeTopupOption && (
+                    <DropdownItem
+                      onClick={() => setIsRedeemInvoiceDialogOpen(true)}
+                    >
+                      Redeem by invoice code
+                    </DropdownItem>
+                  )}
                 </DropdownMenu>
               </Dropdown>
             )}
@@ -275,7 +299,7 @@ export default function WalletPage() {
             >
               {canViewTopup && <option value="topup">TopUp History</option>}
 
-              {canViewPayout && (
+              {canViewPayoutTransactions && (
                 <option value="payout">Payout Transactions</option>
               )}
             </select>

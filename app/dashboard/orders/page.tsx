@@ -9,6 +9,8 @@ import { authStore, Auth } from '@/state/auth';
 import { useRouter } from 'next/navigation';
 import { getStatusStyles } from '@/app/lib/utils';
 import { useThemeStore } from '@/state/theme';
+import { userStore } from '@/state/user';
+import { User } from '@/app/lib/types/user';
 
 import Pagination from '../../ui/dashboard/pagination';
 
@@ -27,6 +29,11 @@ export default function Page({}: {}) {
     auth: Auth;
     initializeAuth: () => void;
   };
+  const { user } = userStore() as { user: User };
+  const permissionToViewOrders = user.acl.orders.list.crud.view
+    ? user.acl.orders.list.crud.view
+    : false;
+
   const { theme } = useThemeStore();
   // 🔹 Force re-render when theme changes
   const [themeKey, setThemeKey] = useState(0);
@@ -125,7 +132,7 @@ export default function Page({}: {}) {
           </div>
         </div>
 
-        {loading ? (
+        {loading && permissionToViewOrders ? (
           <InvoicesTableSkeleton />
         ) : (
           <>
