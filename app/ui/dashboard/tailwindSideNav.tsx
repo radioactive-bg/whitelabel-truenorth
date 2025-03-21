@@ -90,6 +90,8 @@ export default function TailwindSideNav({
     useWalletStore();
 
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [userInitial, setUserInitial] = useState(''); // Add state for user initial
+  const [userEmail, setUserEmail] = useState(''); // Add state for user email
   const { auth, setAuth } = authStore() as {
     auth: Auth;
     setAuth: (auth: Auth) => void;
@@ -104,14 +106,16 @@ export default function TailwindSideNav({
 
   useEffect(() => {
     const localValue = localStorage.getItem('username') || '';
-    //console.log('localValue in  page - dashboard: ', localValue);
-    //console.log('auth.access_token in  page - dashboard: ', auth.access_token);
     updateUserProperty('name', localValue);
     if (localValue === '' || !localValue) {
       router.push('/login');
       return;
     }
-  }, [auth.access_token]);
+    // Set the user initial after we have the name
+    setUserInitial(localValue[0]?.toLocaleUpperCase() || '');
+    // Set the user email from the user object
+    setUserEmail(user?.email || '');
+  }, [auth.access_token, user?.email]);
 
   useEffect(() => {
     fetchWallet();
@@ -533,19 +537,15 @@ export default function TailwindSideNav({
                   <Menu as="div" className="relative">
                     <Menu.Button className="-m-1.5 flex items-center p-1.5">
                       <span className="sr-only">Open user menu</span>
-                      {/* replace this image with the one of the user */}
-
                       <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-50 dark:text-white">
-                        <p className="text-blue-600">
-                          {user?.name?.[0]?.toLocaleUpperCase() || ''}
-                        </p>
+                        <p className="text-blue-600">{userInitial}</p>
                       </div>
                       <span className="hidden lg:flex lg:items-center">
                         <span
                           className="ml-4 text-sm font-semibold leading-6 text-gray-900 dark:text-white"
                           aria-hidden="true"
                         >
-                          {user?.name || ''}
+                          {userEmail}
                         </span>
                         <ChevronDownIcon
                           className="ml-2 h-5 w-5 text-gray-400"

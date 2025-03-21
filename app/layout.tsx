@@ -8,7 +8,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className="">
+    <html lang="en" className=" ">
       <body
         className={`${publicSans.className} min-h-[100vh] bg-gray-50 antialiased dark:bg-gray-900 `}
       >
