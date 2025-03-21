@@ -115,13 +115,17 @@ export default function TailwindSideNav({
   useEffect(() => {
     if (!isClient) return;
 
-    const localValue = localStorage.getItem('username') || '';
-    updateUserProperty('name', localValue);
-    if (localValue === '' || !localValue) {
-      router.push('/login');
-      return;
+    try {
+      const localValue = localStorage.getItem('username') || '';
+      updateUserProperty('name', localValue);
+      if (localValue === '' || !localValue) {
+        router.push('/login');
+        return;
+      }
+      setUserInitial(localValue[0]?.toLocaleUpperCase() || '');
+    } catch (error) {
+      console.error('Error initializing user data:', error);
     }
-    setUserInitial(localValue[0]?.toLocaleUpperCase() || '');
   }, [auth.access_token, isClient]);
 
   // Handle wallet fetching
