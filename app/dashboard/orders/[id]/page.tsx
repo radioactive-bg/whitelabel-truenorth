@@ -19,8 +19,6 @@ import { userStore } from '@/state/user';
 import { User } from '@/app/lib/types/user';
 import { authStore, Auth } from '@/state/auth';
 
-import { useWalletStore, Wallet } from '@/state/wallets';
-
 const OrderDetails = () => {
   const { id } = useParams();
   const [order, setOrder] = useState<any>(null);
@@ -32,9 +30,6 @@ const OrderDetails = () => {
     auth: Auth;
     initializeAuth: () => void;
   };
-
-  const { wallets, loadingWallets, error, fetchWallets, removeWallet } =
-    useWalletStore();
 
   const { user } = userStore() as { user: User };
   let permissionToDownloadCodes = user.acl.orders.list.special.downloadInvoice
@@ -72,7 +67,6 @@ const OrderDetails = () => {
       intervalId = setInterval(() => {
         // Do not set the loading indicator during polling if data is already present.
         fetchOrderDetails(id as string, false);
-        fetchWallets();
       }, 3000);
     }
     return () => {

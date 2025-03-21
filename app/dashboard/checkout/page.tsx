@@ -157,7 +157,7 @@ const Checkout = () => {
         router.push(`/dashboard/checkout/payment?orderId=${orderId}`);
 
         clearCart();
-        fetchWallets();
+        // fetchWallets();
       } catch (error: any) {
         console.log('Error during order submission:', error);
         setOrderError(error.message || 'Order creation failed.');

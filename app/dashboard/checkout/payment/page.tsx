@@ -27,7 +27,7 @@ const Payment = () => {
       //setLoading(false);
       router.push(`/dashboard/checkout/downloadCodes?orderId=${orderId}`);
       clearCart();
-      fetchWallets();
+      // fetchWallets();
     }, 3000);
   }, [orderId]);
 

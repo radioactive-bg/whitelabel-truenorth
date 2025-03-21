@@ -34,8 +34,7 @@ const OrderDetailsContent = () => {
   const [openCardsDialog, setOpenCardsDialog] = useState(false);
   const [orderCards, setOrderCards] = useState<any>(null);
 
-  const { wallets, loadingWallets, error, fetchWallets, removeWallet } =
-    useWalletStore();
+  const { fetchWallets } = useWalletStore();
 
   const { user } = userStore() as { user: User };
   let permissionToDownloadCodes = user.acl.orders.list.special.downloadInvoice
@@ -61,7 +60,7 @@ const OrderDetailsContent = () => {
     ) {
       intervalId = setInterval(() => {
         fetchOrderDetails(orderId as string);
-        fetchWallets();
+        //fetchWallets();
       }, 3000); // Fetch order details every 3 seconds
     }
 
