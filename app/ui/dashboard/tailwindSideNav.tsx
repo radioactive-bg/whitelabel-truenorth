@@ -90,8 +90,9 @@ export default function TailwindSideNav({
     useWalletStore();
 
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [userInitial, setUserInitial] = useState(''); // Add state for user initial
-  const [userEmail, setUserEmail] = useState(''); // Add state for user email
+  const [userInitial, setUserInitial] = useState('');
+  const [isClient, setIsClient] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const { auth, setAuth } = authStore() as {
     auth: Auth;
     setAuth: (auth: Auth) => void;
@@ -104,26 +105,37 @@ export default function TailwindSideNav({
   const pathname = usePathname(); // Get the current path
   let iContactUsActive = pathname === '/dashboard/contact-us';
 
+  // Initialize client-side state
   useEffect(() => {
+    setIsClient(true);
+    setIsLoading(false);
+  }, []);
+
+  // Handle user data initialization
+  useEffect(() => {
+    if (!isClient) return;
+
     const localValue = localStorage.getItem('username') || '';
     updateUserProperty('name', localValue);
     if (localValue === '' || !localValue) {
       router.push('/login');
       return;
     }
-    // Set the user initial after we have the name
     setUserInitial(localValue[0]?.toLocaleUpperCase() || '');
-    // Set the user email from the user object
-    setUserEmail(user?.email || '');
-  }, [auth.access_token, user?.email]);
+  }, [auth.access_token, isClient]);
 
+  // Handle wallet fetching
   useEffect(() => {
+    if (!isClient) return;
     fetchWallet();
-  }, []);
+  }, [isClient]);
 
   const fetchWallet = async () => {
-    let walletInfo = await fetchWallets();
-    //console.log('walletInfo:', JSON.stringify(walletInfo));
+    try {
+      await fetchWallets();
+    } catch (error) {
+      console.error('Error fetching wallet:', error);
+    }
   };
 
   const handleLogout = async (e: any) => {
@@ -538,14 +550,16 @@ export default function TailwindSideNav({
                     <Menu.Button className="-m-1.5 flex items-center p-1.5">
                       <span className="sr-only">Open user menu</span>
                       <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-50 dark:text-white">
-                        <p className="text-blue-600">{userInitial}</p>
+                        <p className="text-blue-600">
+                          {isLoading ? '' : userInitial}
+                        </p>
                       </div>
                       <span className="hidden lg:flex lg:items-center">
                         <span
                           className="ml-4 text-sm font-semibold leading-6 text-gray-900 dark:text-white"
                           aria-hidden="true"
                         >
-                          {userEmail}
+                          {isLoading ? '' : user?.name || ''}
                         </span>
                         <ChevronDownIcon
                           className="ml-2 h-5 w-5 text-gray-400"
