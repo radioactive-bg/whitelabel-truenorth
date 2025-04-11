@@ -60,7 +60,7 @@ describe('Orders Dashboard Tests', () => {
 
   const login = () => {
     // Visit the login page with basic auth
-    cy.visit('https://user:7mCbeCHaWarbCgJO0e@dev.b2b.hksglobal.group/login');
+    cy.visit('http://localhost:3000/login');
 
     // Wait for the login form to be visible
     cy.get(selectors.loginForm).should('be.visible');
@@ -85,9 +85,7 @@ describe('Orders Dashboard Tests', () => {
     login();
 
     // Visit the orders page and wait for it to load
-    cy.visit(
-      'https://user:7mCbeCHaWarbCgJO0e@dev.b2b.hksglobal.group/dashboard/orders',
-    );
+    cy.visit('http://localhost:3000/dashboard/orders');
 
     // Wait for the page to be fully loaded
     cy.get('body').should('be.visible');
