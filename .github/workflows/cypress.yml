@@ -82,13 +82,12 @@ jobs:
               echo "Application is up!"
               exit 0
             fi
-            echo "Waiting..."
+            echo "Waiting... ($i/30)"
             sleep 5
           done
           echo "Application did not start in time."
           exit 1
 
-      # Optionally cache Cypress binary, if you'd like
       - name: Cache Cypress Binary
         uses: actions/cache@v4
         with:
@@ -108,6 +107,14 @@ jobs:
           record: true
           ci-build-id: ${{ github.run_id }}
           tag: ${{ github.sha }}
+          config-file: cypress.config.ts
+          config: |
+            {
+              "baseUrl": "http://localhost:3000",
+              "env": {
+                "apiUrl": "http://localhost:3000"
+              }
+            }
 
       - name: Upload Cypress Screenshots
         uses: actions/upload-artifact@v4
@@ -123,6 +130,14 @@ jobs:
         with:
           name: cypress-videos
           path: cypress/videos
+          retention-days: 7
+
+      - name: Upload Test Results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: cypress-results
+          path: cypress/results
           retention-days: 7
 
   # ---------------------------------
@@ -144,7 +159,7 @@ jobs:
   cypress-summary:
     runs-on: ubuntu-24.04
     needs: cypress-run
-    if: always() # Run even if Cypress tests fail
+    if: always()
     outputs:
       test_status: ${{ steps.set-status.outputs.test_status }}
     steps:

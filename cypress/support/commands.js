@@ -45,11 +45,24 @@
 // });
 // cypress/support/commands.js
 
-// Custom login command that bypasses OTP verification
+// Enhanced login command with better error handling and local development support
 Cypress.Commands.add('login', (email, password) => {
-  // Use localhost:3000 for local development
   const apiUrl = Cypress.env('apiUrl') || 'http://localhost:3000';
+  const isLocal = apiUrl.includes('localhost');
 
+  // For local development, use direct login
+  if (isLocal) {
+    cy.visit('/login');
+    cy.get('input[name="email"]').type(email);
+    cy.get('input[name="password"]').type(password);
+    cy.get('button[type="submit"]').click();
+
+    // Wait for successful login
+    cy.url().should('include', '/dashboard');
+    return;
+  }
+
+  // For non-local environments, use API login
   cy.request({
     method: 'POST',
     url: `${apiUrl}/oauth/token`,
@@ -57,22 +70,19 @@ Cypress.Commands.add('login', (email, password) => {
       'Content-Type': 'application/x-www-form-urlencoded',
       'Cache-Control': 'no-cache',
     },
-    form: true, // This is important for proper form encoding
+    form: true,
     body: {
       grant_type: 'password',
       username: email,
       password: password,
     },
   }).then((response) => {
-    // Store tokens in localStorage
     localStorage.setItem('access_token', response.body.access_token);
     localStorage.setItem('refresh_token', response.body.refresh_token);
     localStorage.setItem(
       'access_token_expires',
       response.body.expires_in.toString(),
     );
-
-    // Return the response for chaining
     return response;
   });
 });
