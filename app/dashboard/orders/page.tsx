@@ -109,7 +109,7 @@ export default function Page({}: {}) {
         page={currentPage}
       />
 
-      <div className=" rounded-lg bg-white px-4 py-6 shadow-md dark:border dark:border-gray-700 dark:bg-gray-800">
+      <div className="rounded-lg bg-white px-4 py-6 shadow-md dark:border dark:border-gray-700 dark:bg-gray-800">
         <div className="px-4 sm:px-6 lg:px-8">
           <div className="sm:flex sm:items-center">
             <div className="sm:flex-auto">
@@ -132,125 +132,136 @@ export default function Page({}: {}) {
           </div>
         </div>
 
-        {loading && permissionToViewOrders ? (
-          <InvoicesTableSkeleton />
-        ) : (
-          <>
-            <div className="rounded-lg px-4 sm:px-6  lg:px-8">
-              <div className="mt-8 flow-root rounded-lg ">
-                <div className="-mx-4 -my-2 overflow-x-auto rounded-lg  sm:-mx-6 lg:-mx-8">
-                  <div className="rounded-lgalign-middle inline-block min-w-full ">
-                    <table
-                      key={themeKey}
-                      id="orderList"
-                      className="orderList min-w-full divide-y divide-gray-300 rounded-lg border shadow dark:divide-gray-700 "
-                    >
-                      <thead className="rounded-lg bg-gray-100 dark:bg-gray-700">
-                        <tr>
-                          <th
-                            scope="col"
-                            className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 dark:text-gray-200"
-                          >
-                            Order ID
-                          </th>
-                          <th
-                            scope="col"
-                            className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-200 sm:pl-0"
-                          >
-                            Operator
-                          </th>
-                          <th
-                            scope="col"
-                            className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 dark:text-gray-200"
-                          >
-                            Order Value
-                          </th>
-                          <th
-                            scope="col"
-                            className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 dark:text-gray-200"
-                          >
-                            Date of Order
-                          </th>
-                          <th
-                            scope="col"
-                            className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 dark:text-gray-200"
-                          >
-                            Status
-                          </th>
-                          <th
-                            scope="col"
-                            className="px-3 py-3.5 text-center text-sm font-semibold text-gray-900 dark:text-gray-200"
-                          ></th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y  divide-gray-200 rounded-lg bg-white dark:divide-gray-700 dark:bg-gray-900">
-                        {orders.map((order: any) => (
-                          <tr key={order.id} className="">
-                            <td className="whitespace-nowrap py-5 pr-3 text-sm text-gray-900 dark:text-gray-200 sm:pl-0">
-                              <div className="flex items-center">
-                                <div className="ml-4">
-                                  <div className="font-medium">
-                                    {order.displayId}
-                                  </div>
+        <div className="rounded-lg px-4 sm:px-6 lg:px-8">
+          <div className="mt-8 flow-root rounded-lg">
+            <div className="-mx-4 -my-2 overflow-x-auto rounded-lg sm:-mx-6 lg:-mx-8">
+              <div className="rounded-lgalign-middle inline-block min-w-full">
+                <table
+                  key={themeKey}
+                  id="orderList"
+                  className="orderList min-w-full divide-y divide-gray-300 rounded-lg border shadow dark:divide-gray-700"
+                >
+                  <thead className="rounded-lg bg-gray-100 dark:bg-gray-700">
+                    <tr>
+                      <th
+                        scope="col"
+                        className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 dark:text-gray-200"
+                      >
+                        Order ID
+                      </th>
+                      <th
+                        scope="col"
+                        className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-200 sm:pl-0"
+                      >
+                        Operator
+                      </th>
+                      <th
+                        scope="col"
+                        className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 dark:text-gray-200"
+                      >
+                        Order Value
+                      </th>
+                      <th
+                        scope="col"
+                        className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 dark:text-gray-200"
+                      >
+                        Date of Order
+                      </th>
+                      <th
+                        scope="col"
+                        className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 dark:text-gray-200"
+                      >
+                        Status
+                      </th>
+                      <th
+                        scope="col"
+                        className="px-3 py-3.5 text-center text-sm font-semibold text-gray-900 dark:text-gray-200"
+                      ></th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-200 rounded-lg bg-white dark:divide-gray-700 dark:bg-gray-900">
+                    {loading ? (
+                      <tr>
+                        <td colSpan={6} className="px-3 py-4 text-center">
+                          <div className="flex justify-center">
+                            <div className="h-4 w-4 animate-spin rounded-full border-2 border-gray-300 border-t-gray-900 dark:border-gray-600 dark:border-t-gray-300"></div>
+                          </div>
+                        </td>
+                      </tr>
+                    ) : orders.length > 0 ? (
+                      orders.map((order: any) => (
+                        <tr key={order.id} className="">
+                          <td className="whitespace-nowrap py-5 pr-3 text-sm text-gray-900 dark:text-gray-200 sm:pl-0">
+                            <div className="flex items-center">
+                              <div className="ml-4">
+                                <div className="font-medium">
+                                  {order.displayId}
                                 </div>
                               </div>
-                            </td>
-                            <td className="whitespace-nowrap px-3 py-5 text-sm text-gray-500 dark:text-gray-400">
-                              <div className="mt-1">{order.client}</div>
-                            </td>
-                            <td className="whitespace-nowrap px-3 py-5 text-sm text-gray-500 dark:text-gray-400">
-                              <div className="mt-1">
-                                {order.priceListAmount}
-                              </div>
-                            </td>
-                            <td className="whitespace-nowrap px-3 py-5 text-sm text-gray-500 dark:text-gray-400">
-                              <div className="text-gray-900 dark:text-gray-200">
-                                {order.title}
-                              </div>
-                              <div className="mt-1">{order.createdAt}</div>
-                            </td>
-                            <td
-                              id="statusText"
-                              className="whitespace-nowrap px-3 py-5 text-sm text-gray-500 dark:text-gray-400"
+                            </div>
+                          </td>
+                          <td className="whitespace-nowrap px-3 py-5 text-sm text-gray-500 dark:text-gray-400">
+                            <div className="mt-1">{order.client}</div>
+                          </td>
+                          <td className="whitespace-nowrap px-3 py-5 text-sm text-gray-500 dark:text-gray-400">
+                            <div className="mt-1">{order.priceListAmount}</div>
+                          </td>
+                          <td className="whitespace-nowrap px-3 py-5 text-sm text-gray-500 dark:text-gray-400">
+                            <div className="text-gray-900 dark:text-gray-200">
+                              {order.title}
+                            </div>
+                            <div className="mt-1">{order.createdAt}</div>
+                          </td>
+                          <td
+                            id="statusText"
+                            className="whitespace-nowrap px-3 py-5 text-sm text-gray-500 dark:text-gray-400"
+                          >
+                            <span
+                              className={`${
+                                getStatusStyles(order.status).bgColor
+                              } inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ${
+                                getStatusStyles(order.status).textColor
+                              } ring-1 ring-inset ringring-${
+                                getStatusStyles(order.status).ringColor
+                              }/20`}
                             >
-                              <span
-                                className={`${
-                                  getStatusStyles(order.status).bgColor
-                                } inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ${
-                                  getStatusStyles(order.status).textColor
-                                } ring-1 ring-inset ringring-${
-                                  getStatusStyles(order.status).ringColor
-                                }/20`}
-                              >
-                                {order.statusText}
-                              </span>
-                            </td>
-
-                            <td className="relative whitespace-nowrap py-5 pr-4 text-center text-sm font-bold sm:pr-0">
-                              <button
-                                onClick={() => viewOrder(order.id)}
-                                className="ml-4 rounded-md px-3 py-1 text-black transition duration-150 hover:bg-black hover:text-white active:bg-black active:text-black dark:text-white dark:hover:bg-gray-800 dark:hover:text-white"
-                              >
-                                View
-                                <span className="sr-only">, {order.name}</span>
-                              </button>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                    {/* Pagination */}
-                    <Pagination
-                      currentPage={currentPage}
-                      setCurrentPage={setCurrentPage}
-                      totalPages={totalPages}
-                    />
-                  </div>
-                </div>
+                              {order.statusText}
+                            </span>
+                          </td>
+                          <td className="relative whitespace-nowrap py-5 pr-4 text-center text-sm font-bold sm:pr-0">
+                            <button
+                              onClick={() => viewOrder(order.id)}
+                              className="ml-4 rounded-md px-3 py-1 text-black transition duration-150 hover:bg-black hover:text-white active:bg-black active:text-black dark:text-white dark:hover:bg-gray-800 dark:hover:text-white"
+                            >
+                              View
+                              <span className="sr-only">, {order.name}</span>
+                            </button>
+                          </td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr>
+                        <td
+                          colSpan={6}
+                          className="px-3 py-4 text-center text-gray-500 dark:text-gray-400"
+                        >
+                          No orders found
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+                {!loading && (
+                  <Pagination
+                    currentPage={currentPage}
+                    setCurrentPage={setCurrentPage}
+                    totalPages={totalPages}
+                  />
+                )}
               </div>
             </div>
-          </>
-        )}
+          </div>
+        </div>
       </div>
     </div>
   );
