@@ -140,7 +140,6 @@ describe('Orders Dashboard Tests', () => {
       if ($nextBtn.is(':visible') && !$nextBtn.prop('disabled')) {
         cy.wrap($nextBtn).click();
         cy.wait('@ordersApiCall');
-        cy.screenshot('pagination-next-page');
       }
     });
 
@@ -151,7 +150,6 @@ describe('Orders Dashboard Tests', () => {
         if ($firstPageBtn.is(':visible') && !$firstPageBtn.prop('disabled')) {
           cy.wrap($firstPageBtn).click();
           cy.wait('@ordersApiCall');
-          cy.screenshot('pagination-first-page');
         }
       });
   });
@@ -162,7 +160,6 @@ describe('Orders Dashboard Tests', () => {
 
     // Verify navigation to specific order page
     cy.url().should('match', /\/dashboard\/orders\/\d+/);
-    cy.screenshot('order-details-page');
   });
 
   it('should filter orders by Order ID', () => {
@@ -184,7 +181,6 @@ describe('Orders Dashboard Tests', () => {
         // Verify filtered results
         cy.get(selectors.tableRows).should('have.length', 1);
         cy.get(selectors.tableRows).first().should('contain', cleanOrderId);
-        cy.screenshot('filter-by-orderid');
 
         // Reset filters
         resetFilters();
@@ -213,8 +209,6 @@ describe('Orders Dashboard Tests', () => {
       });
     });
 
-    cy.screenshot('multiple-filters-applied');
-
     // Reset filters
     resetFilters();
   });
@@ -231,8 +225,6 @@ describe('Orders Dashboard Tests', () => {
               cy.get(selectors.statusFilter).select(statusText);
             });
         });
-
-        cy.screenshot('filter-by-status');
 
         // Reset filters
         resetFilters();
@@ -254,8 +246,6 @@ describe('Orders Dashboard Tests', () => {
               cy.get(selectors.productGroupSelect).select(productGroupText);
             });
         });
-
-        cy.screenshot('filter-by-product-group');
 
         // Reset filters
         resetFilters();
@@ -280,9 +270,6 @@ describe('Orders Dashboard Tests', () => {
     cy.get(selectors.tableRows).then(($rows) => {
       const actualCount = $rows.length;
       cy.log(`Table shows ${actualCount} rows after filtering`);
-
-      // Take screenshot regardless of the count
-      cy.screenshot('filter-by-items-per-page');
     });
 
     // Reset filters

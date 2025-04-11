@@ -22,7 +22,7 @@ jobs:
 
       - name: Build Docker Image
         run: |
-          docker build --build-arg NEXT_PUBLIC_API_URL=https://proxy.duegate.com/staging -t b2b-hksglobal-group .
+          docker build --build-arg NEXT_PUBLIC_API_URL=http://localhost:3000 -t b2b-hksglobal-group .
 
       - name: Save Docker Image as Artifact
         run: |
@@ -50,8 +50,8 @@ jobs:
           - cypress/e2e/catalog_order_workflow.cy.js
 
     env:
-      NEXT_PUBLIC_API_URL: 'https://proxy.duegate.com/staging'
-      CYPRESS_apiUrl: 'https://proxy.duegate.com/staging'
+      NEXT_PUBLIC_API_URL: 'http://localhost:3000'
+      CYPRESS_apiUrl: 'http://localhost:3000'
       CYPRESS_PROJECT_ID: ${{ secrets.CYPRESS_PROJECT_ID }}
       CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
       CYPRESS_TEST_EMAIL: ${{ secrets.CYPRESS_TEST_EMAIL }}

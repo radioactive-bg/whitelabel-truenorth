@@ -74,8 +74,8 @@ describe('Login Page Tests', () => {
   }
 
   const login = () => {
-    // Visit the login page with basic auth
-    cy.visit('https://user:7mCbeCHaWarbCgJO0e@dev.b2b.hksglobal.group/login');
+    // Visit the login page
+    cy.visit('http://localhost:3000/login');
 
     // Wait for the login form to be visible
     cy.get(selectors.loginForm).should('be.visible');
@@ -97,8 +97,8 @@ describe('Login Page Tests', () => {
     cy.clearLocalStorage();
     cy.clearCookies();
 
-    // Visit the login page with basic auth
-    cy.visit('https://user:7mCbeCHaWarbCgJO0e@dev.b2b.hksglobal.group/login');
+    // Visit the login page
+    cy.visit('http://localhost:3000/login');
 
     // Wait for the login form to be visible
     cy.get(selectors.loginForm).should('be.visible');

@@ -47,8 +47,8 @@
 
 // Custom login command that bypasses OTP verification
 Cypress.Commands.add('login', (email, password) => {
-  // Use an environment variable (fallback to the dev environment if not set)
-  const apiUrl = Cypress.env('apiUrl') || 'https://dev.b2b.hksglobal.group';
+  // Use localhost:3000 for local development
+  const apiUrl = Cypress.env('apiUrl') || 'http://localhost:3000';
 
   cy.request({
     method: 'POST',
@@ -81,7 +81,7 @@ Cypress.Commands.add('login', (email, password) => {
 Cypress.Commands.add('loginByApi', (email, password) => {
   cy.login(email, password).then(() => {
     // After setting the tokens, directly visit the dashboard
-    cy.visit('/dashboard');
+    cy.visit('http://localhost:3000/dashboard');
   });
 });
 
@@ -93,7 +93,7 @@ Cypress.Commands.add('setupAuthenticatedSession', () => {
     Cypress.env('TEST_USER_PASSWORD') || 'm.petkov2@radioactive.bg';
 
   // Set localStorage directly to simulate logged-in state
-  cy.visit('/login', {
+  cy.visit('http://localhost:3000/login', {
     onBeforeLoad: (window) => {
       window.localStorage.setItem('access_token', 'fake_token');
       window.localStorage.setItem('refresh_token', 'fake_refresh');
@@ -111,5 +111,5 @@ Cypress.Commands.add('setupAuthenticatedSession', () => {
   }).as('profileRequest');
 
   // Navigate to dashboard
-  cy.visit('/dashboard');
+  cy.visit('http://localhost:3000/dashboard');
 });

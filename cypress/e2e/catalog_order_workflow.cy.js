@@ -54,7 +54,7 @@ describe('Catalog Page Tests', () => {
 
   const login = () => {
     // Visit the login page with basic auth
-    cy.visit('https://user:7mCbeCHaWarbCgJO0e@dev.b2b.hksglobal.group/login');
+    cy.visit('http://localhost:3000/login');
 
     // Wait for the login form to be visible
     cy.get(selectors.loginForm).should('be.visible');
@@ -90,9 +90,7 @@ describe('Catalog Page Tests', () => {
     login();
 
     // Visit the catalog page and wait for it to load
-    cy.visit(
-      'https://user:7mCbeCHaWarbCgJO0e@dev.b2b.hksglobal.group/dashboard/catalog',
-    );
+    cy.visit('http://localhost:3000/dashboard/catalog');
 
     // Wait for the page to be fully loaded
     cy.get('body').should('be.visible');
@@ -107,7 +105,6 @@ describe('Catalog Page Tests', () => {
 
     // Wait for API calls to complete
     waitForApiCalls();
-    cy.screenshot('catalog-page-loaded');
 
     // Verify product grid content
     cy.get(selectors.productGrid).should('be.visible');
@@ -141,7 +138,6 @@ describe('Catalog Page Tests', () => {
 
     // Check URL contains the selected product group
     cy.url().should('include', 'ProductGroups=');
-    cy.screenshot('catalog-filtered-products');
   });
 
   it('should filter products using Product Group filter with multiple selections', () => {
@@ -168,7 +164,6 @@ describe('Catalog Page Tests', () => {
 
     // Check URL contains the filter parameter
     cy.url().should('include', 'ProductGroups=');
-    cy.screenshot('catalog-multiple-filters');
   });
 
   it('should filter products using Activation Region filter', () => {
@@ -188,7 +183,6 @@ describe('Catalog Page Tests', () => {
 
     // Verify product data
     verifyProductData();
-    cy.screenshot('catalog-region-filter');
   });
 
   it('should filter products using Denomination Currency filter', () => {
@@ -208,20 +202,24 @@ describe('Catalog Page Tests', () => {
 
     // Verify product data
     verifyProductData();
-    cy.screenshot('catalog-currency-filter');
   });
 
   it('should complete a full order workflow from catalog to checkout', () => {
     // Wait for API calls to complete
     waitForApiCalls();
-
+    // Wait for the product to be added to cart
+    cy.wait(500);
     // Click on the first product group
     cy.get(selectors.productButton).first().click();
+
+    cy.wait(500);
 
     // Wait for product data to load
     cy.get(selectors.productsTable).should('be.visible');
 
-    // Set quantity to 2 for the first product
+    // Wait for the product to be added to cart
+    cy.wait(500);
+
     cy.get('input[type="number"]')
       .first()
       .then(($input) => {
@@ -230,7 +228,8 @@ describe('Catalog Page Tests', () => {
         cy.wrap($input).type('{uparrow}');
         cy.wrap($input).trigger('change');
       });
-
+    // Wait for the product to be added to cart
+    cy.wait(500);
     // Click Add button for the first product
     cy.get('button').contains('Add').first().click();
 
@@ -257,8 +256,5 @@ describe('Catalog Page Tests', () => {
 
     // Wait for redirect to download codes page
     cy.url().should('include', '/dashboard/checkout/downloadCodes');
-
-    // Take a screenshot of the final state
-    cy.screenshot('order-completion');
   });
 });

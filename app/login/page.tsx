@@ -62,7 +62,10 @@ export default function LoginPage() {
 
         setAuth(authInfo);
         // Check if the current URL matches the target URL
-        if (window.location.origin === 'https://dev.b2b.hksglobal.group') {
+        if (
+          window.location.origin === 'https://dev.b2b.hksglobal.group' ||
+          'http://localhost:3000'
+        ) {
           console.log('URL matched. Redirecting to dashboard...');
           // setTimeout(() => {
           router.push('/dashboard'); // Redirect to the dashboard

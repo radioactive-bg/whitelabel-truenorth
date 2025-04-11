@@ -13,7 +13,7 @@ module.exports = defineConfig({
     // Environment variables for testing
     env: {
       // For dev environment testing (when needed)
-      devUrl: 'https://dev.b2b.hksglobal.group',
+      devUrl: 'http://localhost:3000',
       apiUrl: 'https://proxy.duegate.com/staging',
       basicAuth: {
         username: 'user',
@@ -22,8 +22,8 @@ module.exports = defineConfig({
     },
   },
 
-  viewportWidth: 1980,
-  viewportHeight: 1080,
+  viewportWidth: 1280,
+  viewportHeight: 720,
 
   component: {
     devServer: {
