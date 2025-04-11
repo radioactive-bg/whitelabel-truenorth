@@ -122,7 +122,7 @@ describe('Catalog Page Tests', () => {
   it('should filter products by clicking on product group', () => {
     // Wait for API calls to complete
     waitForApiCalls();
-
+    cy.wait(500);
     // Click on the first product group
     cy.get(selectors.productButton).first().click();
 
@@ -132,6 +132,7 @@ describe('Catalog Page Tests', () => {
     // Verify products are displayed
     cy.get(selectors.productsTable).should('be.visible');
     cy.get(selectors.tableRows).should('have.length.at.least', 1);
+    waitForApiCalls();
 
     // Verify product data
     verifyProductData();
