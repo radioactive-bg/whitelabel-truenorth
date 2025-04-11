@@ -104,6 +104,7 @@ describe('Orders Dashboard Tests', () => {
       'be.visible',
     );
 
+    cy.wait(2000);
     // Verify table headers
     cy.get(selectors.tableHeaders).should('have.length', 6);
     cy.get(selectors.tableHeaders).eq(0).should('contain', 'Order ID');
