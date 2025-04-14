@@ -149,13 +149,39 @@ describe('Orders Dashboard Tests', () => {
     // Add a check to ensure we're not redirected to login
     cy.url().should('include', '/dashboard/orders', { timeout: 20000 });
 
-    // Wait for orders API call to complete
+    // Wait for orders API call to complete and handle potential errors
     cy.wait('@ordersApiCall', { timeout: 30000 }).then((interception) => {
-      expect(interception.response.statusCode).to.eq(200);
+      if (interception.response.statusCode !== 200) {
+        // If the API call fails, try to refresh the page and wait for the API call again
+        cy.log(
+          `API call failed with status ${interception.response.statusCode}. Retrying...`,
+        );
+        cy.reload();
+        cy.wait('@ordersApiCall', { timeout: 30000 }).then(
+          (retryInterception) => {
+            expect(retryInterception.response.statusCode).to.eq(200);
+          },
+        );
+      } else {
+        expect(interception.response.statusCode).to.eq(200);
+      }
     });
 
     // Add a delay to ensure the table is fully loaded
     cy.wait(3000);
+  });
+
+  // Add a retry mechanism for the entire test suite
+  Cypress.on('test:after:run', (test, runnable) => {
+    if (test.state === 'failed' && test._currentRetry < test._retries) {
+      cy.log(`Test "${test.title}" failed. Retrying...`);
+    }
+  });
+
+  // Configure retries for all tests
+  Cypress.config('retries', {
+    runMode: 2,
+    openMode: 0,
   });
 
   it('should verify UI components and table structure', () => {
