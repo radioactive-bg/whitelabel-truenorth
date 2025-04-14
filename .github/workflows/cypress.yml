@@ -22,7 +22,7 @@ jobs:
 
       - name: Build Docker Image
         run: |
-          docker build --build-arg NEXT_PUBLIC_API_URL=http://localhost:3000 -t b2b-hksglobal-group .
+          docker build --build-arg NEXT_PUBLIC_API_URL=https://proxy.duegate.com/staging -t b2b-hksglobal-group .
 
       - name: Save Docker Image as Artifact
         run: |
@@ -109,14 +109,6 @@ jobs:
           ci-build-id: ${{ github.run_id }}
           tag: ${{ github.sha }}
           config-file: cypress.config.ts
-          config: |
-            {
-              "baseUrl": "http://localhost:3000",
-              "env": {
-                "apiUrl": "http://localhost:3000",
-                "CI": true
-              }
-            }
 
       - name: Upload Cypress Screenshots
         uses: actions/upload-artifact@v4

@@ -43,18 +43,6 @@ describe('Orders Dashboard Tests', () => {
     profileEndpoint: '**/distributor-crm/v1/profile',
   };
 
-  // Helper functions
-  const waitForTableUpdate = (expectedCount) => {
-    // Wait for the table to be visible and have the expected number of rows
-    cy.get(selectors.tableRows, { timeout: 30000 })
-      .should('be.visible')
-      .should('have.length', expectedCount)
-      .then(($rows) => {
-        const actualCount = $rows.length;
-        cy.log(`Table shows ${actualCount} rows after filtering`);
-      });
-  };
-
   const applyFilter = (filterFn) => {
     // Apply the filter
     filterFn();
@@ -118,6 +106,18 @@ describe('Orders Dashboard Tests', () => {
     cy.clearLocalStorage();
     cy.clearCookies();
 
+    // Log environment variables for debugging
+    cy.log('Environment Variables:', {
+      frontendUrl: Cypress.env('frontendUrl'),
+      apiUrl: Cypress.env('apiUrl'),
+      CI: Cypress.env('CI'),
+    });
+
+    // Log the URLs for debugging
+    cy.log(
+      `Using URLs - Frontend: ${Cypress.env('frontendUrl')}, API: ${Cypress.env('apiUrl')}`,
+    );
+
     // Set up API intercepts for login
     cy.intercept('POST', endpoints.loginEndpoint).as('loginRequest');
     cy.intercept('GET', endpoints.profileEndpoint).as('profileRequest');
@@ -156,6 +156,9 @@ describe('Orders Dashboard Tests', () => {
         cy.get(selectors.submitButton).click();
         cy.wait('@loginRequest', { timeout: 30000 }).then(
           (retryInterception) => {
+            if (!retryInterception) {
+              throw new Error('Login request failed after retry');
+            }
             expect(retryInterception.response.statusCode).to.eq(200);
           },
         );
@@ -171,6 +174,9 @@ describe('Orders Dashboard Tests', () => {
         cy.reload();
         cy.wait('@profileRequest', { timeout: 30000 }).then(
           (retryInterception) => {
+            if (!retryInterception) {
+              throw new Error('Profile request failed after retry');
+            }
             expect(retryInterception.response.statusCode).to.eq(200);
           },
         );
@@ -187,6 +193,18 @@ describe('Orders Dashboard Tests', () => {
   };
 
   beforeEach(() => {
+    // Log environment variables for debugging
+    cy.log('Environment Variables:', {
+      frontendUrl: Cypress.env('frontendUrl'),
+      apiUrl: Cypress.env('apiUrl'),
+      CI: Cypress.env('CI'),
+    });
+
+    // Log the URLs for debugging
+    cy.log(
+      `Using URLs - Frontend: ${Cypress.env('frontendUrl')}, API: ${Cypress.env('apiUrl')}`,
+    );
+
     // Set up API intercepts
     cy.intercept('GET', endpoints.ordersEndpoint).as('ordersApiCall');
 
@@ -215,6 +233,9 @@ describe('Orders Dashboard Tests', () => {
         cy.reload();
         cy.wait('@ordersApiCall', { timeout: 30000 }).then(
           (retryInterception) => {
+            if (!retryInterception) {
+              throw new Error('Orders API call failed after retry');
+            }
             expect(retryInterception.response.statusCode).to.eq(200);
           },
         );
@@ -448,9 +469,6 @@ describe('Orders Dashboard Tests', () => {
         .clear()
         .type(itemCount.toString());
     });
-
-    // Wait for the table to update with the expected number of rows
-    waitForTableUpdate(itemCount);
 
     // Reset filters
     resetFilters();

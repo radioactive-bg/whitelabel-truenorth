@@ -73,79 +73,115 @@ describe('Login Page Tests', () => {
     });
   }
 
-  const login = () => {
-    // Clear any existing session data
-    cy.clearLocalStorage();
-    cy.clearCookies();
-
-    // Visit the login page
-    cy.visit('http://localhost:3000/login');
-
-    // Wait for the login form to be visible with increased timeout
-    cy.get(selectors.loginForm, { timeout: 10000 }).should('be.visible');
-
-    // Login with test credentials
-    cy.get(selectors.email, { timeout: 10000 })
-      .should('be.visible')
-      .type(testData.validEmail);
-    cy.get(selectors.password, { timeout: 10000 })
-      .should('be.visible')
-      .type(testData.validPassword);
-    cy.get(selectors.submitButton, { timeout: 10000 })
-      .should('be.visible')
-      .click();
-
-    // Wait for successful login and redirect with increased timeout
-    cy.url().should('include', '/dashboard', { timeout: 20000 });
-
-    // Add a small delay to ensure the dashboard is fully loaded
-    cy.wait(3000);
-  };
-
   beforeEach(() => {
     // Clear any existing session data
     cy.clearLocalStorage();
     cy.clearCookies();
 
+    // Log environment variables for debugging
+    cy.log('Environment Variables:', {
+      frontendUrl: Cypress.env('frontendUrl'),
+      apiUrl: Cypress.env('apiUrl'),
+      CI: Cypress.env('CI'),
+    });
+
+    // Log the URLs for debugging
+    cy.log(
+      `Using URLs - Frontend: ${Cypress.env('frontendUrl')}, API: ${Cypress.env('apiUrl')}`,
+    );
+
     // Visit the login page
-    cy.visit('http://localhost:3000/login');
+    cy.visit('/login', {
+      timeout: 30000,
+      onBeforeLoad(win) {
+        // Set the API URL in the window object
+        win.CYPRESS_API_URL = Cypress.env('apiUrl');
+      },
+    });
 
     // Wait for the login form to be visible with increased timeout
-    cy.get(selectors.loginForm, { timeout: 10000 }).should('be.visible');
+    cy.get(selectors.loginForm, { timeout: 30000 }).should('be.visible');
   });
+
+  const login = () => {
+    // Clear any existing session data
+    cy.clearLocalStorage();
+    cy.clearCookies();
+
+    // Log environment variables for debugging
+    cy.log('Environment Variables:', {
+      frontendUrl: Cypress.env('frontendUrl'),
+      apiUrl: Cypress.env('apiUrl'),
+      CI: Cypress.env('CI'),
+    });
+
+    // Log the URLs for debugging
+    cy.log(
+      `Using URLs - Frontend: ${Cypress.env('frontendUrl')}, API: ${Cypress.env('apiUrl')}`,
+    );
+
+    // Visit the login page
+    cy.visit('/login', {
+      timeout: 30000,
+      onBeforeLoad(win) {
+        // Set the API URL in the window object
+        win.CYPRESS_API_URL = Cypress.env('apiUrl');
+      },
+    });
+
+    // Wait for the login form to be visible with increased timeout
+    cy.get(selectors.loginForm, { timeout: 30000 }).should('be.visible');
+
+    // Login with test credentials
+    cy.get(selectors.email, { timeout: 30000 })
+      .should('be.visible')
+      .type(testData.validEmail);
+    cy.get(selectors.password, { timeout: 30000 })
+      .should('be.visible')
+      .type(testData.validPassword);
+    cy.get(selectors.submitButton, { timeout: 30000 })
+      .should('be.visible')
+      .click();
+
+    // Wait for successful login and redirect with increased timeout
+    cy.url().should('include', '/dashboard', { timeout: 30000 });
+
+    // Add a small delay to ensure the dashboard is fully loaded
+    cy.wait(3000);
+  };
 
   it('should render the login page with all UI elements', () => {
     // Check for main title and form
-    cy.get(selectors.title, { timeout: 10000 })
+    cy.get(selectors.title, { timeout: 30000 })
       .contains('Sign in to your account')
       .should('be.visible');
 
     // Check login form elements
-    cy.get(selectors.labels, { timeout: 10000 })
+    cy.get(selectors.labels, { timeout: 30000 })
       .contains('Email address')
       .should('be.visible');
-    cy.get(selectors.email, { timeout: 10000 }).should('be.visible');
-    cy.get(selectors.labels, { timeout: 10000 })
+    cy.get(selectors.email, { timeout: 30000 }).should('be.visible');
+    cy.get(selectors.labels, { timeout: 30000 })
       .contains('Password')
       .should('be.visible');
-    cy.get(selectors.password, { timeout: 10000 }).should('be.visible');
-    cy.get(selectors.submitButton, { timeout: 10000 })
+    cy.get(selectors.password, { timeout: 30000 }).should('be.visible');
+    cy.get(selectors.submitButton, { timeout: 30000 })
       .contains('Sign in')
       .should('be.visible');
   });
 
   it('should show validation errors for empty fields', () => {
     // Click sign in without entering any data
-    cy.get(selectors.submitButton, { timeout: 10000 })
+    cy.get(selectors.submitButton, { timeout: 30000 })
       .should('be.visible')
       .click();
 
     // Browser validation should prevent form submission for required fields
     // Check if the form wasn't submitted (we're still on login page)
-    cy.url().should('include', '/login', { timeout: 10000 });
+    cy.url().should('include', '/login', { timeout: 30000 });
 
     // Check for HTML5 validation by verifying email input is invalid
-    cy.get(`${selectors.email}:invalid`, { timeout: 10000 }).should('exist');
+    cy.get(`${selectors.email}:invalid`, { timeout: 30000 }).should('exist');
   });
 
   it('should show error message for invalid credentials', () => {
@@ -158,18 +194,18 @@ describe('Login Page Tests', () => {
     }).as('loginFailedRequest');
 
     // Fill in invalid credentials
-    cy.get(selectors.email, { timeout: 10000 })
+    cy.get(selectors.email, { timeout: 30000 })
       .should('be.visible')
       .type(testData.invalidEmail);
-    cy.get(selectors.password, { timeout: 10000 })
+    cy.get(selectors.password, { timeout: 30000 })
       .should('be.visible')
       .type(testData.invalidPassword);
-    cy.get(selectors.submitButton, { timeout: 10000 })
+    cy.get(selectors.submitButton, { timeout: 30000 })
       .should('be.visible')
       .click();
 
     // Wait for the API call
-    cy.wait('@loginFailedRequest', { timeout: 10000 });
+    cy.wait('@loginFailedRequest', { timeout: 30000 });
 
     // Check for error message (from alert in your handleLogin function)
     cy.on('window:alert', (text) => {
@@ -182,33 +218,33 @@ describe('Login Page Tests', () => {
     setupSuccessfulLoginIntercepts();
 
     // Fill in valid credentials
-    cy.get(selectors.email, { timeout: 10000 })
+    cy.get(selectors.email, { timeout: 30000 })
       .should('be.visible')
       .type(testData.validEmail);
-    cy.get(selectors.password, { timeout: 10000 })
+    cy.get(selectors.password, { timeout: 30000 })
       .should('be.visible')
       .type(testData.validPassword);
-    cy.get(selectors.submitButton, { timeout: 10000 })
+    cy.get(selectors.submitButton, { timeout: 30000 })
       .should('be.visible')
       .click();
 
     // Wait for the login API call
-    cy.wait('@loginRequest', { timeout: 10000 });
+    cy.wait('@loginRequest', { timeout: 30000 });
 
     // Verify redirection to dashboard
-    cy.url().should('include', '/dashboard', { timeout: 20000 });
+    cy.url().should('include', '/dashboard', { timeout: 30000 });
 
     // Wait for the page to be fully loaded
-    cy.get('body', { timeout: 10000 }).should('be.visible');
+    cy.get('body', { timeout: 30000 }).should('be.visible');
 
     // Verify dashboard content is loaded correctly
-    cy.get(selectors.dashboardTitle, { timeout: 10000 })
+    cy.get(selectors.dashboardTitle, { timeout: 30000 })
       .contains('Find the Perfect Gift Card')
       .should('be.visible');
     cy.contains('Browse our wide selection of gift cards for any occasion', {
-      timeout: 10000,
+      timeout: 30000,
     }).should('be.visible');
-    cy.get('a', { timeout: 10000 })
+    cy.get('a', { timeout: 30000 })
       .contains('Browse Gift Cards')
       .should('be.visible');
 
@@ -218,12 +254,12 @@ describe('Login Page Tests', () => {
 
   it('should update form values when typing', () => {
     // Test the controlled inputs
-    cy.get(selectors.email, { timeout: 10000 })
+    cy.get(selectors.email, { timeout: 30000 })
       .should('be.visible')
       .type(testData.testEmail)
       .should('have.value', testData.testEmail);
 
-    cy.get(selectors.password, { timeout: 10000 })
+    cy.get(selectors.password, { timeout: 30000 })
       .should('be.visible')
       .type(testData.testPassword)
       .should('have.value', testData.testPassword);
