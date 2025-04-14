@@ -3,7 +3,10 @@ import { defineConfig } from 'cypress';
 export default defineConfig({
   projectId: 'ftbxmk', // Your Cypress project ID
   e2e: {
-    baseUrl: 'http://localhost:3000', // Local development
+    // Use staging URL in CI, localhost in development
+    baseUrl: process.env.CI
+      ? 'https://proxy.duegate.com/staging'
+      : 'http://localhost:3000',
     experimentalMemoryManagement: true, // Helps manage memory issues
     numTestsKeptInMemory: 0, // Reduces memory usage
     video: true, // Enable video recording for CI
@@ -18,7 +21,8 @@ export default defineConfig({
     env: {
       // For dev environment testing (when needed)
       devUrl: 'http://localhost:3000',
-      apiUrl: 'https://proxy.duegate.com/staging', // Always use staging URL in CI
+      // Always use staging URL for API calls
+      apiUrl: 'https://proxy.duegate.com/staging',
       basicAuth: {
         username: 'user',
         password: '7mCbeCHaWarbCgJO0e',

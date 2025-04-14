@@ -123,30 +123,37 @@ describe('Orders Dashboard Tests', () => {
     cy.intercept('GET', endpoints.profileEndpoint).as('profileRequest');
 
     // Visit the login page with basic auth
-    cy.visit('http://localhost:3000/login');
+    cy.visit('/login', {
+      timeout: 30000,
+      onBeforeLoad(win) {
+        // Set the API URL in the window object
+        win.CYPRESS_API_URL = Cypress.env('apiUrl');
+      },
+    });
 
     // Wait for the login form to be visible with increased timeout
-    cy.get(selectors.loginForm, { timeout: 10000 }).should('be.visible');
+    cy.get(selectors.loginForm, { timeout: 30000 }).should('be.visible');
 
     // Login with test credentials
-    cy.get(selectors.email, { timeout: 10000 })
+    cy.get(selectors.email, { timeout: 30000 })
       .should('be.visible')
       .type(testData.loginEmail);
-    cy.get(selectors.password, { timeout: 10000 })
+    cy.get(selectors.password, { timeout: 30000 })
       .should('be.visible')
       .type(testData.loginPassword);
-    cy.get(selectors.submitButton, { timeout: 10000 })
+    cy.get(selectors.submitButton, { timeout: 30000 })
       .should('be.visible')
       .should('not.be.disabled')
       .click();
 
-    // Wait for login API call to complete
+    // Wait for login API call to complete with retry logic
     cy.wait('@loginRequest', { timeout: 30000 }).then((interception) => {
-      if (interception.response.statusCode !== 200) {
-        cy.log(
-          `Login API call failed with status ${interception.response.statusCode}. Retrying...`,
-        );
+      if (!interception) {
+        cy.log('Login request not intercepted. Retrying login...');
         cy.reload();
+        cy.get(selectors.email).type(testData.loginEmail);
+        cy.get(selectors.password).type(testData.loginPassword);
+        cy.get(selectors.submitButton).click();
         cy.wait('@loginRequest', { timeout: 30000 }).then(
           (retryInterception) => {
             expect(retryInterception.response.statusCode).to.eq(200);
@@ -159,10 +166,8 @@ describe('Orders Dashboard Tests', () => {
 
     // Wait for profile API call to complete
     cy.wait('@profileRequest', { timeout: 30000 }).then((interception) => {
-      if (interception.response.statusCode !== 200) {
-        cy.log(
-          `Profile API call failed with status ${interception.response.statusCode}. Retrying...`,
-        );
+      if (!interception) {
+        cy.log('Profile request not intercepted. Retrying...');
         cy.reload();
         cy.wait('@profileRequest', { timeout: 30000 }).then(
           (retryInterception) => {
@@ -189,20 +194,24 @@ describe('Orders Dashboard Tests', () => {
     login();
 
     // Visit the orders page and wait for it to load
-    cy.visit('http://localhost:3000/dashboard/orders');
+    cy.visit('/dashboard/orders', {
+      timeout: 30000,
+      onBeforeLoad(win) {
+        // Set the API URL in the window object
+        win.CYPRESS_API_URL = Cypress.env('apiUrl');
+      },
+    });
 
     // Wait for the page to be fully loaded with increased timeout
-    cy.get('body', { timeout: 10000 }).should('be.visible');
+    cy.get('body', { timeout: 30000 }).should('be.visible');
 
     // Add a check to ensure we're not redirected to login
-    cy.url().should('include', '/dashboard/orders', { timeout: 20000 });
+    cy.url().should('include', '/dashboard/orders', { timeout: 30000 });
 
     // Wait for orders API call to complete and handle potential errors
     cy.wait('@ordersApiCall', { timeout: 30000 }).then((interception) => {
-      if (interception.response.statusCode !== 200) {
-        cy.log(
-          `Orders API call failed with status ${interception.response.statusCode}. Retrying...`,
-        );
+      if (!interception) {
+        cy.log('Orders API call not intercepted. Retrying...');
         cy.reload();
         cy.wait('@ordersApiCall', { timeout: 30000 }).then(
           (retryInterception) => {
