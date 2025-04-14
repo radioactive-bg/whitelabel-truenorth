@@ -186,10 +186,12 @@ describe('Orders Dashboard Tests', () => {
     });
 
     // Wait for successful login and redirect with increased timeout
-    cy.url().should('include', '/dashboard', { timeout: 30000 });
-
-    // Add a delay to ensure the dashboard is fully loaded
-    cy.wait(3000);
+    cy.url({ timeout: 30000 })
+      .should('include', '/dashboard')
+      .then(() => {
+        // Add a delay to ensure the dashboard is fully loaded
+        cy.wait(3000);
+      });
   };
 
   beforeEach(() => {
@@ -224,28 +226,30 @@ describe('Orders Dashboard Tests', () => {
     cy.get('body', { timeout: 30000 }).should('be.visible');
 
     // Add a check to ensure we're not redirected to login
-    cy.url().should('include', '/dashboard/orders', { timeout: 30000 });
+    cy.url({ timeout: 30000 })
+      .should('include', '/dashboard/orders')
+      .then(() => {
+        // Wait for orders API call to complete and handle potential errors
+        cy.wait('@ordersApiCall', { timeout: 30000 }).then((interception) => {
+          if (!interception) {
+            cy.log('Orders API call not intercepted. Retrying...');
+            cy.reload();
+            cy.wait('@ordersApiCall', { timeout: 30000 }).then(
+              (retryInterception) => {
+                if (!retryInterception) {
+                  throw new Error('Orders API call failed after retry');
+                }
+                expect(retryInterception.response.statusCode).to.eq(200);
+              },
+            );
+          } else {
+            expect(interception.response.statusCode).to.eq(200);
+          }
+        });
 
-    // Wait for orders API call to complete and handle potential errors
-    cy.wait('@ordersApiCall', { timeout: 30000 }).then((interception) => {
-      if (!interception) {
-        cy.log('Orders API call not intercepted. Retrying...');
-        cy.reload();
-        cy.wait('@ordersApiCall', { timeout: 30000 }).then(
-          (retryInterception) => {
-            if (!retryInterception) {
-              throw new Error('Orders API call failed after retry');
-            }
-            expect(retryInterception.response.statusCode).to.eq(200);
-          },
-        );
-      } else {
-        expect(interception.response.statusCode).to.eq(200);
-      }
-    });
-
-    // Add a delay to ensure the table is fully loaded
-    cy.wait(3000);
+        // Add a delay to ensure the table is fully loaded
+        cy.wait(3000);
+      });
   });
 
   // Add a retry mechanism for the entire test suite
