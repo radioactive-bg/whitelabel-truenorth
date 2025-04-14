@@ -47,7 +47,7 @@ jobs:
         spec:
           - cypress/e2e/login_page_workflow.cy.js
           - cypress/e2e/orders_filter_workflow.cy.js
-          - cypress/e2e/catalog_order_workflow.cy.js
+          # - cypress/e2e/catalog_order_workflow.cy.js  # Removed as test no longer exists
 
     env:
       NEXT_PUBLIC_API_URL: 'http://localhost:3000'
