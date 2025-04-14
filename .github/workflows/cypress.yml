@@ -56,6 +56,7 @@ jobs:
       CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
       CYPRESS_TEST_EMAIL: ${{ secrets.CYPRESS_TEST_EMAIL }}
       CYPRESS_TEST_PASSWORD: ${{ secrets.CYPRESS_TEST_PASSWORD }}
+      CI: true
 
     steps:
       - name: Checkout Repository
@@ -112,13 +113,14 @@ jobs:
             {
               "baseUrl": "http://localhost:3000",
               "env": {
-                "apiUrl": "http://localhost:3000"
+                "apiUrl": "http://localhost:3000",
+                "CI": true
               }
             }
 
       - name: Upload Cypress Screenshots
         uses: actions/upload-artifact@v4
-        if: failure()
+        if: always()
         with:
           name: cypress-screenshots
           path: cypress/screenshots
@@ -126,7 +128,7 @@ jobs:
 
       - name: Upload Cypress Videos
         uses: actions/upload-artifact@v4
-        if: failure()
+        if: always()
         with:
           name: cypress-videos
           path: cypress/videos

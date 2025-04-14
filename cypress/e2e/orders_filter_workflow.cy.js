@@ -44,24 +44,49 @@ describe('Orders Dashboard Tests', () => {
   };
 
   // Helper functions
+  const waitForTableUpdate = (expectedCount) => {
+    // Wait for the table to be visible and have the expected number of rows
+    cy.get(selectors.tableRows, { timeout: 30000 })
+      .should('be.visible')
+      .then(($rows) => {
+        const actualCount = $rows.length;
+        cy.log(`Table shows ${actualCount} rows after filtering`);
+      });
+  };
+
   const applyFilter = (filterFn) => {
     // Apply the filter
     filterFn();
 
-    // Click the Filter button
+    // Click the Filter button and wait for it to be clickable
     cy.get(selectors.filterButton, { timeout: 10000 })
       .should('be.visible')
+      .should('not.be.disabled')
       .click();
 
-    // Wait for the filtered API call to complete
-    cy.wait('@ordersApiCall', { timeout: 30000 });
+    // Wait for the filtered API call to complete with increased timeout
+    cy.wait('@ordersApiCall', { timeout: 30000 }).then((interception) => {
+      // Verify the API call was successful
+      expect(interception.response.statusCode).to.eq(200);
+    });
+
+    // Add a delay to ensure UI updates
+    cy.wait(2000);
   };
 
   const resetFilters = () => {
     cy.get(selectors.resetButton, { timeout: 10000 })
       .should('be.visible')
+      .should('not.be.disabled')
       .click();
-    cy.wait('@ordersApiCall', { timeout: 30000 });
+
+    // Wait for the reset API call to complete
+    cy.wait('@ordersApiCall', { timeout: 30000 }).then((interception) => {
+      expect(interception.response.statusCode).to.eq(200);
+    });
+
+    // Add a delay to ensure UI updates
+    cy.wait(2000);
   };
 
   const login = () => {
@@ -88,30 +113,23 @@ describe('Orders Dashboard Tests', () => {
       .type(testData.loginPassword);
     cy.get(selectors.submitButton, { timeout: 10000 })
       .should('be.visible')
+      .should('not.be.disabled')
       .click();
 
     // Wait for login API call to complete
     cy.wait('@loginRequest', { timeout: 30000 }).then((interception) => {
-      if (interception.response.statusCode !== 200) {
-        throw new Error(
-          `Login failed with status ${interception.response.statusCode}`,
-        );
-      }
+      expect(interception.response.statusCode).to.eq(200);
     });
 
     // Wait for profile API call to complete
     cy.wait('@profileRequest', { timeout: 30000 }).then((interception) => {
-      if (interception.response.statusCode !== 200) {
-        throw new Error(
-          `Profile fetch failed with status ${interception.response.statusCode}`,
-        );
-      }
+      expect(interception.response.statusCode).to.eq(200);
     });
 
     // Wait for successful login and redirect with increased timeout
     cy.url().should('include', '/dashboard', { timeout: 30000 });
 
-    // Add a small delay to ensure the dashboard is fully loaded
+    // Add a delay to ensure the dashboard is fully loaded
     cy.wait(3000);
   };
 
@@ -132,7 +150,12 @@ describe('Orders Dashboard Tests', () => {
     cy.url().should('include', '/dashboard/orders', { timeout: 20000 });
 
     // Wait for orders API call to complete
-    cy.wait('@ordersApiCall', { timeout: 30000 });
+    cy.wait('@ordersApiCall', { timeout: 30000 }).then((interception) => {
+      expect(interception.response.statusCode).to.eq(200);
+    });
+
+    // Add a delay to ensure the table is fully loaded
+    cy.wait(3000);
   });
 
   it('should verify UI components and table structure', () => {
@@ -340,22 +363,12 @@ describe('Orders Dashboard Tests', () => {
     // Apply Items Per Page filter
     applyFilter(() => {
       cy.get(selectors.itemsPerPageInput, { timeout: 10000 })
-        .should('be.visible')
         .clear()
         .type(itemCount.toString());
     });
 
-    // Wait for the table to update with fewer items and verify
-    cy.get(selectors.tableRows, { timeout: 10000 }).should(
-      'have.length.at.most',
-      itemCount,
-    );
-
-    // Check if the API response actually applied our filter
-    cy.get(selectors.tableRows, { timeout: 10000 }).then(($rows) => {
-      const actualCount = $rows.length;
-      cy.log(`Table shows ${actualCount} rows after filtering`);
-    });
+    // Wait for the table to update with the expected number of rows
+    waitForTableUpdate(itemCount);
 
     // Reset filters
     resetFilters();

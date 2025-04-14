@@ -1,6 +1,6 @@
-const { defineConfig } = require('cypress');
+import { defineConfig } from 'cypress';
 
-module.exports = defineConfig({
+export default defineConfig({
   projectId: 'ftbxmk', // Your Cypress project ID
   e2e: {
     baseUrl: 'http://localhost:3000', // Local development
@@ -8,17 +8,24 @@ module.exports = defineConfig({
     numTestsKeptInMemory: 0, // Reduces memory usage
     video: true, // Enable video recording for CI
     screenshotOnRunFailure: true, // Enable screenshots on failure
-    defaultCommandTimeout: 10000, // Increases command timeout
+    defaultCommandTimeout: process.env.CI ? 10000 : 4000,
+    pageLoadTimeout: process.env.CI ? 60000 : 30000,
+    requestTimeout: process.env.CI ? 5000 : 5000,
+    responseTimeout: process.env.CI ? 30000 : 30000,
+    trashAssetsBeforeRuns: true,
 
     // Environment variables for testing
     env: {
       // For dev environment testing (when needed)
       devUrl: 'http://localhost:3000',
-      apiUrl: 'https://proxy.duegate.com/staging',
+      apiUrl: process.env.CYPRESS_apiUrl || 'https://proxy.duegate.com/staging',
       basicAuth: {
         username: 'user',
         password: '7mCbeCHaWarbCgJO0e',
       },
+      CI: process.env.CI,
+      TEST_EMAIL: process.env.CYPRESS_TEST_EMAIL,
+      TEST_PASSWORD: process.env.CYPRESS_TEST_PASSWORD,
     },
   },
 
@@ -35,5 +42,17 @@ module.exports = defineConfig({
   retries: {
     runMode: 2,
     openMode: 0,
+  },
+
+  setupNodeEvents(on, config) {
+    // Add retry configuration for CI
+    if (process.env.CI) {
+      config.retries = {
+        runMode: 2,
+        openMode: 0,
+      };
+    }
+
+    return config;
   },
 });
