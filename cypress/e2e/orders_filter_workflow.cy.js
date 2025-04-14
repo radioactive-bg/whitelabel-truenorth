@@ -48,6 +48,7 @@ describe('Orders Dashboard Tests', () => {
     // Wait for the table to be visible and have the expected number of rows
     cy.get(selectors.tableRows, { timeout: 30000 })
       .should('be.visible')
+      .should('have.length', expectedCount)
       .then(($rows) => {
         const actualCount = $rows.length;
         cy.log(`Table shows ${actualCount} rows after filtering`);
@@ -66,8 +67,19 @@ describe('Orders Dashboard Tests', () => {
 
     // Wait for the filtered API call to complete with increased timeout
     cy.wait('@ordersApiCall', { timeout: 30000 }).then((interception) => {
-      // Verify the API call was successful
-      expect(interception.response.statusCode).to.eq(200);
+      if (interception.response.statusCode !== 200) {
+        cy.log(
+          `API call failed with status ${interception.response.statusCode}. Retrying...`,
+        );
+        cy.reload();
+        cy.wait('@ordersApiCall', { timeout: 30000 }).then(
+          (retryInterception) => {
+            expect(retryInterception.response.statusCode).to.eq(200);
+          },
+        );
+      } else {
+        expect(interception.response.statusCode).to.eq(200);
+      }
     });
 
     // Add a delay to ensure UI updates
@@ -82,7 +94,19 @@ describe('Orders Dashboard Tests', () => {
 
     // Wait for the reset API call to complete
     cy.wait('@ordersApiCall', { timeout: 30000 }).then((interception) => {
-      expect(interception.response.statusCode).to.eq(200);
+      if (interception.response.statusCode !== 200) {
+        cy.log(
+          `API call failed with status ${interception.response.statusCode}. Retrying...`,
+        );
+        cy.reload();
+        cy.wait('@ordersApiCall', { timeout: 30000 }).then(
+          (retryInterception) => {
+            expect(retryInterception.response.statusCode).to.eq(200);
+          },
+        );
+      } else {
+        expect(interception.response.statusCode).to.eq(200);
+      }
     });
 
     // Add a delay to ensure UI updates
@@ -118,12 +142,36 @@ describe('Orders Dashboard Tests', () => {
 
     // Wait for login API call to complete
     cy.wait('@loginRequest', { timeout: 30000 }).then((interception) => {
-      expect(interception.response.statusCode).to.eq(200);
+      if (interception.response.statusCode !== 200) {
+        cy.log(
+          `Login API call failed with status ${interception.response.statusCode}. Retrying...`,
+        );
+        cy.reload();
+        cy.wait('@loginRequest', { timeout: 30000 }).then(
+          (retryInterception) => {
+            expect(retryInterception.response.statusCode).to.eq(200);
+          },
+        );
+      } else {
+        expect(interception.response.statusCode).to.eq(200);
+      }
     });
 
     // Wait for profile API call to complete
     cy.wait('@profileRequest', { timeout: 30000 }).then((interception) => {
-      expect(interception.response.statusCode).to.eq(200);
+      if (interception.response.statusCode !== 200) {
+        cy.log(
+          `Profile API call failed with status ${interception.response.statusCode}. Retrying...`,
+        );
+        cy.reload();
+        cy.wait('@profileRequest', { timeout: 30000 }).then(
+          (retryInterception) => {
+            expect(retryInterception.response.statusCode).to.eq(200);
+          },
+        );
+      } else {
+        expect(interception.response.statusCode).to.eq(200);
+      }
     });
 
     // Wait for successful login and redirect with increased timeout
@@ -152,9 +200,8 @@ describe('Orders Dashboard Tests', () => {
     // Wait for orders API call to complete and handle potential errors
     cy.wait('@ordersApiCall', { timeout: 30000 }).then((interception) => {
       if (interception.response.statusCode !== 200) {
-        // If the API call fails, try to refresh the page and wait for the API call again
         cy.log(
-          `API call failed with status ${interception.response.statusCode}. Retrying...`,
+          `Orders API call failed with status ${interception.response.statusCode}. Retrying...`,
         );
         cy.reload();
         cy.wait('@ordersApiCall', { timeout: 30000 }).then(

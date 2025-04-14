@@ -18,7 +18,7 @@ export default defineConfig({
     env: {
       // For dev environment testing (when needed)
       devUrl: 'http://localhost:3000',
-      apiUrl: process.env.CYPRESS_apiUrl || 'https://proxy.duegate.com/staging',
+      apiUrl: 'https://proxy.duegate.com/staging', // Always use staging URL in CI
       basicAuth: {
         username: 'user',
         password: '7mCbeCHaWarbCgJO0e',
