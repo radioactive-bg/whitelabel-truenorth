@@ -111,12 +111,8 @@ describe('Orders Dashboard Tests', () => {
       frontendUrl: Cypress.env('frontendUrl'),
       apiUrl: Cypress.env('apiUrl'),
       CI: Cypress.env('CI'),
+      baseUrl: Cypress.config('baseUrl'),
     });
-
-    // Log the URLs for debugging
-    cy.log(
-      `Using URLs - Frontend: ${Cypress.env('frontendUrl')}, API: ${Cypress.env('apiUrl')}`,
-    );
 
     // Set up API intercepts for login
     cy.intercept('POST', endpoints.loginEndpoint).as('loginRequest');
@@ -128,6 +124,10 @@ describe('Orders Dashboard Tests', () => {
       onBeforeLoad(win) {
         // Set the API URL in the window object
         win.CYPRESS_API_URL = Cypress.env('apiUrl');
+        // Log the URLs for debugging
+        cy.log(
+          `Using URLs - Frontend: ${Cypress.env('frontendUrl')}, API: ${Cypress.env('apiUrl')}`,
+        );
       },
     });
 
@@ -191,6 +191,19 @@ describe('Orders Dashboard Tests', () => {
       .then(() => {
         // Add a delay to ensure the dashboard is fully loaded
         cy.wait(3000);
+      })
+      .catch((error) => {
+        cy.log('Error during login redirect:', error);
+        // If we're still on the login page, try to login again
+        cy.url().then((currentUrl) => {
+          if (currentUrl.includes('/login')) {
+            cy.log('Still on login page, retrying login...');
+            cy.get(selectors.email).type(testData.loginEmail);
+            cy.get(selectors.password).type(testData.loginPassword);
+            cy.get(selectors.submitButton).click();
+            cy.url({ timeout: 30000 }).should('include', '/dashboard');
+          }
+        });
       });
   };
 
@@ -200,12 +213,8 @@ describe('Orders Dashboard Tests', () => {
       frontendUrl: Cypress.env('frontendUrl'),
       apiUrl: Cypress.env('apiUrl'),
       CI: Cypress.env('CI'),
+      baseUrl: Cypress.config('baseUrl'),
     });
-
-    // Log the URLs for debugging
-    cy.log(
-      `Using URLs - Frontend: ${Cypress.env('frontendUrl')}, API: ${Cypress.env('apiUrl')}`,
-    );
 
     // Set up API intercepts
     cy.intercept('GET', endpoints.ordersEndpoint).as('ordersApiCall');

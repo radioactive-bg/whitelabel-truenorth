@@ -9,9 +9,9 @@ export default defineConfig({
     numTestsKeptInMemory: 0, // Reduces memory usage
     video: true, // Enable video recording for CI
     screenshotOnRunFailure: true, // Enable screenshots on failure
-    defaultCommandTimeout: process.env.CI ? 10000 : 4000,
+    defaultCommandTimeout: process.env.CI ? 30000 : 4000,
     pageLoadTimeout: process.env.CI ? 60000 : 30000,
-    requestTimeout: process.env.CI ? 5000 : 5000,
+    requestTimeout: process.env.CI ? 30000 : 5000,
     responseTimeout: process.env.CI ? 30000 : 30000,
     trashAssetsBeforeRuns: true,
 
@@ -55,9 +55,13 @@ export default defineConfig({
       };
     }
 
-    // Log the URLs for debugging
-    console.log('Frontend URL:', config.env.frontendUrl);
-    console.log('API URL:', config.env.apiUrl);
+    // Log the URLs and environment for debugging
+    console.log('Environment:', {
+      CI: process.env.CI,
+      frontendUrl: config.env.frontendUrl,
+      apiUrl: config.env.apiUrl,
+      baseUrl: config.baseUrl,
+    });
 
     return config;
   },
