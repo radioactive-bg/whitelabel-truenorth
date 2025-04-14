@@ -1,7 +1,7 @@
 const { defineConfig } = require('cypress');
 
 module.exports = defineConfig({
-  projectId: '979hmh', // Your Cypress project ID
+  projectId: 'ftbxmk', // Your Cypress project ID
   e2e: {
     baseUrl: 'http://localhost:3000', // Local development
     experimentalMemoryManagement: true, // Helps manage memory issues
