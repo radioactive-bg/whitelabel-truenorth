@@ -39,6 +39,8 @@ describe('Orders Dashboard Tests', () => {
   // API endpoints
   const endpoints = {
     ordersEndpoint: '**/distributor-crm/v1/orders**',
+    loginEndpoint: '**/oauth/token',
+    profileEndpoint: '**/distributor-crm/v1/profile',
   };
 
   // Helper functions
@@ -67,6 +69,10 @@ describe('Orders Dashboard Tests', () => {
     cy.clearLocalStorage();
     cy.clearCookies();
 
+    // Set up API intercepts for login
+    cy.intercept('POST', endpoints.loginEndpoint).as('loginRequest');
+    cy.intercept('GET', endpoints.profileEndpoint).as('profileRequest');
+
     // Visit the login page with basic auth
     cy.visit('http://localhost:3000/login');
 
@@ -84,8 +90,26 @@ describe('Orders Dashboard Tests', () => {
       .should('be.visible')
       .click();
 
+    // Wait for login API call to complete
+    cy.wait('@loginRequest', { timeout: 30000 }).then((interception) => {
+      if (interception.response.statusCode !== 200) {
+        throw new Error(
+          `Login failed with status ${interception.response.statusCode}`,
+        );
+      }
+    });
+
+    // Wait for profile API call to complete
+    cy.wait('@profileRequest', { timeout: 30000 }).then((interception) => {
+      if (interception.response.statusCode !== 200) {
+        throw new Error(
+          `Profile fetch failed with status ${interception.response.statusCode}`,
+        );
+      }
+    });
+
     // Wait for successful login and redirect with increased timeout
-    cy.url().should('include', '/dashboard', { timeout: 20000 });
+    cy.url().should('include', '/dashboard', { timeout: 30000 });
 
     // Add a small delay to ensure the dashboard is fully loaded
     cy.wait(3000);

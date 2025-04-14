@@ -15,9 +15,19 @@ describe('Catalog Page Tests', () => {
     submitButton: 'button[type="submit"]',
   };
 
+  // API endpoints
+  const endpoints = {
+    loginEndpoint: '**/oauth/token',
+    profileEndpoint: '**/distributor-crm/v1/profile',
+    regionsEndpoint: '**/distributor-crm/v1/filters/regions',
+    currenciesEndpoint: '**/distributor-crm/v1/filters/currencies',
+    productGroupsEndpoint: '**/distributor-crm/v1/product-groups**',
+    productPreviewEndpoint: '**/distributor-crm/v1/price-list/preview**',
+  };
+
   // Common verification functions
   const verifyProductData = () => {
-    cy.get(selectors.tableRows)
+    cy.get(selectors.tableRows, { timeout: 10000 })
       .first()
       .should('be.visible')
       .within(() => {
@@ -28,7 +38,7 @@ describe('Catalog Page Tests', () => {
         cy.get('td')
           .contains(/In Stock|Sold Out/)
           .should('be.visible');
-        cy.contains('button', 'Add').should('exist');
+        cy.contains('button', 'Add').should('be.visible');
       });
   };
 
@@ -38,18 +48,32 @@ describe('Catalog Page Tests', () => {
     cy.wait(
       ['@regionsApiCall', '@currenciesApiCall', '@productGroupsApiCall'],
       { timeout },
-    );
+    ).then((interceptions) => {
+      interceptions.forEach((interception) => {
+        if (interception.response.statusCode !== 200) {
+          throw new Error(
+            `API call failed with status ${interception.response.statusCode}`,
+          );
+        }
+      });
+    });
   };
 
   const selectFilterOption = (filterIndex, optionIndex = 0) => {
     // Open the filter popover by index
-    cy.get(selectors.filterButtons).eq(filterIndex).click();
+    cy.get(selectors.filterButtons, { timeout: 10000 })
+      .eq(filterIndex)
+      .should('be.visible')
+      .click();
 
     // Wait for popover to open with increased timeout
     cy.get(selectors.popover, { timeout: 10000 }).should('be.visible');
 
     // Select the option by index
-    cy.get(selectors.checkboxes).eq(optionIndex).click();
+    cy.get(selectors.checkboxes, { timeout: 10000 })
+      .eq(optionIndex)
+      .should('be.visible')
+      .click();
 
     // Close the popover by clicking outside
     cy.get('body').click(0, 0);
@@ -60,6 +84,10 @@ describe('Catalog Page Tests', () => {
     cy.clearLocalStorage();
     cy.clearCookies();
 
+    // Set up API intercepts for login
+    cy.intercept('POST', endpoints.loginEndpoint).as('loginRequest');
+    cy.intercept('GET', endpoints.profileEndpoint).as('profileRequest');
+
     // Visit the login page
     cy.visit('http://localhost:3000/login');
 
@@ -67,12 +95,36 @@ describe('Catalog Page Tests', () => {
     cy.get(selectors.loginForm, { timeout: 10000 }).should('be.visible');
 
     // Login with test credentials
-    cy.get(selectors.emailInput).type(Cypress.env('TEST_EMAIL'));
-    cy.get(selectors.passwordInput).type(Cypress.env('TEST_PASSWORD'));
-    cy.get(selectors.submitButton).click();
+    cy.get(selectors.emailInput, { timeout: 10000 })
+      .should('be.visible')
+      .type(Cypress.env('TEST_EMAIL'));
+    cy.get(selectors.passwordInput, { timeout: 10000 })
+      .should('be.visible')
+      .type(Cypress.env('TEST_PASSWORD'));
+    cy.get(selectors.submitButton, { timeout: 10000 })
+      .should('be.visible')
+      .click();
+
+    // Wait for login API call to complete
+    cy.wait('@loginRequest', { timeout: 30000 }).then((interception) => {
+      if (interception.response.statusCode !== 200) {
+        throw new Error(
+          `Login failed with status ${interception.response.statusCode}`,
+        );
+      }
+    });
+
+    // Wait for profile API call to complete
+    cy.wait('@profileRequest', { timeout: 30000 }).then((interception) => {
+      if (interception.response.statusCode !== 200) {
+        throw new Error(
+          `Profile fetch failed with status ${interception.response.statusCode}`,
+        );
+      }
+    });
 
     // Wait for successful login and redirect with increased timeout
-    cy.url().should('include', '/dashboard', { timeout: 20000 });
+    cy.url().should('include', '/dashboard', { timeout: 30000 });
 
     // Add a small delay to ensure the dashboard is fully loaded
     cy.wait(3000);
@@ -80,16 +132,12 @@ describe('Catalog Page Tests', () => {
 
   beforeEach(() => {
     // Set up API intercepts
-    cy.intercept('GET', '**/distributor-crm/v1/filters/regions').as(
-      'regionsApiCall',
-    );
-    cy.intercept('GET', '**/distributor-crm/v1/filters/currencies').as(
-      'currenciesApiCall',
-    );
-    cy.intercept('GET', '**/distributor-crm/v1/product-groups**').as(
+    cy.intercept('GET', endpoints.regionsEndpoint).as('regionsApiCall');
+    cy.intercept('GET', endpoints.currenciesEndpoint).as('currenciesApiCall');
+    cy.intercept('GET', endpoints.productGroupsEndpoint).as(
       'productGroupsApiCall',
     );
-    cy.intercept('GET', '**/distributor-crm/v1/price-list/preview**').as(
+    cy.intercept('GET', endpoints.productPreviewEndpoint).as(
       'productPreviewCall',
     );
 
