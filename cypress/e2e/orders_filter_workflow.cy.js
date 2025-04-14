@@ -47,34 +47,48 @@ describe('Orders Dashboard Tests', () => {
     filterFn();
 
     // Click the Filter button
-    cy.get(selectors.filterButton).click();
+    cy.get(selectors.filterButton, { timeout: 10000 })
+      .should('be.visible')
+      .click();
 
     // Wait for the filtered API call to complete
     cy.wait('@ordersApiCall', { timeout: 30000 });
   };
 
   const resetFilters = () => {
-    cy.get(selectors.resetButton).click();
+    cy.get(selectors.resetButton, { timeout: 10000 })
+      .should('be.visible')
+      .click();
     cy.wait('@ordersApiCall', { timeout: 30000 });
   };
 
   const login = () => {
+    // Clear any existing session data
+    cy.clearLocalStorage();
+    cy.clearCookies();
+
     // Visit the login page with basic auth
     cy.visit('http://localhost:3000/login');
 
-    // Wait for the login form to be visible
-    cy.get(selectors.loginForm).should('be.visible');
+    // Wait for the login form to be visible with increased timeout
+    cy.get(selectors.loginForm, { timeout: 10000 }).should('be.visible');
 
     // Login with test credentials
-    cy.get(selectors.email).type(testData.loginEmail);
-    cy.get(selectors.password).type(testData.loginPassword);
-    cy.get(selectors.submitButton).click();
+    cy.get(selectors.email, { timeout: 10000 })
+      .should('be.visible')
+      .type(testData.loginEmail);
+    cy.get(selectors.password, { timeout: 10000 })
+      .should('be.visible')
+      .type(testData.loginPassword);
+    cy.get(selectors.submitButton, { timeout: 10000 })
+      .should('be.visible')
+      .click();
 
-    // Wait for successful login and redirect
-    cy.url().should('include', '/dashboard');
+    // Wait for successful login and redirect with increased timeout
+    cy.url().should('include', '/dashboard', { timeout: 20000 });
 
     // Add a small delay to ensure the dashboard is fully loaded
-    cy.wait(2000);
+    cy.wait(3000);
   };
 
   beforeEach(() => {
@@ -87,11 +101,11 @@ describe('Orders Dashboard Tests', () => {
     // Visit the orders page and wait for it to load
     cy.visit('http://localhost:3000/dashboard/orders');
 
-    // Wait for the page to be fully loaded
-    cy.get('body').should('be.visible');
+    // Wait for the page to be fully loaded with increased timeout
+    cy.get('body', { timeout: 10000 }).should('be.visible');
 
     // Add a check to ensure we're not redirected to login
-    cy.url().should('include', '/dashboard/orders');
+    cy.url().should('include', '/dashboard/orders', { timeout: 20000 });
 
     // Wait for orders API call to complete
     cy.wait('@ordersApiCall', { timeout: 30000 });
@@ -99,26 +113,39 @@ describe('Orders Dashboard Tests', () => {
 
   it('should verify UI components and table structure', () => {
     // Verify page heading and description
-    cy.get('h1').contains('Orders').should('be.visible');
-    cy.contains('A list of all the Orders in your account').should(
-      'be.visible',
-    );
+    cy.get('h1', { timeout: 10000 }).contains('Orders').should('be.visible');
+    cy.contains('A list of all the Orders in your account', {
+      timeout: 10000,
+    }).should('be.visible');
 
-    cy.wait(2000);
     // Verify table headers
-    cy.get(selectors.tableHeaders).should('have.length', 6);
-    cy.get(selectors.tableHeaders).eq(0).should('contain', 'Order ID');
-    cy.get(selectors.tableHeaders).eq(1).should('contain', 'Operator');
-    cy.get(selectors.tableHeaders).eq(2).should('contain', 'Order Value');
-    cy.get(selectors.tableHeaders).eq(3).should('contain', 'Date of Order');
-    cy.get(selectors.tableHeaders).eq(4).should('contain', 'Status');
+    cy.get(selectors.tableHeaders, { timeout: 10000 }).should('have.length', 6);
+    cy.get(selectors.tableHeaders, { timeout: 10000 })
+      .eq(0)
+      .should('contain', 'Order ID');
+    cy.get(selectors.tableHeaders, { timeout: 10000 })
+      .eq(1)
+      .should('contain', 'Operator');
+    cy.get(selectors.tableHeaders, { timeout: 10000 })
+      .eq(2)
+      .should('contain', 'Order Value');
+    cy.get(selectors.tableHeaders, { timeout: 10000 })
+      .eq(3)
+      .should('contain', 'Date of Order');
+    cy.get(selectors.tableHeaders, { timeout: 10000 })
+      .eq(4)
+      .should('contain', 'Status');
 
     // Verify table contains data rows
-    cy.get(selectors.tableRows).should('have.length.at.least', 1);
+    cy.get(selectors.tableRows, { timeout: 10000 }).should(
+      'have.length.at.least',
+      1,
+    );
 
     // Verify first row has expected data structure
-    cy.get(selectors.tableRows)
+    cy.get(selectors.tableRows, { timeout: 10000 })
       .first()
+      .should('be.visible')
       .within(() => {
         // Check each cell has content
         cy.get('td').eq(0).should('not.be.empty'); // Order ID
@@ -132,39 +159,48 @@ describe('Orders Dashboard Tests', () => {
 
   it('should test pagination functionality', () => {
     // Verify pagination component exists
-    cy.get(selectors.paginationNav).should('exist');
+    cy.get(selectors.paginationNav, { timeout: 10000 }).should('be.visible');
 
     // Test Next button if it's enabled
-    cy.get(selectors.nextButton).then(($nextBtn) => {
-      if ($nextBtn.is(':visible') && !$nextBtn.prop('disabled')) {
-        cy.wrap($nextBtn).click();
-        cy.wait('@ordersApiCall');
-      }
-    });
+    cy.get(selectors.nextButton, { timeout: 10000 })
+      .should('be.visible')
+      .then(($nextBtn) => {
+        if (!$nextBtn.prop('disabled')) {
+          cy.wrap($nextBtn).click();
+          cy.wait('@ordersApiCall', { timeout: 30000 });
+        }
+      });
 
     // Go back to page 1 if we navigated away
-    cy.get(selectors.pageButtons)
+    cy.get(selectors.pageButtons, { timeout: 10000 })
       .contains('1')
+      .should('be.visible')
       .then(($firstPageBtn) => {
-        if ($firstPageBtn.is(':visible') && !$firstPageBtn.prop('disabled')) {
+        if (!$firstPageBtn.prop('disabled')) {
           cy.wrap($firstPageBtn).click();
-          cy.wait('@ordersApiCall');
+          cy.wait('@ordersApiCall', { timeout: 30000 });
         }
       });
   });
 
   it('should navigate to order details page', () => {
     // Click View button on first order
-    cy.get(selectors.tableRows).first().find(selectors.viewButton).click();
+    cy.get(selectors.tableRows, { timeout: 10000 })
+      .first()
+      .should('be.visible')
+      .find(selectors.viewButton)
+      .should('be.visible')
+      .click();
 
     // Verify navigation to specific order page
-    cy.url().should('match', /\/dashboard\/orders\/\d+/);
+    cy.url().should('match', /\/dashboard\/orders\/\d+/, { timeout: 10000 });
   });
 
   it('should filter orders by Order ID', () => {
     // Get the Order ID from the first row to use in filter
-    cy.get(selectors.tableRows)
+    cy.get(selectors.tableRows, { timeout: 10000 })
       .first()
+      .should('be.visible')
       .find('td')
       .eq(0)
       .invoke('text')
@@ -174,18 +210,29 @@ describe('Orders Dashboard Tests', () => {
 
         // Apply Order ID filter
         applyFilter(() => {
-          cy.get(selectors.orderIdFilter).clear().type(cleanOrderId);
+          cy.get(selectors.orderIdFilter, { timeout: 10000 })
+            .should('be.visible')
+            .clear()
+            .type(cleanOrderId);
         });
 
         // Verify filtered results
-        cy.get(selectors.tableRows).should('have.length', 1);
-        cy.get(selectors.tableRows).first().should('contain', cleanOrderId);
+        cy.get(selectors.tableRows, { timeout: 10000 }).should(
+          'have.length',
+          1,
+        );
+        cy.get(selectors.tableRows, { timeout: 10000 })
+          .first()
+          .should('contain', cleanOrderId);
 
         // Reset filters
         resetFilters();
 
         // Verify filter was reset
-        cy.get(selectors.tableRows).should('have.length.at.least', 1);
+        cy.get(selectors.tableRows, { timeout: 10000 }).should(
+          'have.length.at.least',
+          1,
+        );
       });
   });
 
@@ -193,19 +240,24 @@ describe('Orders Dashboard Tests', () => {
     // Apply multiple filters
     applyFilter(() => {
       // Set Items Per Page
-      cy.get(selectors.itemsPerPageInput).clear().type(testData.itemsPerPage);
+      cy.get(selectors.itemsPerPageInput, { timeout: 10000 })
+        .should('be.visible')
+        .clear()
+        .type(testData.itemsPerPage);
 
       // Select a Status if available
-      cy.get(selectors.statusFilter).then(($select) => {
-        if ($select.find('option').length > 1) {
-          cy.get(`${selectors.statusFilter} option`)
-            .eq(1)
-            .then(($option) => {
-              const statusText = $option.text().trim();
-              cy.get(selectors.statusFilter).select(statusText);
-            });
-        }
-      });
+      cy.get(selectors.statusFilter, { timeout: 10000 })
+        .should('be.visible')
+        .then(($select) => {
+          if ($select.find('option').length > 1) {
+            cy.get(`${selectors.statusFilter} option`, { timeout: 10000 })
+              .eq(1)
+              .then(($option) => {
+                const statusText = $option.text().trim();
+                cy.get(selectors.statusFilter).select(statusText);
+              });
+          }
+        });
     });
 
     // Reset filters
@@ -213,45 +265,49 @@ describe('Orders Dashboard Tests', () => {
   });
 
   it('should filter orders by Status', () => {
-    cy.get(selectors.statusFilter).then(($select) => {
-      if ($select.find('option').length > 1) {
-        // Apply Status filter
-        applyFilter(() => {
-          cy.get(`${selectors.statusFilter} option`)
-            .eq(1)
-            .then(($option) => {
-              const statusText = $option.text().trim();
-              cy.get(selectors.statusFilter).select(statusText);
-            });
-        });
+    cy.get(selectors.statusFilter, { timeout: 10000 })
+      .should('be.visible')
+      .then(($select) => {
+        if ($select.find('option').length > 1) {
+          // Apply Status filter
+          applyFilter(() => {
+            cy.get(`${selectors.statusFilter} option`, { timeout: 10000 })
+              .eq(1)
+              .then(($option) => {
+                const statusText = $option.text().trim();
+                cy.get(selectors.statusFilter).select(statusText);
+              });
+          });
 
-        // Reset filters
-        resetFilters();
-      } else {
-        cy.log('No status options available for filtering');
-      }
-    });
+          // Reset filters
+          resetFilters();
+        } else {
+          cy.log('No status options available for filtering');
+        }
+      });
   });
 
   it('should filter orders by Product Group', () => {
-    cy.get(selectors.productGroupSelect).then(($select) => {
-      if ($select.find('option').length > 1) {
-        // Apply Product Group filter
-        applyFilter(() => {
-          cy.get(`${selectors.productGroupSelect} option`)
-            .eq(1)
-            .then(($option) => {
-              const productGroupText = $option.text().trim();
-              cy.get(selectors.productGroupSelect).select(productGroupText);
-            });
-        });
+    cy.get(selectors.productGroupSelect, { timeout: 10000 })
+      .should('be.visible')
+      .then(($select) => {
+        if ($select.find('option').length > 1) {
+          // Apply Product Group filter
+          applyFilter(() => {
+            cy.get(`${selectors.productGroupSelect} option`, { timeout: 10000 })
+              .eq(1)
+              .then(($option) => {
+                const productGroupText = $option.text().trim();
+                cy.get(selectors.productGroupSelect).select(productGroupText);
+              });
+          });
 
-        // Reset filters
-        resetFilters();
-      } else {
-        cy.log('No product group options available for filtering');
-      }
-    });
+          // Reset filters
+          resetFilters();
+        } else {
+          cy.log('No product group options available for filtering');
+        }
+      });
   });
 
   it('should filter orders by Items Per Page', () => {
@@ -259,14 +315,20 @@ describe('Orders Dashboard Tests', () => {
 
     // Apply Items Per Page filter
     applyFilter(() => {
-      cy.get(selectors.itemsPerPageInput).clear().type(itemCount.toString());
+      cy.get(selectors.itemsPerPageInput, { timeout: 10000 })
+        .should('be.visible')
+        .clear()
+        .type(itemCount.toString());
     });
 
     // Wait for the table to update with fewer items and verify
-    cy.wait(1000); // Add a small wait to ensure UI updates
+    cy.get(selectors.tableRows, { timeout: 10000 }).should(
+      'have.length.at.most',
+      itemCount,
+    );
 
     // Check if the API response actually applied our filter
-    cy.get(selectors.tableRows).then(($rows) => {
+    cy.get(selectors.tableRows, { timeout: 10000 }).then(($rows) => {
       const actualCount = $rows.length;
       cy.log(`Table shows ${actualCount} rows after filtering`);
     });

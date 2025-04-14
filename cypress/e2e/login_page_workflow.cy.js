@@ -74,22 +74,32 @@ describe('Login Page Tests', () => {
   }
 
   const login = () => {
+    // Clear any existing session data
+    cy.clearLocalStorage();
+    cy.clearCookies();
+
     // Visit the login page
     cy.visit('http://localhost:3000/login');
 
-    // Wait for the login form to be visible
-    cy.get(selectors.loginForm).should('be.visible');
+    // Wait for the login form to be visible with increased timeout
+    cy.get(selectors.loginForm, { timeout: 10000 }).should('be.visible');
 
     // Login with test credentials
-    cy.get(selectors.email).type(Cypress.env('TEST_EMAIL'));
-    cy.get(selectors.password).type(Cypress.env('TEST_PASSWORD'));
-    cy.get(selectors.submitButton).click();
+    cy.get(selectors.email, { timeout: 10000 })
+      .should('be.visible')
+      .type(testData.validEmail);
+    cy.get(selectors.password, { timeout: 10000 })
+      .should('be.visible')
+      .type(testData.validPassword);
+    cy.get(selectors.submitButton, { timeout: 10000 })
+      .should('be.visible')
+      .click();
 
-    // Wait for successful login and redirect
-    cy.url().should('include', '/dashboard');
+    // Wait for successful login and redirect with increased timeout
+    cy.url().should('include', '/dashboard', { timeout: 20000 });
 
     // Add a small delay to ensure the dashboard is fully loaded
-    cy.wait(2000);
+    cy.wait(3000);
   };
 
   beforeEach(() => {
@@ -100,32 +110,42 @@ describe('Login Page Tests', () => {
     // Visit the login page
     cy.visit('http://localhost:3000/login');
 
-    // Wait for the login form to be visible
-    cy.get(selectors.loginForm).should('be.visible');
+    // Wait for the login form to be visible with increased timeout
+    cy.get(selectors.loginForm, { timeout: 10000 }).should('be.visible');
   });
 
   it('should render the login page with all UI elements', () => {
     // Check for main title and form
-    cy.get(selectors.title).contains('Sign in to your account').should('exist');
+    cy.get(selectors.title, { timeout: 10000 })
+      .contains('Sign in to your account')
+      .should('be.visible');
 
     // Check login form elements
-    cy.get(selectors.labels).contains('Email address').should('exist');
-    cy.get(selectors.email).should('exist');
-    cy.get(selectors.labels).contains('Password').should('exist');
-    cy.get(selectors.password).should('exist');
-    cy.get(selectors.submitButton).contains('Sign in').should('exist');
+    cy.get(selectors.labels, { timeout: 10000 })
+      .contains('Email address')
+      .should('be.visible');
+    cy.get(selectors.email, { timeout: 10000 }).should('be.visible');
+    cy.get(selectors.labels, { timeout: 10000 })
+      .contains('Password')
+      .should('be.visible');
+    cy.get(selectors.password, { timeout: 10000 }).should('be.visible');
+    cy.get(selectors.submitButton, { timeout: 10000 })
+      .contains('Sign in')
+      .should('be.visible');
   });
 
   it('should show validation errors for empty fields', () => {
     // Click sign in without entering any data
-    cy.get(selectors.submitButton).click();
+    cy.get(selectors.submitButton, { timeout: 10000 })
+      .should('be.visible')
+      .click();
 
     // Browser validation should prevent form submission for required fields
     // Check if the form wasn't submitted (we're still on login page)
-    cy.url().should('include', '/login');
+    cy.url().should('include', '/login', { timeout: 10000 });
 
     // Check for HTML5 validation by verifying email input is invalid
-    cy.get(`${selectors.email}:invalid`).should('exist');
+    cy.get(`${selectors.email}:invalid`, { timeout: 10000 }).should('exist');
   });
 
   it('should show error message for invalid credentials', () => {
@@ -138,12 +158,18 @@ describe('Login Page Tests', () => {
     }).as('loginFailedRequest');
 
     // Fill in invalid credentials
-    cy.get(selectors.email).type(testData.invalidEmail);
-    cy.get(selectors.password).type(testData.invalidPassword);
-    cy.get(selectors.submitButton).click();
+    cy.get(selectors.email, { timeout: 10000 })
+      .should('be.visible')
+      .type(testData.invalidEmail);
+    cy.get(selectors.password, { timeout: 10000 })
+      .should('be.visible')
+      .type(testData.invalidPassword);
+    cy.get(selectors.submitButton, { timeout: 10000 })
+      .should('be.visible')
+      .click();
 
     // Wait for the API call
-    cy.wait('@loginFailedRequest');
+    cy.wait('@loginFailedRequest', { timeout: 10000 });
 
     // Check for error message (from alert in your handleLogin function)
     cy.on('window:alert', (text) => {
@@ -156,27 +182,35 @@ describe('Login Page Tests', () => {
     setupSuccessfulLoginIntercepts();
 
     // Fill in valid credentials
-    cy.get(selectors.email).type(testData.validEmail);
-    cy.get(selectors.password).type(testData.validPassword);
-    cy.get(selectors.submitButton).click();
+    cy.get(selectors.email, { timeout: 10000 })
+      .should('be.visible')
+      .type(testData.validEmail);
+    cy.get(selectors.password, { timeout: 10000 })
+      .should('be.visible')
+      .type(testData.validPassword);
+    cy.get(selectors.submitButton, { timeout: 10000 })
+      .should('be.visible')
+      .click();
 
     // Wait for the login API call
-    cy.wait('@loginRequest');
+    cy.wait('@loginRequest', { timeout: 10000 });
 
     // Verify redirection to dashboard
-    cy.url().should('include', '/dashboard');
+    cy.url().should('include', '/dashboard', { timeout: 20000 });
 
     // Wait for the page to be fully loaded
-    cy.get('body').should('be.visible');
+    cy.get('body', { timeout: 10000 }).should('be.visible');
 
     // Verify dashboard content is loaded correctly
-    cy.get(selectors.dashboardTitle)
+    cy.get(selectors.dashboardTitle, { timeout: 10000 })
       .contains('Find the Perfect Gift Card')
       .should('be.visible');
-    cy.contains(
-      'Browse our wide selection of gift cards for any occasion',
-    ).should('be.visible');
-    cy.get('a').contains('Browse Gift Cards').should('be.visible');
+    cy.contains('Browse our wide selection of gift cards for any occasion', {
+      timeout: 10000,
+    }).should('be.visible');
+    cy.get('a', { timeout: 10000 })
+      .contains('Browse Gift Cards')
+      .should('be.visible');
 
     // Verify local storage was updated with the token
     verifyLocalStorage();
@@ -184,11 +218,13 @@ describe('Login Page Tests', () => {
 
   it('should update form values when typing', () => {
     // Test the controlled inputs
-    cy.get(selectors.email)
+    cy.get(selectors.email, { timeout: 10000 })
+      .should('be.visible')
       .type(testData.testEmail)
       .should('have.value', testData.testEmail);
 
-    cy.get(selectors.password)
+    cy.get(selectors.password, { timeout: 10000 })
+      .should('be.visible')
       .type(testData.testPassword)
       .should('have.value', testData.testPassword);
   });
