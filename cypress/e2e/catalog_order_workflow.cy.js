@@ -53,8 +53,8 @@ describe('Catalog Page Tests', () => {
   };
 
   const login = () => {
-    // Visit the login page with basic auth
-    cy.visit('https://user:7mCbeCHaWarbCgJO0e@dev.b2b.hksglobal.group/login');
+    // Visit the login page
+    cy.visit('/login');
 
     // Wait for the login form to be visible
     cy.get(selectors.loginForm).should('be.visible');
@@ -90,9 +90,7 @@ describe('Catalog Page Tests', () => {
     login();
 
     // Visit the catalog page and wait for it to load
-    cy.visit(
-      'https://user:7mCbeCHaWarbCgJO0e@dev.b2b.hksglobal.group/dashboard/catalog',
-    );
+    cy.visit('/dashboard/catalog');
 
     // Wait for the page to be fully loaded
     cy.get('body').should('be.visible');
