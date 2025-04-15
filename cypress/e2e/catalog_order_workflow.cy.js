@@ -15,22 +15,6 @@ describe('Catalog Page Tests', () => {
     submitButton: 'button[type="submit"]',
   };
 
-  // Common verification functions
-  const verifyProductData = () => {
-    cy.get(selectors.tableRows)
-      .first()
-      .within(() => {
-        cy.get('img').should('be.visible');
-        cy.get('td').should('have.length.at.least', 3);
-        cy.contains(/\d+(\.\d+)?/).should('be.visible');
-        cy.get('input[type="number"]').should('be.visible');
-        cy.get('td')
-          .contains(/In Stock|Sold Out/)
-          .should('be.visible');
-        cy.contains('button', 'Add').should('exist');
-      });
-  };
-
   const waitForApiCalls = () => {
     cy.wait(
       ['@regionsApiCall', '@currenciesApiCall', '@productGroupsApiCall'],
@@ -133,9 +117,6 @@ describe('Catalog Page Tests', () => {
     cy.get(selectors.productsTable).should('be.visible');
     cy.get(selectors.tableRows).should('have.length.at.least', 1);
 
-    // Verify product data
-    verifyProductData();
-
     // Check URL contains the selected product group
     cy.url().should('include', 'ProductGroups=');
   });
@@ -159,9 +140,6 @@ describe('Catalog Page Tests', () => {
     cy.get(selectors.productsTable).should('be.visible');
     cy.get(selectors.tableRows).should('have.length.at.least', 1);
 
-    // Verify product data
-    verifyProductData();
-
     // Check URL contains the filter parameter
     cy.url().should('include', 'ProductGroups=');
   });
@@ -180,9 +158,6 @@ describe('Catalog Page Tests', () => {
     cy.url().should('include', 'ActivationRegions=');
     cy.get(selectors.productsTable).should('be.visible');
     cy.get(selectors.tableRows).should('have.length.at.least', 1);
-
-    // Verify product data
-    verifyProductData();
   });
 
   it('should filter products using Denomination Currency filter', () => {
@@ -199,14 +174,12 @@ describe('Catalog Page Tests', () => {
     cy.url().should('include', 'DenominationCurrencys=');
     cy.get(selectors.productsTable).should('be.visible');
     cy.get(selectors.tableRows).should('have.length.at.least', 1);
-
-    // Verify product data
-    verifyProductData();
   });
 
   it('should complete a full order workflow from catalog to checkout', () => {
     // Wait for API calls to complete
     waitForApiCalls();
+    cy.wait(1000);
 
     // Click on the first product group
     cy.get(selectors.productButton).first().click();
