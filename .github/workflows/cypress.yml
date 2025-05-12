@@ -22,18 +22,18 @@ jobs:
 
       - name: Build Docker Image
         run: |
-          docker build --build-arg NEXT_PUBLIC_API_URL=https://proxy.duegate.com/staging -t b2b-hksglobal-group .
+          docker build --build-arg NEXT_PUBLIC_API_URL=https://proxy.duegate.com/staging -t b2b-truenorth .
 
       - name: Save Docker Image as Artifact
         run: |
-          docker save -o b2b-hksglobal-group.tar b2b-hksglobal-group
+          docker save -o b2b-truenorth.tar b2b-truenorth
         shell: bash
 
       - name: Upload Docker Image
         uses: actions/upload-artifact@v4
         with:
-          name: b2b-hksglobal-group-image
-          path: b2b-hksglobal-group.tar
+          name: b2b-truenorth-image
+          path: b2b-truenorth.tar
           retention-days: 1
 
   # ---------------------------------
@@ -64,15 +64,15 @@ jobs:
       - name: Download Docker Image
         uses: actions/download-artifact@v4
         with:
-          name: b2b-hksglobal-group-image
+          name: b2b-truenorth-image
 
       - name: Load Docker Image
         run: |
-          docker load -i b2b-hksglobal-group.tar
+          docker load -i b2b-truenorth.tar
 
       - name: Start Docker Container
         run: |
-          docker run -d -p 3000:3000 --name b2b-hksglobal-group-container b2b-hksglobal-group
+          docker run -d -p 3000:3000 --name b2b-truenorth-container b2b-truenorth
 
       - name: Wait for Application to be Ready
         run: |
@@ -135,8 +135,8 @@ jobs:
     steps:
       - name: Stop and Remove Docker Container
         run: |
-          docker stop b2b-hksglobal-group-container || true
-          docker rm b2b-hksglobal-group-container || true
+          docker stop b2b-truenorth-container || true
+          docker rm b2b-truenorth-container || true
 
   # ---------------------------------
   # 4) TEST SUMMARY JOB
