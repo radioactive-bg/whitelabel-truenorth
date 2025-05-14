@@ -97,19 +97,37 @@ export default function CatalogPage() {
   return (
     <>
       {/* Hero Section */}
+      {/* Popular Products Banner */}
       <section
-        className="flex w-full flex-col items-center justify-center overflow-hidden  rounded 
-        rounded-md from-primary to-primary-foreground dark:from-gray-900 dark:to-gray-700 md:!min-h-[400px] md:min-w-0 md:!bg-cover md:!bg-center"
+        className="my-3 w-full rounded-md py-8"
         style={{
-          backgroundImage: 'url(/products-hero.webp)',
-          backgroundPosition: 'calc(100% + 75px) 0',
-          backgroundRepeat: 'no-repeat',
-          backgroundSize: 'auto 30vh',
-          minHeight: 'calc(100vh - 120px)',
-          backgroundColor: '#00060b',
+          background: 'linear-gradient(135deg, #FF4500 0%, #000000 100%)',
         }}
       >
-        <div className="container mt-16 flex flex-col  items-center px-4 text-center md:mt-0 md:items-start md:px-6">
+        <div className="container mx-auto px-4">
+          <div className="flex items-center justify-between">
+            <h2 className="text-5xl font-bold text-background dark:text-white">
+              Popular Products
+            </h2>
+            <Link
+              href="/dashboard/catalog"
+              className="text-background hover:text-background/80 dark:text-white dark:hover:text-gray-300"
+              prefetch={false}
+            >
+              View All →
+            </Link>
+          </div>
+        </div>
+      </section>
+      <section
+        className="flex w-full flex-col items-center justify-center overflow-hidden rounded-md 
+        md:!min-h-[400px] md:min-w-0"
+        style={{
+          background:
+            'linear-gradient(135deg, #FFD700 0%, #FF4500 50%, #000000 100%)',
+        }}
+      >
+        <div className="container mt-16 flex flex-col items-center px-4 text-center md:mt-0 md:items-start md:px-6">
           <h1 className="mb-4 text-3xl font-bold text-background dark:text-white sm:text-4xl md:text-5xl">
             Find the Perfect Gift Card
           </h1>
@@ -119,14 +137,32 @@ export default function CatalogPage() {
           <Link
             href="/dashboard/catalog"
             className="inline-flex items-center justify-center rounded-md bg-background px-6 py-3 font-bold 
-      text-primary hover:bg-background/90 focus:outline-none focus-visible:ring-2 focus-visible:ring-background 
-      focus-visible:ring-offset-2 dark:bg-white dark:text-black dark:hover:bg-white dark:focus-visible:ring-gray-600"
+            text-primary hover:bg-background/90 focus:outline-none focus-visible:ring-2 focus-visible:ring-background 
+            focus-visible:ring-offset-2 dark:bg-white dark:text-black dark:hover:bg-white dark:focus-visible:ring-gray-600"
             prefetch={false}
           >
             Browse Gift Cards
           </Link>
         </div>
       </section>
+
+      {/* Popular Products Banner */}
+      {/* <section className="w-full bg-primary py-8">
+        <div className="container mx-auto px-4">
+          <div className="flex items-center justify-between">
+            <h2 className="text-2xl font-bold text-background dark:text-white">
+              Popular Products
+            </h2>
+            <Link
+              href="/dashboard/catalog"
+              className="text-background hover:text-background/80 dark:text-white dark:hover:text-gray-300"
+              prefetch={false}
+            >
+              View All →
+            </Link>
+          </div>
+        </div>
+      </section> */}
 
       {/* Popular Brands Section */}
       {/* <section className="py-16 md:py-24">

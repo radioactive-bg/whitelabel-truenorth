@@ -26,7 +26,13 @@ export default function Page() {
   return (
     <main className="flex h-screen w-screen flex-col flex-wrap md:flex-row">
       {/* Right Section with Dynamic Login Content */}
-      <div className="flex w-full  flex-col justify-between bg-gradient-to-t from-white to-blue-700 px-8 py-8 md:order-last md:h-full md:w-1/2 lg:px-16 lg:py-16">
+      <div
+        className="flex w-full flex-col justify-between px-8 py-8 md:order-last md:h-full md:w-1/2 lg:px-16 lg:py-16"
+        style={{
+          background:
+            'linear-gradient(135deg, #FFD700 0%, #FF4500 50%, #000000 100%)',
+        }}
+      >
         {/* Logo at the top */}
         <div className="flex justify-start">
           <LogoWhite />
@@ -34,10 +40,10 @@ export default function Page() {
 
         {/* Content at the bottom */}
         <div className="flex flex-col items-start text-left lg:pb-12">
-          <h1 className="mt-4 text-4xl font-bold tracking-tight text-black sm:mt-6 md:text-5xl">
+          <h1 className="mt-4 text-4xl font-bold tracking-tight text-white sm:mt-6 md:text-5xl">
             Distribution Hub
           </h1>
-          <p className="mt-4 text-lg leading-8 text-black md:text-2xl">
+          <p className="mt-4 text-lg leading-8 text-white md:text-2xl">
             Empower your business with streamlined distribution of digital
             products
           </p>
@@ -48,7 +54,11 @@ export default function Page() {
         <div className="max-w-[400px]">
           <Link
             href="/login"
-            className="text-m rounded-md bg-black px-6 py-3 font-semibold text-white shadow-sm hover:bg-black/70 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black"
+            style={{
+              background:
+                'linear-gradient(135deg, #FFD700 0%, #FF4500 50%, #000000 100%)',
+            }}
+            className="text-md rounded-md bg-black px-6 py-3 font-semibold text-white shadow-sm hover:bg-black/70 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black"
           >
             Login
           </Link>

@@ -319,8 +319,9 @@ const ProductsTable = ({
                           <td>
                             {' '}
                             <div>
-                              <div className="mr-2 font-medium text-gray-900 text-gray-900 dark:text-gray-100">
+                              <div className="mr-2 font-medium  text-gray-900 dark:text-gray-100">
                                 {product.groupName}
+                                {product.category}
                               </div>
                               <div className="mt-1 sm:hidden">
                                 {product.price}
