@@ -2,8 +2,8 @@
 import React, { useState, useEffect } from 'react';
 import LogoWhite from '@/app/ui/logo-white';
 import LoginForm from '@/app/ui/login/login-form';
-import OTPForm from '@/app/ui/login/OTP-form';
-import FirstTimeLoginQRCode from '@/app/ui/login/FirstTimeLoginQRCode';
+// import OTPForm from '@/app/ui/login/OTP-form';
+// import FirstTimeLoginQRCode from '@/app/ui/login/FirstTimeLoginQRCode';
 
 import { userStore, getUserProfile } from '@/state/user';
 import { User } from '@/app/lib/types/user';
@@ -22,8 +22,8 @@ export default function LoginPage() {
 
   const router = useRouter();
 
-  const [showOtpForm, setShowOtpForm] = useState(false);
-  const [showQRCode, setShowQRCode] = useState(false);
+  // const [showOtpForm, setShowOtpForm] = useState(false);
+  // const [showQRCode, setShowQRCode] = useState(false);
 
   const handleLogin = async (e: any, email: string, password: string) => {
     e.preventDefault();
@@ -61,33 +61,28 @@ export default function LoginPage() {
         );
 
         setAuth(authInfo);
-        // Check if the current URL matches the target URL
-        if (window.location.origin === 'https://dev.b2b.hksglobal.group') {
-          console.log('URL matched. Redirecting to dashboard...');
-          // setTimeout(() => {
-          router.push('/dashboard'); // Redirect to the dashboard
-          // }, 1000);
-        }
-        //  else {
-        //   setShowOtpForm(true); // Show OTP form if the condition is not met
-        // }
         const userProfile = await getUserProfile(data.access_token);
+        setUser(userProfile);
+        router.push('/dashboard'); // Redirect to dashboard immediately after successful login
+
+        /* OTP Flow - Commented out
         if (userProfile.is2FAEnable) {
           setShowOtpForm(true);
         } else {
           setShowQRCode(true);
         }
-        //console.log('getUserProfile: '+JSON.stringify(user))
+        */
       } else {
-        console.log('else Login Error:', data);
+        console.log('Login Error:', data);
         alert(data.message);
       }
     } catch (error) {
-      console.error('catch Login Error:', error);
+      console.error('Login Error:', error);
       alert('Failed to login');
     }
   };
 
+  /* OTP Verification - Commented out
   const handleVerifyOtp = async (
     e: any,
     otp: string,
@@ -114,14 +109,12 @@ export default function LoginPage() {
           setShowOtpForm(false);
         }, 2000);
 
-        router.push('/dashboard'); // Redirects to the dashboard page
+        router.push('/dashboard');
       } else {
-        // alert(data.message);
         setOtpError('The OTP code is incorrect. Please try again.');
       }
     } catch (error) {
       console.error('OTP Error:', error);
-      //alert('Failed to verify OTP');
       setOtpError('Failed to verify OTP. Please try again later.');
     }
   };
@@ -130,6 +123,7 @@ export default function LoginPage() {
     setShowQRCode(false);
     setShowOtpForm(true);
   };
+  */
 
   return (
     <main className="flex h-screen w-screen flex-col flex-wrap md:flex-row">
@@ -138,7 +132,7 @@ export default function LoginPage() {
         className="flex w-full  flex-col justify-between bg-gradient-to-t from-white to-blue-700 px-8 py-8 md:order-last md:h-full md:w-1/2 lg:px-16 lg:py-16"
         style={{
           background:
-            'linear-gradient(135deg, #FFD700 0%, #FF4500 50%, #000000 100%)',
+            'linear-gradient(135deg, white 0%,#0d9551 50%, #0b2a62 100%)',
         }}
       >
         {/* Logo at the top */}
@@ -160,16 +154,13 @@ export default function LoginPage() {
       {/* Left Section with Dynamic Login Content */}
       <div className="flex w-full justify-center bg-white md:h-full md:w-1/2 md:items-center">
         <div className="w-full max-w-[400px]">
-          {showQRCode ? (
+          {/* {showQRCode ? (
             <FirstTimeLoginQRCode onQRCodeScanned={handleQRCodeScanned} />
           ) : showOtpForm ? (
-            <OTPForm
-              handleVerifyOtp={handleVerifyOtp}
-              showOtpForm={showOtpForm}
-            />
-          ) : (
-            <LoginForm handleLogin={handleLogin} />
-          )}
+            <OTPForm handleVerifyOtp={handleVerifyOtp} showOtpForm={showOtpForm} />
+          ) : ( */}
+          <LoginForm handleLogin={handleLogin} />
+          {/* )} */}
         </div>
       </div>
     </main>

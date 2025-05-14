@@ -8,9 +8,9 @@ export default function Logo() {
       className={`${lusitana.className} flex flex-row items-center leading-none text-white`}
     >
       <Image
-        src="/HKS-Logo.svg"
-        width={130}
-        height={40}
+        src="/TRUE NORTH.png"
+        width={200}
+        height={100}
         alt="HKS Logo"
         priority
       />

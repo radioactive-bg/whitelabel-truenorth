@@ -1,17 +1,17 @@
 'use client';
 import { useEffect, useState } from 'react';
-import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import TagManager from 'react-gtm-module';
 import LogoWhite from '@/app/ui/logo-white';
-import { useRouter } from 'next/navigation'; // Import useRouter
 
 export default function Page() {
   const [isStaging, setIsStaging] = useState(false);
-  const router = useRouter(); // Initialize the router
+  const router = useRouter();
 
-  // useEffect(() => {
-  //   router.push('/login'); // Redirect to /login
-  // }, []);
+  useEffect(() => {
+    // Redirect to login page
+    router.push('/login');
+  }, []);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -30,7 +30,7 @@ export default function Page() {
         className="flex w-full flex-col justify-between px-8 py-8 md:order-last md:h-full md:w-1/2 lg:px-16 lg:py-16"
         style={{
           background:
-            'linear-gradient(135deg, #FFD700 0%, #FF4500 50%, #000000 100%)',
+            'linear-gradient(135deg, white 0%,#0d9551 50%, #000000 100%)',
         }}
       >
         {/* Logo at the top */}
@@ -49,19 +49,10 @@ export default function Page() {
           </p>
         </div>
       </div>
-      {/* Left Section - Button Centered */}
+      {/* Left Section - Loading State */}
       <div className="flex h-1/3 w-full items-center justify-center bg-white md:h-full md:w-1/2 md:items-center">
-        <div className="max-w-[400px]">
-          <Link
-            href="/login"
-            style={{
-              background:
-                'linear-gradient(135deg, #FFD700 0%, #FF4500 50%, #000000 100%)',
-            }}
-            className="text-md rounded-md bg-black px-6 py-3 font-semibold text-white shadow-sm hover:bg-black/70 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black"
-          >
-            Login
-          </Link>
+        <div className="text-center">
+          <p className="text-gray-600">Redirecting to login...</p>
         </div>
       </div>
     </main>

@@ -372,7 +372,7 @@ export default function TailwindSideNav({
                   className={clsx(
                     'group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 transition duration-300',
                     iContactUsActive
-                      ? 'bg-black text-white dark:bg-white dark:text-black'
+                      ? 'bg-[#1b3b67] text-white dark:bg-white dark:text-black'
                       : 'text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700',
                   )}
                 >

@@ -42,6 +42,33 @@ export default function CatalogPage() {
     },
   ]);
 
+  const popularProducts = [
+    {
+      src: '/flightgift-popular.png',
+      name: 'Flight Gift',
+    },
+    {
+      src: '/Frame 26086500-popular.png',
+      name: 'Hotel Gift',
+    },
+    {
+      src: '/rewarble-popular.png',
+      name: 'Rewarble',
+    },
+    {
+      src: '/stel-hosting-popular.png',
+      name: 'Stel Hosting',
+    },
+    {
+      src: '/tripgift-popular.png',
+      name: 'Trip Gift',
+    },
+    {
+      src: '/activitygift.png',
+      name: 'Activity Gift',
+    },
+  ];
+
   const handleImageLoad = (index: number) => {
     setLoadingStates((prev) => {
       const newState = [...prev];
@@ -101,30 +128,50 @@ export default function CatalogPage() {
       <section
         className="my-3 w-full rounded-md py-8"
         style={{
-          background: 'linear-gradient(135deg, #FF4500 0%, #000000 100%)',
+          background: '#1b3b67',
         }}
       >
         <div className="container mx-auto px-4">
-          <div className="flex items-center justify-between">
+          <div className="mb-8 flex flex-col items-center justify-between gap-3">
             <h2 className="text-5xl font-bold text-background dark:text-white">
               Popular Products
             </h2>
-            <Link
-              href="/dashboard/catalog"
-              className="text-background hover:text-background/80 dark:text-white dark:hover:text-gray-300"
-              prefetch={false}
-            >
-              View All →
-            </Link>
+          </div>
+
+          <div className="flex flex-wrap justify-center gap-6">
+            {popularProducts.map((product, index) => (
+              <div
+                key={index}
+                className="group relative h-[150px] w-[150px] transform cursor-pointer overflow-hidden rounded-2xl bg-white p-2 shadow-lg transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl dark:bg-gray-800"
+              >
+                <div className="relative h-full w-full overflow-hidden rounded-xl">
+                  {loadingStates[index] && (
+                    <div className="absolute h-full w-full animate-pulse bg-gray-300 dark:bg-gray-700"></div>
+                  )}
+                  <Image
+                    src={product.src}
+                    alt={product.name}
+                    fill
+                    className="object-contain transition-transform duration-500 group-hover:scale-110"
+                    onLoad={() => handleImageLoad(index)}
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100"></div>
+                  <div className="absolute bottom-0 left-0 right-0 p-4 text-center text-white opacity-0 transition-all duration-300 group-hover:opacity-100">
+                    <h3 className="text-xl font-semibold">{product.name}</h3>
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </section>
+
       <section
         className="flex w-full flex-col items-center justify-center overflow-hidden rounded-md 
         md:!min-h-[400px] md:min-w-0"
         style={{
           background:
-            'linear-gradient(135deg, #FFD700 0%, #FF4500 50%, #000000 100%)',
+            'linear-gradient(135deg,#a5d36b 10%, #0d9551 50%, #0b2a62 100%)',
         }}
       >
         <div className="container mt-16 flex flex-col items-center px-4 text-center md:mt-0 md:items-start md:px-6">
@@ -145,59 +192,6 @@ export default function CatalogPage() {
           </Link>
         </div>
       </section>
-
-      {/* Popular Products Banner */}
-      {/* <section className="w-full bg-primary py-8">
-        <div className="container mx-auto px-4">
-          <div className="flex items-center justify-between">
-            <h2 className="text-2xl font-bold text-background dark:text-white">
-              Popular Products
-            </h2>
-            <Link
-              href="/dashboard/catalog"
-              className="text-background hover:text-background/80 dark:text-white dark:hover:text-gray-300"
-              prefetch={false}
-            >
-              View All →
-            </Link>
-          </div>
-        </div>
-      </section> */}
-
-      {/* Popular Brands Section */}
-      {/* <section className="py-16 md:py-24">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="mb-8 text-2xl font-bold dark:text-white sm:text-3xl">
-            Popular Brands
-          </h2>
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
-            {brands.map((item, index) => (
-              <Link
-                key={index}
-                href={item.href}
-                prefetch={false}
-                className="pointer-events-none"
-              >
-                <div className="relative flex items-center justify-center">
-                  {loadingStates[index] && (
-                    <div className="absolute h-[120px] w-full animate-pulse rounded-md bg-gray-300 dark:bg-gray-700 sm:h-[175px]"></div>
-                  )}
-                  <Image
-                    src={item.src}
-                    alt={item.name}
-                    width={240}
-                    height={240}
-                    className={`h-auto w-full rounded-md object-contain transition-opacity duration-300 dark:bg-gray-800 ${
-                      loadingStates[index] ? 'opacity-0' : 'opacity-100'
-                    }`}
-                    onLoad={() => handleImageLoad(index)}
-                  />
-                </div>
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section> */}
     </>
   );
 }
