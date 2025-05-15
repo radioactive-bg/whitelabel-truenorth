@@ -4,7 +4,10 @@ import { authStore, Auth } from '@/state/auth';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
-import { getProductGroups } from '@/app/lib/api/filters';
+import { getProductGroupsList } from '@/app/lib/api/productGroup';
+import Skeleton from 'react-loading-skeleton';
+import 'react-loading-skeleton/dist/skeleton.css';
+import { useThemeStore } from '@/state/theme';
 
 export default function CatalogPage() {
   const router = useRouter();
@@ -12,62 +15,17 @@ export default function CatalogPage() {
     auth: Auth;
     initializeAuth: () => void;
   };
+  const { theme } = useThemeStore();
 
   const [loadingStates, setLoadingStates] = useState<boolean[]>(
     Array(6).fill(true),
   );
 
-  const [brands, setBrands] = useState([
-    { src: '/amazon-fb-cat.png', name: 'Amazon', href: '/dashboard/catalog' },
-    {
-      src: '/playstation-store-fb-cat.png',
-      name: 'PSN',
-      href: '/dashboard/catalog',
-    },
-    {
-      src: '/google-play-fb-cat.png',
-      name: 'Google Play',
-      href: '/dashboard/catalog',
-    },
-    {
-      src: '/appstore-fb-cat.png',
-      name: 'Apple Card',
-      href: '/dashboard/catalog',
-    },
-    { src: '/steam-fb-cat.png', name: 'Steam', href: '/dashboard/catalog' },
-    {
-      src: '/nintendo-fb-cat.png',
-      name: 'Nintendo',
-      href: '/dashboard/catalog',
-    },
-  ]);
+  const [popularProducts, setPopularProducts] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const popularProducts = [
-    {
-      src: '/flightgift-popular.png',
-      name: 'Flight Gift',
-    },
-    {
-      src: '/Frame 26086500-popular.png',
-      name: 'Hotel Gift',
-    },
-    {
-      src: '/rewarble-popular.png',
-      name: 'Rewarble',
-    },
-    {
-      src: '/stel-hosting-popular.png',
-      name: 'Stel Hosting',
-    },
-    {
-      src: '/tripgift-popular.png',
-      name: 'Trip Gift',
-    },
-    {
-      src: '/activitygift.png',
-      name: 'Activity Gift',
-    },
-  ];
+  const baseColor = theme === 'dark' ? '#374151' : '#d1d5db';
+  const highlightColor = theme === 'dark' ? '#4b5563' : '#e5e7eb';
 
   const handleImageLoad = (index: number) => {
     setLoadingStates((prev) => {
@@ -84,46 +42,125 @@ export default function CatalogPage() {
       router.push('/');
       return;
     }
-  }, [auth.access_token]);
 
-  // Fetch product groups on page load and log the result
-  useEffect(() => {
-    const fetchProductGroups = async () => {
+    // Fetch product groups for popular products
+    const fetchPopularProducts = async () => {
       try {
-        const productGroups = await getProductGroups();
-        console.log('Product Groups:', productGroups);
-
-        // Update brands array with correct hrefs
-        const updatedBrands = brands.map((brand) => {
-          // Find a product group that matches the brand name
-          const matchedGroup = Object.entries(productGroups).find(
-            ([_, name]) =>
-              typeof name === 'string' &&
-              (name as string).toLowerCase().includes(brand.name.toLowerCase()),
-          );
-
-          return {
-            ...brand,
-            href: matchedGroup
-              ? `/dashboard/catalog?ProductGroups=${encodeURIComponent(
-                  matchedGroup[1] as string,
-                )}`
-              : '/dashboard/catalog', // Default if not found
-          };
-        });
-
-        setBrands(updatedBrands);
+        setIsLoading(true);
+        const response = await getProductGroupsList(6); // Get first 6 products
+        if (response.data && response.data.data) {
+          setPopularProducts(response.data.data);
+        }
       } catch (error) {
-        console.error('Error fetching product groups:', error);
+        console.error('Error fetching popular products:', error);
+      } finally {
+        setIsLoading(false);
       }
     };
 
-    fetchProductGroups();
-  }, []);
+    fetchPopularProducts();
+  }, [auth.access_token]);
+
+  const handleProductClick = (productName: string) => {
+    // Create URLSearchParams to handle the parameters like the catalog page
+    const params = new URLSearchParams();
+    params.set('ProductGroups', productName);
+    router.push(`/dashboard/catalog?${params.toString()}`);
+  };
+
+  if (isLoading) {
+    return (
+      <>
+        {/* Popular Products Banner Skeleton */}
+        <section
+          className="my-3 w-full rounded-md py-8"
+          style={{
+            background: '#1b3b67',
+          }}
+        >
+          <div className="container mx-auto px-4">
+            <div className="mb-8 flex flex-col items-center justify-between gap-3">
+              <Skeleton
+                height={48}
+                width={300}
+                baseColor={baseColor}
+                highlightColor={highlightColor}
+                className="bg-white/20"
+              />
+            </div>
+
+            <div className="flex flex-wrap justify-center gap-6">
+              {Array.from({ length: 6 }).map((_, index) => (
+                <div
+                  key={index}
+                  className="group relative h-[150px] w-[150px] transform cursor-pointer overflow-hidden rounded-2xl shadow-lg transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl"
+                >
+                  <div className="relative h-full w-full overflow-hidden rounded-xl">
+                    <div className="relative h-full w-full">
+                      <Skeleton
+                        height={150}
+                        width={150}
+                        baseColor={baseColor}
+                        highlightColor={highlightColor}
+                        className="h-full w-full rounded-xl"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100"></div>
+                      <div className="absolute bottom-0 left-0 right-0 top-0 text-center text-white opacity-0 transition-all duration-300 group-hover:opacity-100">
+                        <Skeleton
+                          height={32}
+                          width={120}
+                          baseColor={baseColor}
+                          highlightColor={highlightColor}
+                          className="mx-auto bg-white/20"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Banner Section Skeleton */}
+        <section
+          className="flex w-full flex-col items-center justify-center overflow-hidden rounded-md 
+          md:!min-h-[400px] md:min-w-0"
+          style={{
+            background:
+              'linear-gradient(135deg,#a5d36b 10%, #0d9551 50%, #0b2a62 100%)',
+          }}
+        >
+          <div className="container mt-16 flex flex-col items-center px-4 text-center md:mt-0 md:items-start md:px-6">
+            <Skeleton
+              height={48}
+              width={400}
+              baseColor={baseColor}
+              highlightColor={highlightColor}
+              className="mb-4 bg-white/20"
+            />
+            <Skeleton
+              height={24}
+              width={300}
+              baseColor={baseColor}
+              highlightColor={highlightColor}
+              className="mb-8 bg-white/20"
+            />
+            <Skeleton
+              height={48}
+              width={200}
+              baseColor={baseColor}
+              highlightColor={highlightColor}
+              className="bg-white/20"
+            />
+          </div>
+        </section>
+      </>
+    );
+  }
 
   return (
     <>
-      {/* Hero Section */}
       {/* Popular Products Banner */}
       <section
         className="my-3 w-full rounded-md py-8"
@@ -141,15 +178,16 @@ export default function CatalogPage() {
           <div className="flex flex-wrap justify-center gap-6">
             {popularProducts.map((product, index) => (
               <div
-                key={index}
-                className="group relative h-[150px] w-[150px] transform cursor-pointer overflow-hidden rounded-2xl bg-white p-2 shadow-lg transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl dark:bg-gray-800"
+                key={product.id}
+                onClick={() => handleProductClick(product.name)}
+                className="group relative h-[150px] w-[150px] transform cursor-pointer overflow-hidden rounded-2xl bg-white p-1 shadow-lg transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl dark:bg-gray-800"
               >
                 <div className="relative h-full w-full overflow-hidden rounded-xl">
                   {loadingStates[index] && (
                     <div className="absolute h-full w-full animate-pulse bg-gray-300 dark:bg-gray-700"></div>
                   )}
                   <Image
-                    src={product.src}
+                    src={product.logo || '/NoPhoto.jpg'}
                     alt={product.name}
                     fill
                     className="object-contain transition-transform duration-500 group-hover:scale-110"

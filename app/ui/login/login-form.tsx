@@ -35,7 +35,7 @@ export default function LoginForm({
               Staging
             </p>
           )}
-          <h2 className=" text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
+          <h2 className=" text-center text-2xl font-bold leading-9 tracking-tight text-[#1b3b67]">
             Sign in to your account
           </h2>
         </div>
@@ -97,7 +97,7 @@ export default function LoginForm({
             <div>
               <button
                 type="submit"
-                className="flex w-full justify-center rounded-md bg-black px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-black/70 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                className="flex w-full justify-center rounded-md bg-[#1b3b67] px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-[#1b3b67]/80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
                 onClick={(e) => handleLogin(e, email, password)}
               >
                 Sign in

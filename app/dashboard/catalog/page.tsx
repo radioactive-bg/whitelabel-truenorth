@@ -14,8 +14,10 @@ import { getProductGroupsList } from '@/app/lib/api/productGroup';
 
 import FilterPopover from '@/app/ui/dashboard/catalog/FilterPopover';
 import ProductsTable from '@/app/ui/dashboard/catalog/ProductsTable';
+import QueryProductsTable from '@/app/ui/dashboard/catalog/QueryProductsTable';
 
 import { CatalogSkeleton } from '@/app/ui/skeletons';
+import axios from 'axios';
 
 function classNames(...classes: any) {
   return classes.filter(Boolean).join(' ');
@@ -314,8 +316,14 @@ const Catalog = () => {
     setFiltersActive(isActive ? isActive : false);
   };
 
+  // Check if we have a ProductGroups query parameter
+  const hasProductGroupQuery = () => {
+    const productGroup = findQueryParam('ProductGroups');
+    return !!productGroup;
+  };
+
   return (
-    <div className="w-full ">
+    <div className="w-full">
       <main className="mx-auto max-w-2xl rounded-md bg-white px-4 dark:bg-gray-800 lg:max-w-7xl lg:px-8">
         {loading === true ? (
           <CatalogSkeleton />
@@ -392,7 +400,7 @@ const Catalog = () => {
               </Dialog>
             </Transition.Root>
 
-            <div className=" hidden items-center justify-end border-b border-gray-300 pb-10 pt-10 dark:border-gray-500 lg:flex">
+            <div className="hidden items-center justify-end border-b border-gray-300 pb-10 pt-10 dark:border-gray-500 lg:flex">
               <div className="flex hidden items-center lg:block">
                 <div className="flex items-center">
                   {allFilters?.map((filter) => (
@@ -413,10 +421,9 @@ const Catalog = () => {
               </div>
             </div>
 
-            <div className="pb-10 pt-10  lg:grid lg:grid-cols-3 lg:gap-x-8">
+            <div className="pb-10 pt-10 lg:grid lg:grid-cols-3 lg:gap-x-8">
               <aside className="mb-4 lg:hidden">
                 <h2 className="sr-only">Filters</h2>
-
                 <button
                   type="button"
                   className="inline-flex items-center lg:hidden"
@@ -426,7 +433,7 @@ const Catalog = () => {
                     Filters
                   </span>
                   <PlusIcon
-                    className="ml-1 h-5 w-5 flex-shrink-0 text-gray-400  dark:text-gray-300"
+                    className="ml-1 h-5 w-5 flex-shrink-0 text-gray-400 dark:text-gray-300"
                     aria-hidden="true"
                   />
                 </button>
@@ -434,13 +441,15 @@ const Catalog = () => {
 
               <section
                 aria-labelledby="product-heading"
-                className="md:col-span-6 lg:col-span-3  xl:col-span-3"
+                className="md:col-span-6 lg:col-span-3 xl:col-span-3"
               >
                 <h2 id="product-heading" className="sr-only">
                   Products
                 </h2>
 
-                {filtersActive === true ? (
+                {hasProductGroupQuery() ? (
+                  <QueryProductsTable />
+                ) : filtersActive ? (
                   <ProductsTable
                     allFilters={allFilters}
                     checkIfAnyFiltersActive={checkIfAnyFiltersActive}
@@ -458,7 +467,7 @@ const Catalog = () => {
                               }
                               className="group flex flex-col items-center"
                             >
-                              <div className="relative aspect-[1/1] w-full overflow-hidden rounded-lg bg-gray-200  dark:bg-gray-700">
+                              <div className="relative aspect-[1/1] w-full overflow-hidden rounded-lg bg-gray-200 dark:bg-gray-700">
                                 <Image
                                   src={
                                     product.logo ? product.logo : '/NoPhoto.jpg'
@@ -470,10 +479,10 @@ const Catalog = () => {
                                       ? product.imageAlt
                                       : 'Default description'
                                   }
-                                  className=" h-full w-full rounded-lg border border-gray-200 object-cover object-center  group-hover:opacity-75  dark:border-gray-700"
+                                  className="h-full w-full rounded-lg border border-gray-200 object-cover object-center group-hover:opacity-75 dark:border-gray-700"
                                 />
                               </div>
-                              <h3 className="dark: mt-4 text-xs text-black text-gray-700 dark:text-gray-300">
+                              <h3 className="mt-4 text-xs text-black text-gray-700 dark:text-gray-300">
                                 {product.label}
                               </h3>
                             </button>
