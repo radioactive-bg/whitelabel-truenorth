@@ -47,9 +47,24 @@ export default function CatalogPage() {
     const fetchPopularProducts = async () => {
       try {
         setIsLoading(true);
-        const response = await getProductGroupsList(6); // Get first 6 products
+        const response = await getProductGroupsList(400); // Get all products first
         if (response.data && response.data.data) {
-          setPopularProducts(response.data.data);
+          // Filter for specific product groups
+          const specificGroups = [
+            'Activity Gift',
+            'Flight Gift',
+            'Hotel Gift',
+            'Rewarble',
+            'Stel Hosting',
+            'Trip Gift',
+          ];
+
+          const filteredProducts = response.data.data.filter((product: any) =>
+            specificGroups.includes(product.name),
+          );
+
+          console.log('Filtered popular products:', filteredProducts);
+          setPopularProducts(filteredProducts);
         }
       } catch (error) {
         console.error('Error fetching popular products:', error);
