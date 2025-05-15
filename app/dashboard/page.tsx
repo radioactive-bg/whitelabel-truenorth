@@ -81,7 +81,7 @@ export default function CatalogPage() {
     initializeAuth();
     const localValue = localStorage.getItem('access_token') || '';
     if (!localValue) {
-      router.push('/login');
+      router.push('/');
       return;
     }
   }, [auth.access_token]);

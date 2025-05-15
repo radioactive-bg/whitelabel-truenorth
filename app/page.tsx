@@ -1,36 +1,138 @@
 'use client';
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import TagManager from 'react-gtm-module';
+import React, { useState, useEffect } from 'react';
 import LogoWhite from '@/app/ui/logo-white';
+import LoginForm from '@/app/ui/login/login-form';
+// import OTPForm from '@/app/ui/login/OTP-form';
+// import FirstTimeLoginQRCode from '@/app/ui/login/FirstTimeLoginQRCode';
 
-export default function Page() {
-  const [isStaging, setIsStaging] = useState(false);
+import { userStore, getUserProfile } from '@/state/user';
+import { User } from '@/app/lib/types/user';
+import { authStore, Auth } from '@/state/auth';
+import { useRouter } from 'next/navigation';
+
+export default function LoginPage() {
+  const { user, setUser } = userStore() as {
+    user: User;
+    setUser: (user: User) => void;
+  };
+  const { auth, setAuth } = authStore() as {
+    auth: Auth;
+    setAuth: (auth: Auth) => void;
+  };
+
   const router = useRouter();
 
-  useEffect(() => {
-    // Redirect to login page
-    router.push('/login');
-  }, []);
+  // const [showOtpForm, setShowOtpForm] = useState(false);
+  // const [showQRCode, setShowQRCode] = useState(false);
 
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      if (window.origin === 'https://staging.b2b.hksglobal.group') {
-        setIsStaging(true);
+  const handleLogin = async (e: any, email: string, password: string) => {
+    e.preventDefault();
+
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/oauth/token`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'Cache-Control': 'no-cache',
+          },
+          body: new URLSearchParams({
+            grant_type: 'password',
+            username: email,
+            password: password,
+          }),
+        },
+      );
+      const data = await response.json();
+
+      if (data.access_token) {
+        let authInfo: Auth = {
+          access_token: data.access_token,
+          access_token_expires: data.expires_in,
+          refresh_token: data.refresh_token,
+          isLoggedIn: true,
+        };
+        localStorage.setItem('access_token', data.access_token);
+        localStorage.setItem('refresh_token', data.refresh_token);
+        localStorage.setItem(
+          'access_token_expires',
+          data.expires_in.toString(),
+        );
+
+        setAuth(authInfo);
+        const userProfile = await getUserProfile(data.access_token);
+        setUser(userProfile);
+        router.push('/dashboard'); // Redirect to dashboard immediately after successful login
+
+        /* OTP Flow - Commented out
+        if (userProfile.is2FAEnable) {
+          setShowOtpForm(true);
+        } else {
+          setShowQRCode(true);
+        }
+        */
+      } else {
+        console.log('Login Error:', data);
+        alert(data.message);
       }
+    } catch (error) {
+      console.error('Login Error:', error);
+      alert('Failed to login');
     }
+  };
 
-    TagManager.initialize({ gtmId: 'GTM-5JLP32N8' });
-  }, []);
+  /* OTP Verification - Commented out
+  const handleVerifyOtp = async (
+    e: any,
+    otp: string,
+    setOtpError: (msg: string) => void,
+  ) => {
+    e.preventDefault();
+
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/distributor-crm/v1/check-2fa`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${auth.access_token}`,
+          },
+          body: JSON.stringify({ code: otp }),
+        },
+      );
+      const data = await response.json();
+
+      if (data.status === 'success') {
+        setTimeout(() => {
+          setShowOtpForm(false);
+        }, 2000);
+
+        router.push('/dashboard');
+      } else {
+        setOtpError('The OTP code is incorrect. Please try again.');
+      }
+    } catch (error) {
+      console.error('OTP Error:', error);
+      setOtpError('Failed to verify OTP. Please try again later.');
+    }
+  };
+
+  const handleQRCodeScanned = () => {
+    setShowQRCode(false);
+    setShowOtpForm(true);
+  };
+  */
 
   return (
     <main className="flex h-screen w-screen flex-col flex-wrap md:flex-row">
       {/* Right Section with Dynamic Login Content */}
       <div
-        className="flex w-full flex-col justify-between px-8 py-8 md:order-last md:h-full md:w-1/2 lg:px-16 lg:py-16"
+        className="flex w-full  flex-col justify-between bg-gradient-to-t from-white to-blue-700 px-8 py-8 md:order-last md:h-full md:w-1/2 lg:px-16 lg:py-16"
         style={{
           background:
-            'linear-gradient(135deg, white 0%,#0d9551 50%, #000000 100%)',
+            'linear-gradient(135deg, white 0%,#0d9551 50%, #0b2a62 100%)',
         }}
       >
         {/* Logo at the top */}
@@ -49,10 +151,16 @@ export default function Page() {
           </p>
         </div>
       </div>
-      {/* Left Section - Loading State */}
-      <div className="flex h-1/3 w-full items-center justify-center bg-white md:h-full md:w-1/2 md:items-center">
-        <div className="text-center">
-          <p className="text-gray-600">Redirecting to login...</p>
+      {/* Left Section with Dynamic Login Content */}
+      <div className="flex w-full justify-center bg-white md:h-full md:w-1/2 md:items-center">
+        <div className="w-full max-w-[400px]">
+          {/* {showQRCode ? (
+            <FirstTimeLoginQRCode onQRCodeScanned={handleQRCodeScanned} />
+          ) : showOtpForm ? (
+            <OTPForm handleVerifyOtp={handleVerifyOtp} showOtpForm={showOtpForm} />
+          ) : ( */}
+          <LoginForm handleLogin={handleLogin} />
+          {/* )} */}
         </div>
       </div>
     </main>

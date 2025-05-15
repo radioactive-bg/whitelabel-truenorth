@@ -127,7 +127,7 @@ const Catalog = () => {
     const localValue = localStorage.getItem('access_token') || 'no value';
     //console.log('localValue in catalog: ', localValue);
     if (!localValue) {
-      router.push('/login');
+      router.push('/');
       return;
     }
   }, [auth.access_token]);

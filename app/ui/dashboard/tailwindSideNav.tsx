@@ -105,7 +105,7 @@ export default function TailwindSideNav({
     //console.log('auth.access_token in  page - dashboard: ', auth.access_token);
     updateUserProperty('name', localValue);
     if (localValue === '' || !localValue) {
-      router.push('/login');
+      router.push('/');
       return;
     }
   }, [auth.access_token]);
@@ -267,8 +267,8 @@ export default function TailwindSideNav({
                       <div className="h-10 w-40 animate-pulse rounded-md bg-gray-200 dark:bg-gray-600"></div>
                     ) : (
                       <dd className="w-full flex-none text-2xl font-medium leading-10 tracking-tight text-gray-900 dark:text-white">
-                        {wallets[0].availableAmount
-                          ? wallets[0].availableAmount
+                        {wallets[0]?.availableAmount
+                          ? wallets[0]?.availableAmount
                           : '$ 0'}
                       </dd>
                     )}
@@ -343,8 +343,8 @@ export default function TailwindSideNav({
               <div className="h-10 w-40 animate-pulse rounded-md bg-gray-200 dark:bg-gray-600"></div>
             ) : (
               <dd className="w-full flex-none text-2xl font-medium leading-10 tracking-tight text-gray-900 dark:text-white">
-                {wallets[0].availableAmount
-                  ? wallets[0].availableAmount
+                {wallets[0]?.availableAmount
+                  ? wallets[0]?.availableAmount
                   : '$ 0'}
               </dd>
             )}
