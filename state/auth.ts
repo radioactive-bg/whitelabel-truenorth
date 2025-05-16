@@ -1,6 +1,5 @@
 'use client';
 import { create } from 'zustand';
-import axios from 'axios';
 
 export interface Auth {
   access_token: string;
@@ -32,20 +31,8 @@ export const authStore = create((set) => ({
   },
   setAuth: (auth: Auth | null) => {
     if (auth !== null) {
-      localStorage.setItem('access_token', auth.access_token);
-      localStorage.setItem(
-        'access_token_expires',
-        auth.access_token_expires.toString(),
-      );
-      localStorage.setItem('refresh_token', auth.refresh_token);
-      localStorage.setItem('isLoggedIn', auth.isLoggedIn.toString());
       set({ auth });
     } else {
-      // Optionally clear auth from state and localStorage
-      localStorage.removeItem('access_token');
-      localStorage.removeItem('access_token_expires');
-      localStorage.removeItem('refresh_token');
-      localStorage.removeItem('isLoggedIn');
       set({
         auth: {
           access_token: '',
@@ -67,7 +54,5 @@ export const authStore = create((set) => ({
 
       return { auth: newAuth };
     });
-    // Convert boolean and number to string and update localStorage
-    localStorage.setItem(propertyKey, propertyValue.toString());
   },
 }));
