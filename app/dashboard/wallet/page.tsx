@@ -1,7 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { useWalletStore, Wallet } from '@/state/wallets';
-import { userStore } from '@/state/user';
+import { getUserProfile, userStore } from '@/state/user';
 import { User } from '@/app/lib/types/user';
 import axios from 'axios';
 
@@ -29,13 +29,23 @@ interface Column {
 // ----------------------------------------------------------------------
 export default function WalletPage() {
   const { wallets, selectedWallet } = useWalletStore();
-  const { user } = userStore() as { user: User };
+  const [user, setUser] = useState<User | null>(null);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      const userData = await getUserProfile(
+        localStorage.getItem('access_token') || '',
+      );
+      setUser(userData);
+    };
+    fetchUser();
+  }, []);
 
   // -------------------------
   // ACL Flags based on the user object
   // -------------------------
-  const canViewTopup = user.acl.wallet.list.crud.view; // TopUp history permission
-  const canViewPayout = user.acl.payoutTransaction.list.crud.view; // Payout history permission
+  const canViewTopup = user?.acl.wallet.list.crud.view; // TopUp history permission
+  const canViewPayout = user?.acl.payoutTransaction.list.crud.view; // Payout history permission
 
   // Allowed table types array based on ACL
   const allowedTableTypes: ('topup' | 'payout')[] = [];
@@ -200,7 +210,7 @@ export default function WalletPage() {
     { header: 'Payout (Target)', accessor: 'payoutAmountTarget' },
     { header: 'Receiver', accessor: 'receiver' },
   ];
-
+  console.log('user', user);
   // ----------------------------------------------------------------------
   // Render
   // ----------------------------------------------------------------------
@@ -223,17 +233,21 @@ export default function WalletPage() {
             </div>
           </div>
           <div>
-            {user.acl.payoutTransaction.list.crud.store === true && (
+            {user && user.acl?.payoutTransaction?.list?.crud?.store && (
               <button
                 onClick={() => setIsPaymentDialogOpen(true)}
-                className="mr-4 mt-4 inline-flex items-center justify-between rounded-md bg-zinc-900 px-4 py-[11px] text-sm font-semibold text-white shadow-sm hover:bg-gray-800 dark:bg-white dark:text-[#000] dark:hover:bg-gray-100 md:py-2"
+                className="mr-4 mt-4 inline-flex items-center justify-between rounded-md bg-[#1b3b67] px-4 py-[11px] text-sm font-semibold text-white shadow-sm hover:bg-[#162b49] dark:bg-white dark:text-[#000] dark:hover:bg-gray-100 md:py-2"
               >
                 Payout
               </button>
             )}
-            {canViewTopup && (
+            {user && user.acl?.wallet?.list?.crud?.view && (
               <Dropdown>
-                <DropdownButton className="inline-flex w-[120px] items-center justify-between rounded-md bg-black px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-gray-50 dark:bg-white dark:!text-black dark:hover:bg-gray-100">
+                <DropdownButton
+                  style={{ backgroundColor: 'beige' }}
+                  className="inline-flex w-[120px] items-center justify-between rounded-md bg-slate-700 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#162b49] dark:bg-white dark:!text-black dark:hover:bg-gray-100"
+                  color="customblue"
+                >
                   TopUp
                   <ChevronDownIcon className="h-4 w-4 text-white dark:text-black" />
                 </DropdownButton>

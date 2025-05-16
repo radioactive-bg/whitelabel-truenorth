@@ -308,7 +308,7 @@ const FiltersSection: React.FC<FiltersSectionProps> = ({
         <button
           id="filterButton"
           onClick={applyFilters}
-          className="rounded-md bg-black px-4 py-2 text-sm font-bold text-white shadow-sm hover:bg-black/70 dark:bg-white dark:text-black dark:hover:bg-gray-300"
+          className="hover:bg-[#1b3b67]/170 rounded-md bg-[#1b3b67] px-4 py-2 text-sm font-bold text-white shadow-sm hover:bg-[#14263f] dark:bg-white dark:text-black dark:hover:bg-gray-300"
         >
           Filter
         </button>

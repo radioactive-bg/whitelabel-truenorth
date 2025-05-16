@@ -63,18 +63,13 @@ interface ACLFilters {
 
 interface ACLPayoutTransaction {
   list: {
-    crud: {
-      view: boolean;
-      store: boolean;
-    };
+    crud: ACLActions;
   };
 }
 
 interface ACLPayoutMethod {
   list: {
-    crud: {
-      view: boolean;
-    };
+    crud: ACLActions;
   };
 }
 

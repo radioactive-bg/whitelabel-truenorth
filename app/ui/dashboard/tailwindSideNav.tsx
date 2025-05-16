@@ -26,7 +26,7 @@ import NavLinks from '@/app/ui/dashboard/nav-links';
 import Logo from '@/app/ui/logo';
 import LogoWhite from '@/app/ui/logo-white';
 import { authStore, Auth } from '@/state/auth';
-import { userStore } from '@/state/user';
+import { getUserProfile, userStore } from '@/state/user';
 import { useCartStore } from '@/state/shoppingCart';
 import { User } from '@/app/lib/types/user';
 import { useRouter, usePathname } from 'next/navigation';
@@ -87,10 +87,24 @@ export default function TailwindSideNav({
     auth: Auth;
     setAuth: (auth: Auth) => void;
   };
-  const { user, updateUserProperty } = userStore() as {
+  // const { user, updateUserProperty } = userStore() as {
+  //   user: User;
+  //   updateUserProperty: (propertyKey: keyof User, propertyValue: any) => void;
+  // };
+  const [user, setUser] = useState<User | null>(null);
+  const { updateUserProperty } = userStore() as {
     user: User;
     updateUserProperty: (propertyKey: keyof User, propertyValue: any) => void;
   };
+  useEffect(() => {
+    const fetchUser = async () => {
+      const userData = await getUserProfile(
+        localStorage.getItem('access_token') || '',
+      );
+      setUser(userData);
+    };
+    fetchUser();
+  }, []);
   const router = useRouter();
   const pathname = usePathname(); // Get the current path
   let iContactUsActive = pathname === '/dashboard/contact-us';
