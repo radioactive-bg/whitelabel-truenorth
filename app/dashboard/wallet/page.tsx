@@ -233,18 +233,17 @@ export default function WalletPage() {
             </div>
           </div>
           <div>
-            {user && user.acl?.payoutTransaction?.list?.crud?.store && (
+            {/* {user && user.acl?.payoutTransaction?.list?.crud?.store && (
               <button
                 onClick={() => setIsPaymentDialogOpen(true)}
                 className="mr-4 mt-4 inline-flex items-center justify-between rounded-md bg-[#1b3b67] px-4 py-[11px] text-sm font-semibold text-white shadow-sm hover:bg-[#162b49] dark:bg-white dark:text-[#000] dark:hover:bg-gray-100 md:py-2"
               >
                 Payout
               </button>
-            )}
+            )} */}
             {user && user.acl?.wallet?.list?.crud?.view && (
               <Dropdown>
                 <DropdownButton
-                  style={{ backgroundColor: 'beige' }}
                   className="inline-flex w-[120px] items-center justify-between rounded-md bg-slate-700 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#162b49] dark:bg-white dark:!text-black dark:hover:bg-gray-100"
                   color="customblue"
                 >
