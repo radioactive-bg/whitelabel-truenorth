@@ -29,52 +29,7 @@ export default function LoginPage() {
   const [accessToken, setAccessToken] = useState<string>('');
   const [refreshToken, setRefreshToken] = useState<string>('');
   const [accessTokenExpires, setAccessTokenExpires] = useState<number>(0);
-  // const handleLogin = async (e: any, email: string, password: string) => {
-  //   e.preventDefault();
 
-  //   try {
-  //     const response = await fetch(
-  //       `${process.env.NEXT_PUBLIC_API_URL}/oauth/token`,
-  //       {
-  //         method: 'POST',
-  //         headers: {
-  //           'Content-Type': 'application/x-www-form-urlencoded',
-  //           'Cache-Control': 'no-cache',
-  //         },
-  //         body: new URLSearchParams({
-  //           grant_type: 'password',
-  //           username: email,
-  //           password: password,
-  //         }),
-  //       },
-  //     );
-  //     const data = await response.json();
-
-  //     if (data.access_token) {
-  //       const userProfile = await getUserProfile(data.access_token);
-  //       setAuth({
-  //         access_token: data.access_token,
-  //         access_token_expires: data.expires_in,
-  //         refresh_token: data.refresh_token,
-  //         isLoggedIn: false,
-  //       });
-  //       if (userProfile.is2FAEnable) {
-  //         setUser(userProfile);
-  //         setShowQRCode(true);
-  //         setShowOtpForm(true);
-  //       } else {
-  //         setUser(userProfile);
-  //         setShowQRCode(true);
-  //       }
-  //     } else {
-  //       console.log('Login Error:', data);
-  //       alert(data.message);
-  //     }
-  //   } catch (error) {
-  //     console.error('Login Error:', error);
-  //     alert('Failed to login');
-  //   }
-  // };
   const handleLogin = async (e: any, email: string, password: string) => {
     e.preventDefault();
 
@@ -95,7 +50,7 @@ export default function LoginPage() {
         },
       );
       const data = await response.json();
-
+      console.log('data', data);
       if (data.access_token) {
         // Store token temporarily in state but don't set isLoggedIn to true yet
         // Also don't save to localStorage or Zustand at this stage
@@ -113,6 +68,7 @@ export default function LoginPage() {
         } else {
           setShowQRCode(true);
         }
+        console.log('accessToken', accessToken);
       } else {
         console.log('Login Error:', data);
         alert(data.message);
@@ -122,7 +78,6 @@ export default function LoginPage() {
       alert('Failed to login');
     }
   };
-
   const handleQRCodeScanned = () => {
     setShowQRCode(false);
     setShowOtpForm(true);
@@ -206,7 +161,10 @@ export default function LoginPage() {
       <div className="flex w-full justify-center bg-white md:h-full md:w-1/2 md:items-center">
         <div className="w-full max-w-[400px]">
           {showQRCode ? (
-            <FirstTimeLoginQRCode onQRCodeScanned={handleQRCodeScanned} />
+            <FirstTimeLoginQRCode
+              onQRCodeScanned={handleQRCodeScanned}
+              accessToken={accessToken}
+            />
           ) : showOtpForm ? (
             <OTPForm
               handleVerifyOtp={handleVerifyOtp}

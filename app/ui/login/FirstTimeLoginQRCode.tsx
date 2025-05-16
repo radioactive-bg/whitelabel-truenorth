@@ -5,8 +5,10 @@ import axios from 'axios';
 
 export default function FirstTimeLoginQRCode({
   onQRCodeScanned,
+  accessToken,
 }: {
   onQRCodeScanned: () => void;
+  accessToken: string;
 }) {
   const [qrCodeUrl, setQrCodeUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -20,7 +22,7 @@ export default function FirstTimeLoginQRCode({
           {
             headers: {
               'Content-Type': 'application/json',
-              Authorization: `Bearer ${localStorage.getItem('access_token')}`,
+              Authorization: `Bearer ${accessToken}`,
             },
           },
         );
